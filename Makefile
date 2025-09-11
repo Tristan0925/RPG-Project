@@ -5,7 +5,7 @@ CXX = g++
 
 
 # Show all warnings (so we catch bugs early)
-CXXFLAGS = -std=c++17 -Wall
+CXXFLAGS = -std=c++17 -Wall -Iinclude
 
 # These are the SFML libraries we need to link: graphics for drawing stuff, window for handling the game window, system for timing and other utilities
 LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
@@ -24,7 +24,7 @@ all: $(TARGET)
 
 # Link all object files together to create the final game executable
 $(TARGET): $(OBJ)
-    $(CXX) $(OBJ) -o $@ $(LDFLAGS)
+	$(CXX) $(OBJ) -o $@ $(LDFLAGS)
 
 clean:
-    rm -f $(OBJ) $(TARGET)
+	rm -f $(OBJ) $(TARGET)

@@ -1,0 +1,157 @@
+Code that didn't work out but might be useful...
+
+/*
+    // 3D environment 
+
+    struct Slice {
+    float depth; // how far it is from the player
+    sf::RectangleShape shape;
+    };
+
+    std::vector<Slice> hallway;
+    for (int i = 0; i < 20; ++i) {
+        Slice slice;
+        slice.depth = i * 1.0f; // start with evenly spaced depth
+
+        float scale = 1.0f / (1.0f + slice.depth * 0.1f); // perspective scaling
+        float width = 600.f * scale;
+        float height = 40.f * scale;
+
+        slice.shape.setSize(sf::Vector2f(width, height));
+        slice.shape.setOrigin(width / 2.f, height / 2.f);
+        slice.shape.setPosition(400.f, 200.f + i * 50.f * scale);
+        slice.shape.setFillColor(sf::Color::White);
+
+        hallway.push_back(slice);
+    }
+
+    // Side walls
+    std::vector<sf::RectangleShape> sideWalls;
+
+    for (int i = 0; i < 20; ++i) {
+        float depth = i * 1.0f;
+        float scale = 1.0f / (1.0f + depth * 0.1f);
+        float height = 50.f * scale;
+
+        sf::RectangleShape left(sf::Vector2f(5.f, height));
+        left.setFillColor(sf::Color::White);
+        left.setOrigin(0.f, height / 2.f);
+        left.setPosition(100.f + i * 10.f, 200.f + i * 50.f * scale);
+
+        sf::RectangleShape right = left;
+        right.setPosition(700.f - i * 10.f, 200.f + i * 50.f * scale);
+
+        sideWalls.push_back(left);
+        sideWalls.push_back(right);
+    }
+
+    // Floor
+    std::vector<sf::RectangleShape> floorLayers;
+
+    for (int i = 0; i < 10; ++i) {
+        float y = 600.f - i * 40.f;
+        sf::RectangleShape layer(sf::Vector2f(800.f, 40.f));
+        layer.setPosition(0.f, y);
+        layer.setFillColor(sf::Color(80, 80, 80, 255 - i * 10)); // stronger contrast
+        floorLayers.push_back(layer);
+    }
+
+    sf::RectangleShape floor(sf::Vector2f(800.f, 300.f));
+    floor.setPosition(0.f, 300.f);
+    floor.setFillColor(sf::Color(50, 50, 50)); // darker base
+
+    // Ceiling
+    std::vector<sf::RectangleShape> ceilingLayers;
+
+    sf::RectangleShape ceiling(sf::Vector2f(800.f, 300.f));
+    ceiling.setPosition(0.f, 0.f);
+    ceiling.setFillColor(sf::Color(30, 30, 30));
+
+
+    sf::View camera(sf::FloatRect(0.f, 0.f, 800.f, 600.f));
+    */
+
+/*
+        // old code
+        // Recalculation for shape positiongs
+        float yBase = 500.f; // bottom of screen
+        float yStep = 5.f;   // gets smaller with each slice
+        
+        for (int i = 0; i < hallway.size(); ++i) {
+            float depth = hallway[i].depth;
+            float scale = 1.0f / (1.0f + depth * 0.1f);
+            float width = 600.f * scale;
+            float height = 40.f * scale;
+        
+            hallway[i].shape.setSize(sf::Vector2f(width, height));
+            hallway[i].shape.setOrigin(width / 2.f, height / 2.f);
+            hallway[i].shape.setPosition(400.f, yBase - i * yStep * scale);
+
+            // Fade effect: darker with depth
+            int brightness = std::max(0, 255 - static_cast<int>(hallway[i].depth * 10));
+            int baseBrightness = std::max(0, 255 - static_cast<int>(depth * 10));
+            int flicker = rand() % 20 - 10; // random flicker
+            //int brightness = std::clamp(baseBrightness + flicker, 0, 255);
+            hallway[i].shape.setFillColor(sf::Color(brightness, brightness, brightness));
+        }
+
+        for (int i = 0; i < sideWalls.size(); ++i) {
+            int pairIndex = i / 2;
+            float depth = pairIndex * 1.0f;
+            float scale = 1.0f / (1.0f + depth * 0.1f);
+            float height = 50.f * scale;
+        
+            sideWalls[i].setSize(sf::Vector2f(5.f, height));
+            sideWalls[i].setOrigin(0.f, height / 2.f);
+            float x = (i % 2 == 0) ? 100.f + depth * 10.f : 700.f - depth * 10.f;
+            sideWalls[i].setPosition(x, 200.f + depth * 50.f * scale);
+        
+            int brightness = std::max(0, 255 - static_cast<int>(depth * 10));
+            sideWalls[i].setFillColor(sf::Color(brightness, brightness, brightness));
+        }
+        
+
+        camera.setCenter(400.f, 300.f);
+        
+        window.setView(camera);
+        */
+
+/*
+        // old code
+        // ceiling
+        window.draw(ceiling);
+        
+        
+        // Draw floor first
+        for (auto& layer : floorLayers)
+            window.draw(layer);
+        
+        // Then side walls
+        for (auto& wall : sideWalls)
+            window.draw(wall);
+        
+        for (auto& slice : hallway)
+            window.draw(slice.shape);
+        */
+
+/*
+void Player::tryMove(sf::Vector2f delta, const std::vector<sf::FloatRect>& walls) {
+    sf::FloatRect nextPos(position.x + delta.x - 10.f, position.y + delta.y - 10.f, 20.f, 20.f);
+
+    for (const auto& wall : walls) {
+        if (wall.intersects(nextPos)) {
+            return; // Collision detected — cancel movement
+        }
+    }
+
+    position += delta; // No collision — apply movement
+}
+*/
+
+        // Handle turning
+
+        // Handle movement forward/backward
+
+        //const auto& wallBounds = map.getWallBounds();
+
+        // float speed = 2.0f;
