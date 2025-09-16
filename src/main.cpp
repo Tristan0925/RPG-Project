@@ -36,7 +36,7 @@ int main() {
 
     // Camera rotation angles
     const float PI = 3.14159f;
-    const float FOV = PI / 3.0f; // 60 degree feild of view
+    const float FOV = PI / 3.0f; // 60 degree field of view
     // Screen size for calculations
     const int screenWidth = 800;
     const int screenHeight = 600;
