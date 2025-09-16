@@ -34,7 +34,6 @@ class Player {
         sf::Vector2f getPosition() const; // returns current position
         void setPosition(const sf::Vector2f& pos);
 
-
         
         float getAngle() const;
 

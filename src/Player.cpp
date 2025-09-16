@@ -28,6 +28,8 @@ Player::Player() {
 Player::Player(const sf::Vector2f& spawnPos) {
     position = spawnPos * 64.0f; // Start the player in the center of the screen
     angle = 0.f; // player facing right, (π/2 = down, π = left, 3π/2)
+    targetAngle = 0.f;
+    turnSpeed = 3.0f;
 }
 
 void Player::move(sf::Vector2f delta) {
@@ -76,6 +78,9 @@ void Player::update(float dt) {
 float Player::getAngle() const {
     return angle; // for recognition in minimap
 }
+
+
+
 
 // Player collision detection
 void Player::tryMove(sf::Vector2f delta, const Map& map) {
