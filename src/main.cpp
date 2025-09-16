@@ -41,9 +41,15 @@ int main() {
     const int screenWidth = 800;
     const int screenHeight = 600;
 
+    //Font and stuff
+    sf::Font font;
+    font.loadFromFile("./assets/edosz.ttf");
+    sf::Text text;
+    text.setFont(font);
     // Main game loop, runs until the window is closed
     while (window.isOpen()) {
         sf::Event event;
+        
 
         // Poll and handle events (like closing the window)
         while (window.pollEvent(event)) {
@@ -53,6 +59,11 @@ int main() {
                 window.close(); // Close the window             
         }
 
+        
+            
+            
+          
+        
         float dt = clock.restart().asSeconds(); // dt = seconds since last frame (makes speed frame dependent)
         float moveSpeed = 100.f * dt;   // movement speed
         float rotSpeed  = 2.0f * dt;    // rotation speed
@@ -182,6 +193,14 @@ int main() {
         // Draw minimap last (so it overlays)
         map.renderMiniMap(window, player.getPosition(), player.getAngle());
         
+
+        text.setString("Hello Tristan");
+            text.setCharacterSize(72);
+            text.setFillColor(sf::Color::Black);
+            text.setStyle(sf::Text::Bold | sf::Text::Underlined);
+            window.draw(text);
+
+
         window.display();
     }
 
