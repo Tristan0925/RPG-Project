@@ -24,6 +24,8 @@ class Player {
     public:
         Player(); // Constructor
 
+        Player(const sf::Vector2f& spawnPos);
+
         void move(sf::Vector2f delta); // Handle input and updates the position
         sf::Vector2f getPosition() const; // returns current position
 

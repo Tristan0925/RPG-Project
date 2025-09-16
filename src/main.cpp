@@ -19,8 +19,18 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "RPG Starter"); // create a window
     window.setFramerateLimit(60); // set frame rate
 
-    Player player; // declare entites
+    // declare entites
     Map map; 
+
+    if (!map.loadFromFile("assets/map1.txt")) {
+        return -1; // failed to load
+    }
+
+    // spawnPos from map
+    sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
+
+    // create player at that location
+    Player player(spawn);
     
     sf::Clock clock; // frame timing, in accordance with delta
 

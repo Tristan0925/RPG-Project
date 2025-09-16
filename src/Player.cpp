@@ -10,8 +10,8 @@ Handles keyboard input and updates the player's position in the world.
 #include <SFML/Window/Keyboard.hpp>
 #include <cmath>
 
-Player::Player() {
-    position = sf::Vector2f(400.f, 400.f); // Start the player in the center of the screen
+Player::Player(const sf::Vector2f& spawnPos) {
+    position = spawnPos * 64.0f; // Start the player in the center of the screen
     angle = 0.f; // player facing right, (π/2 = down, π = left, 3π/2)
 }
 
