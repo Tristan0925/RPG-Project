@@ -36,7 +36,8 @@ int main() {
 
     // Camera rotation angles
     const float PI = 3.14159f;
-    const float FOV = PI / 3.0f; // 60 degree field of view
+    const float FOV = PI / 3.0f;  // 60 degree feild of view
+
     // Screen size for calculations
     const int screenWidth = 800;
     const int screenHeight = 600;
@@ -55,7 +56,8 @@ int main() {
 
         float dt = clock.restart().asSeconds(); // dt = seconds since last frame (makes speed frame dependent)
         float moveSpeed = 100.f * dt;   // movement speed
-        float rotSpeed  = 2.0f * dt;    // rotation speed
+
+        player.update(dt);
 
         // handle imput
 
@@ -69,15 +71,31 @@ int main() {
             player.moveBackward(moveSpeed, map);
         }
 
-        // Rotate left
+        
+        static bool leftPressed = false;
+        static bool rightPressed = false;
+        
+        // Turn left
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            player.rotate(-rotSpeed);
+            if (!leftPressed) {
+                player.turnLeft();
+                leftPressed = true;
+            }
+        } else {
+            leftPressed = false;
         }
 
-        // Rotate right
+        // Turn right
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            player.rotate(rotSpeed);
+            if (!rightPressed) {
+                player.turnRight();
+                rightPressed = true;
+            }
+        } else {
+            rightPressed = false;
         }
+                
+
 
         window.clear(sf::Color::Black);
 
