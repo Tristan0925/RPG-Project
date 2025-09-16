@@ -5,7 +5,7 @@ CXX = g++
 
 
 # Show all warnings (so we catch bugs early)
-CXXFLAGS = -std=c++17 -Wall -Iinclude
+CXXFLAGS = -std=c++17 -Wall -g -Iinclude
 
 # These are the SFML libraries we need to link: graphics for drawing stuff, window for handling the game window, system for timing and other utilities
 LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system

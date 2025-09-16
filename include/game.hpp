@@ -5,6 +5,9 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include "texture_manager.hpp"
+#include "Player.hpp"
+#include "Map.hpp"
+
 class GameState;
 
 class Game
@@ -15,6 +18,8 @@ class Game
 
 
     public:
+    Player player;
+    Map map;
 
     std::stack<std::unique_ptr<GameState>> states;
 

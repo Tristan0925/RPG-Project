@@ -81,6 +81,12 @@ Game::Game() //place constants in here
    this->window.create(sf::VideoMode(800, 600), "Untitled RPG Project"); // create a window
    this->window.setFramerateLimit(60); // set frame rate
    this->background.setTexture(this->texmgr.getRef("background"));
+    if (!map.loadFromFile("assets/map1.txt")) {
+        throw std::runtime_error("failed to load");
+    }
+
+    sf::Vector2f spawn(99.0f,99.0f);
+    this->player.setPosition(spawn);
 }
 
 Game::~Game() //get rid of all the things on the stack

@@ -10,6 +10,21 @@ Handles keyboard input and updates the player's position in the world.
 #include <SFML/Window/Keyboard.hpp>
 #include <cmath>
 
+
+// normalize angle helper
+ float normalizeAngle(float a) {
+    while (a < 0) a += 2 * M_PI;
+    while (a >= 2 * M_PI) a -= 2 * M_PI;
+    return a;
+}
+
+Player::Player() {
+    position = sf::Vector2f(0.f, 0.f);
+    angle = 0.f;
+    targetAngle = 0.f;
+    turnSpeed = 3.0f; // radians/sec, tweak to taste
+}
+
 Player::Player(const sf::Vector2f& spawnPos) {
     position = spawnPos * 64.0f; // Start the player in the center of the screen
     angle = 0.f; // player facing right, (π/2 = down, π = left, 3π/2)
@@ -23,14 +38,40 @@ sf::Vector2f Player::getPosition() const {
     return position; // returns current position so stuff like the minimap can draw the player
 }
 
-void Player::rotate(float radians) {
-    angle += radians; // player angle (where they are facing)
-
-    // Keep angle within [0, 2π) for consistency ;)
-    const float TWO_PI = 6.283185f;
-    if (angle < 0) angle += TWO_PI;
-    if (angle >= TWO_PI) angle -= TWO_PI;
+void Player::setPosition(const sf::Vector2f & pos)
+{
+    position = pos;
 }
+
+void Player::turnLeft() {
+    targetAngle -= M_PI / 2.f;
+    targetAngle = normalizeAngle(targetAngle);
+}
+
+void Player::turnRight() {
+    targetAngle += M_PI / 2.f;
+    targetAngle = normalizeAngle(targetAngle);
+}
+
+
+void Player::update(float dt) {
+    // Smoothly rotate toward targetAngle
+    float delta = targetAngle - angle;
+
+    // shortest path wrapping
+    if (delta > M_PI) delta -= 2 * M_PI;
+    if (delta < -M_PI) delta += 2 * M_PI;
+
+    float step = turnSpeed * dt;
+    if (std::fabs(delta) <= step) {
+        angle = targetAngle;
+    } else {
+        angle += (delta > 0 ? step : -step);
+    }
+
+    angle = normalizeAngle(angle);
+}
+
 
 float Player::getAngle() const {
     return angle; // for recognition in minimap
