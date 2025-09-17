@@ -10,7 +10,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
     
     // Camera rotation angles
     const float PI = 3.14159f;
-    const float FOV = PI / 2.0f;  // 60 degree feild of view
+    const float FOV = PI / 2.0f;  // 90 degree field of view
 
     // Screen size for calculations
     const int screenWidth = 800;
