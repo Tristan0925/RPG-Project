@@ -1,3 +1,5 @@
+//This represents the main menu screen.
+
 #include <SFML/Graphics.hpp>
 
 #include "game_state_start.hpp"

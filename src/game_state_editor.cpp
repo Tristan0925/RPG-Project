@@ -1,9 +1,11 @@
+//This is the main game file
+
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include "game_state.hpp"
 #include "game_state_editor.hpp"
 
-void GameStateEditor::draw(const float dt)
+void GameStateEditor::draw(const float dt) //If you draw things, put them here
 {
     
     // Camera rotation angles
@@ -117,7 +119,7 @@ void GameStateEditor::draw(const float dt)
     return;
 }
 
-void GameStateEditor::update(const float dt)
+void GameStateEditor::update(const float dt) //If something needs to be updated based on dt, then go here
 {
 
    moveSpeed = 100.f * dt;   // movement speed
@@ -125,7 +127,7 @@ void GameStateEditor::update(const float dt)
     return;
 }
 
-void GameStateEditor::handleInput()
+void GameStateEditor::handleInput() //Inputs go here
 {
     sf::Event event;
  
@@ -192,7 +194,7 @@ void GameStateEditor::handleInput()
     return;
 }
 
-GameStateEditor::GameStateEditor(Game* game)
+GameStateEditor::GameStateEditor(Game* game) //This is a constructor
 {
 
     this->game = game;

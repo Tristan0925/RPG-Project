@@ -1,13 +1,4 @@
-/*
-Entry point for the RPG game.
-Sets up the game window, handles the main loop, and manages player movement via camera.
-
--- This version simulates a first-person view by moving the camera instead of a visible player sprite.
-
-*/
-
-// sf is the SFML version of a namespace, std being the standard one. Namespaces are basically like containers that hold variables, functions, and the like. Kinda similar to modules in python (i think).
-
+//This file represents the game stack. Essentially, all the parts of the game(main menu, main game, etc.) exist as separate states and all exist on this stack. The separate files(game_state_editor, game_state_start) create these separate states and let the game stack manage them. The current one being used exists at the top of the stack and will then get popped off when not in use. 
 #include <SFML/Graphics.hpp> 
 #include <SFML/System.hpp>
 #include <cmath>
@@ -54,7 +45,7 @@ GameState* Game::peekState() //check game state
 }
 
 
-void Game::gameLoop() //place game logic in here
+void Game::gameLoop() //things that need to exist across gamestates go here
 {
    sf::Clock clock;
 
@@ -75,7 +66,7 @@ void Game::gameLoop() //place game logic in here
    }
 }
 
-Game::Game() //place constants in here
+Game::Game() //i'm not sure what these things do just yet
 {
    this->loadTextures();
    this->window.create(sf::VideoMode(800, 600), "Untitled RPG Project"); // create a window
