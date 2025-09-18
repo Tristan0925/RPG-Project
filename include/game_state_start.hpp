@@ -2,7 +2,7 @@
 #define GAME_STATE_START_HPP
 
 #include <SFML/Graphics.hpp>
-
+#include "Button.hpp"
 #include "game_state.hpp"
 
 class GameStateStart : public GameState
@@ -11,6 +11,10 @@ class GameStateStart : public GameState
 
     sf::View view;
     sf::Text title;
+    Button startgame;
+    Button settings;
+    Button endgame;
+
     void loadgame();
 
     public:
