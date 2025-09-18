@@ -67,15 +67,12 @@ GameStateStart::GameStateStart(Game* game)
     this->view.setSize(pos);
     pos *= 0.5f;
     this->view.setCenter(pos);
-<<<<<<< HEAD
     
     title.setFont(this->game->font);
     title.setString("UNTITLED RPG GAME");
     title.setCharacterSize(48); // in pixels
     title.setFillColor(sf::Color::Red);
     title.setPosition(100.f, 50.f); // x, y
-=======
->>>>>>> dd81b5daa3557755b002ee232ac7a88cd6cbdf04
 }
 
 void GameStateStart::loadgame()
