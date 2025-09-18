@@ -79,16 +79,23 @@ void Map::renderMiniMap(sf::RenderWindow& window, const sf::View& miniMapView, c
             }
         }
     }
+    
+    // Draw player arrow
+    sf::ConvexShape playerArrow;
+    playerArrow.setPointCount(3);
 
-    // draw player
-    sf::CircleShape playerTriangle(30.f, 3);
-    playerTriangle.setFillColor(sf::Color::Red);
-    playerTriangle.setOrigin(10.f,10.f);
-    playerTriangle.setPosition(playerPos);
+    float size = 16.f; // size of arrow
 
-    playerTriangle.setRotation(-90.f);
+    // Define a triangle pointing up by default
+    playerArrow.setPoint(0, sf::Vector2f(size, 0.f));      // tip
+    playerArrow.setPoint(1, sf::Vector2f(-size/2, -size/2));  // bottom left
+    playerArrow.setPoint(2, sf::Vector2f(-size/2, size/2));   // bottom right
 
-    window.draw(playerTriangle);
+    playerArrow.setFillColor(sf::Color::Red);
+    playerArrow.setOrigin(0.f, 0.f);      // origin at tip
+    playerArrow.setPosition(playerPos);
+    playerArrow.setRotation(playerAngle * 180.f / 3.14159f); // rotate to player facing
 
+    window.draw(playerArrow);
 
 }
