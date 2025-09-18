@@ -21,7 +21,11 @@ class Game
     Player player;
     Map map;
     sf::Font font;
+<<<<<<< HEAD
       
+=======
+    
+>>>>>>> dd81b5daa3557755b002ee232ac7a88cd6cbdf04
 
     std::stack<std::unique_ptr<GameState>> states;
 

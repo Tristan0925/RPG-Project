@@ -9,9 +9,16 @@
 #include "Player.hpp"
 #include "Map.hpp"
 
+<<<<<<< HEAD
 void Game::loadTextures()
 {
     texmgr.loadTexture("background", "./assets/mainmenu.jpeg");
+=======
+
+void Game::loadTextures()
+{
+    texmgr.loadTexture("background", "./assets/mainmenu.jpg");
+>>>>>>> dd81b5daa3557755b002ee232ac7a88cd6cbdf04
 }
 void Game::pushState(std::unique_ptr<GameState> state) //place game state onto stack
 {
