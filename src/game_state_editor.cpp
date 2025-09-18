@@ -112,10 +112,50 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
                  this->game->window.draw(line, 2, sf::Lines);
             }
 
-        // DRaw world here 
-        // Draw minimap last (so it overlays)
-        this->game->map.renderMiniMap( this->game->window, this->game->player.getPosition(), this->game->player.getAngle());
-        
+        // 1. Draw border (default view)
+        float mapSizePx = 200.f;
+        float padding = 10.f;
+        this->game->window.setView(this->game->window.getDefaultView());
+
+        sf::RectangleShape minimapBorder(sf::Vector2f(mapSizePx, mapSizePx));
+        minimapBorder.setFillColor(sf::Color(0, 0, 0, 180));
+        minimapBorder.setOutlineThickness(2.f);
+        minimapBorder.setOutlineColor(sf::Color::White);
+
+        // bottom-left position
+        float winW = this->game->window.getSize().x;
+        float winH = this->game->window.getSize().y;
+        minimapBorder.setPosition(padding, winH - mapSizePx - padding);
+
+        this->game->window.draw(minimapBorder);
+
+        // Convert border rect (pixels) → viewport (normalized)
+        sf::FloatRect vp(
+            minimapBorder.getPosition().x / winW,
+            minimapBorder.getPosition().y / winH,
+            mapSizePx / winW,
+            mapSizePx / winH
+        );
+
+        // Flip Y so it aligns with SFML’s normalized coords
+        vp.top = 1.f - vp.top - vp.height;
+
+        sf::View minimapView;
+        minimapView.setSize(400.f, 400.f);
+        minimapView.setCenter(this->game->player.getPosition());
+        minimapView.setViewport(vp);
+
+        // 2. Render minimap
+        this->game->map.renderMiniMap(this->game->window,
+                                    minimapView,
+                                    this->game->player.getPosition(),
+                                    this->game->player.getAngle());
+
+        // 3. Reset to default
+        this->game->window.setView(this->game->window.getDefaultView());
+
+
+        // draw HUD elements here
     return;
 }
 
