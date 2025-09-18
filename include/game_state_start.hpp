@@ -14,6 +14,7 @@ class GameStateStart : public GameState
     Button startgame;
     Button settings;
     Button endgame;
+    sf::RectangleShape underline;
 
     void loadgame();
 

@@ -10,8 +10,13 @@ class Button{
     bool wasClicked(sf::RenderWindow& window);
     void changePosition(float posx, float posy);
     void draw(sf::RenderWindow& window);
-    private:
     bool isHovered(sf::RenderWindow& window);
+    sf::RectangleShape underline;
+    const sf::RectangleShape& getUnderline() const;
+
+
+    private:
+   
     sf::Text text;
     Game* game;
 };

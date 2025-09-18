@@ -18,6 +18,17 @@ void GameStateStart::draw(const float dt)
     startgame.draw(this->game->window);
     settings.draw(this->game->window);
     endgame.draw(this->game->window);
+    if(startgame.isHovered(this->game->window)){
+        this->game->window.draw(startgame.getUnderline());
+    }
+
+    if(settings.isHovered(this->game->window)){
+        this->game->window.draw(settings.getUnderline());
+    }
+
+    if(endgame.isHovered(this->game->window)){
+        this->game->window.draw(endgame.getUnderline());
+    }
     return;
 }
 
@@ -31,11 +42,25 @@ void GameStateStart::handleInput()
     sf::Event event;
     while(this->game->window.pollEvent(event))
     {
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
+          if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+    {
+         if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
             if (startgame.wasClicked(this->game->window)){
-                std::cout << "CONGRATS" <<std::endl;
+                this->loadgame();
             }
         }
+
+         if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
+            if (settings.wasClicked(this->game->window)){
+                std::cout << "Whenever we have settings to change, put it here." << std::endl;
+            }
+        }
+         if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){ //for some reason, putting elseifs causes buttons to not work
+            if (endgame.wasClicked(this->game->window)){
+                this->game->window.close();
+            }
+        }
+    }
         switch(event.type)
         {
             case sf::Event::Closed:
@@ -60,7 +85,7 @@ void GameStateStart::handleInput()
             case sf::Event::KeyPressed:
             {
                 if(event.key.code == sf::Keyboard::Escape) this->game->window.close();
-                else if(event.key.code == sf::Keyboard::Space) this->loadgame();
+                
                  break;
             }
             
@@ -71,9 +96,9 @@ void GameStateStart::handleInput()
 }
 
 GameStateStart::GameStateStart(Game* game):
-  startgame("Start Game", sf::Vector2f(0.f,0.f), 24, game),
-  settings("Settings", sf::Vector2f(0.f,0.f), 24, game),
-  endgame("End Game", sf::Vector2f(0.f,0.f), 24, game)
+  startgame("Start Game", sf::Vector2f(0.f,0.f), 48, game),
+  settings("Settings", sf::Vector2f(0.f,0.f), 48, game),
+  endgame("End Game", sf::Vector2f(0.f,0.f), 48, game)
    
 {
     this->game = game;
@@ -88,6 +113,7 @@ GameStateStart::GameStateStart(Game* game):
     title.setFillColor(sf::Color::Red);
     title.setStyle(sf::Text::Italic | sf::Text::Bold);
    
+    
  
    
    

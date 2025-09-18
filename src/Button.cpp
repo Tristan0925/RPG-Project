@@ -8,7 +8,13 @@ Button::Button(std::string words, sf::Vector2f location, int size, Game* game, s
     text.setPosition(location);
     text.setCharacterSize(size);
     text.setFillColor(color);
+    underline.setSize(sf::Vector2f(text.getGlobalBounds().width, 2.f));
+    underline.setFillColor(color);
+    underline.setPosition(location.x, (location.y + 3.f));
+}
 
+const sf::RectangleShape& Button::getUnderline() const{
+    return underline;
 }
 
 bool Button::wasClicked(sf::RenderWindow& window){
@@ -31,11 +37,11 @@ bool Button::isHovered(sf::RenderWindow& window){
         return true;
     }
 return false;
-
 }
 
 void Button::changePosition(float posx, float posy){
     text.setPosition(posx, posy);
+    underline.setPosition(posx, (text.getGlobalBounds().top + text.getGlobalBounds().height + 2.f));
 }
 
 void Button::draw(sf::RenderWindow& window){
