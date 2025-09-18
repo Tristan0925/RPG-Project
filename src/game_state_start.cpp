@@ -38,16 +38,6 @@ void GameStateStart::handleInput()
             }
             case sf::Event::Resized:
             {
-<<<<<<< HEAD
-
-            this->view.setSize(static_cast<float>(event.size.width), static_cast<float>(event.size.height));
-            this->view.setCenter(this->view.getSize() / 2.f);
-            this->game->window.setView(this->view);
-            this->game->background.setPosition(0.f, 0.f);
-            this->game->background.setScale(float(event.size.width) / this->game->background.getTexture()->getSize().x, float(event.size.height) / this->game->background.getTexture()->getSize().y);
-            break;
-
-=======
                 this->view.setSize(static_cast<float>(event.size.width), static_cast<float>(event.size.height)); //resize window to new window size
                 this->view.setCenter(this->view.getSize() / 2.f); //center view 
                 this->game->window.setView(this->view); //updates view
@@ -56,7 +46,6 @@ void GameStateStart::handleInput()
                 
                 
                 break;
->>>>>>> dd81b5daa3557755b002ee232ac7a88cd6cbdf04
             }
             case sf::Event::KeyPressed:
             {
