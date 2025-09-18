@@ -20,6 +20,8 @@ class Game
     public:
     Player player;
     Map map;
+    sf::Font font;
+      
 
     std::stack<std::unique_ptr<GameState>> states;
 

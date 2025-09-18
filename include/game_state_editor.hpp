@@ -15,7 +15,7 @@ class GameStateEditor : public GameState
     float moveSpeed;
     Map map;
     const float PI = 3.14159f;
-    const float FOV = PI / 3.0f; 
+    const float FOV = PI / 2.0f; 
 
     public:
  

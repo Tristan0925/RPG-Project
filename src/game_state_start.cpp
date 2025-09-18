@@ -8,10 +8,14 @@
 
 void GameStateStart::draw(const float dt)
 {
+    
     this->game->window.setView(this->view);
     this->game->window.clear(sf::Color::Black);
     this->game->window.draw(this->game->background);
-
+  
+  
+   
+    this->game->window.draw(title);
     return;
 }
 
@@ -34,10 +38,14 @@ void GameStateStart::handleInput()
             }
             case sf::Event::Resized:
             {
-                this->view.setSize(event.size.width,event.size.height);
-                this->game->background.setPosition(this->game->window.mapPixelToCoords(sf::Vector2i(0, 0)));
-                this->game->background.setScale(float(event.size.width) / float(this->game->background.getTexture()->getSize().x), float(event.size.height) / float(this->game->background.getTexture()->getSize().y));
-                break;
+
+            this->view.setSize(static_cast<float>(event.size.width), static_cast<float>(event.size.height));
+            this->view.setCenter(this->view.getSize() / 2.f);
+            this->game->window.setView(this->view);
+            this->game->background.setPosition(0.f, 0.f);
+            this->game->background.setScale(float(event.size.width) / this->game->background.getTexture()->getSize().x, float(event.size.height) / this->game->background.getTexture()->getSize().y);
+            break;
+
             }
             case sf::Event::KeyPressed:
             {
@@ -59,6 +67,12 @@ GameStateStart::GameStateStart(Game* game)
     this->view.setSize(pos);
     pos *= 0.5f;
     this->view.setCenter(pos);
+    
+    title.setFont(this->game->font);
+    title.setString("UNTITLED RPG GAME");
+    title.setCharacterSize(48); // in pixels
+    title.setFillColor(sf::Color::Red);
+    title.setPosition(100.f, 50.f); // x, y
 }
 
 void GameStateStart::loadgame()

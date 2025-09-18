@@ -13,8 +13,8 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
     const float FOV = PI / 2.0f;  // 90 degree field of view
 
     // Screen size for calculations
-    const int screenWidth = 800;
-    const int screenHeight = 600;
+    const int screenWidth = 1920;
+    const int screenHeight = 1080;
 
      sf::RectangleShape ceiling(sf::Vector2f(800, 300));
         ceiling.setFillColor(sf::Color(30, 30, 30));

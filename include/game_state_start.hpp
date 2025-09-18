@@ -10,7 +10,7 @@ class GameStateStart : public GameState
     private:
 
     sf::View view;
-
+      sf::Text title;
     void loadgame();
 
     public:

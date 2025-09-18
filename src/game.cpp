@@ -11,7 +11,7 @@
 
 void Game::loadTextures()
 {
-    texmgr.loadTexture("background", "./assets/peripeteia.jpg");
+    texmgr.loadTexture("background", "./assets/mainmenu.jpeg");
 }
 void Game::pushState(std::unique_ptr<GameState> state) //place game state onto stack
 {
@@ -69,10 +69,13 @@ void Game::gameLoop() //things that need to exist across gamestates go here
 Game::Game() //i'm not sure what these things do just yet
 {
    this->loadTextures();
-   this->window.create(sf::VideoMode(800, 600), "Untitled RPG Project"); // create a window
+   this->window.create(sf::VideoMode(1920, 1080), "Untitled RPG Project"); // create a window
    this->window.setFramerateLimit(60); // set frame rate
    this->background.setTexture(this->texmgr.getRef("background"));
     if (!map.loadFromFile("assets/map1.txt")) {
+        throw std::runtime_error("failed to load");
+    }
+    if (!font.loadFromFile("assets/Birch.ttf")){
         throw std::runtime_error("failed to load");
     }
 
