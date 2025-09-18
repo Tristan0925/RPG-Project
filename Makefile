@@ -3,7 +3,6 @@
 # This is the compiler we'll use — g++ is the standard for C++
 CXX = g++
 
-
 # Show all warnings (so we catch bugs early)
 CXXFLAGS = -std=c++17 -Wall -g -Iinclude
 
@@ -26,5 +25,15 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	$(CXX) $(OBJ) -o $@ $(LDFLAGS)
 
+# Run the game while silencing Mesa/OpenGL warnings
+# Use this when you don’t want to see "MESA: error" or "glx: failed to create drisw screen" messages
+run: $(TARGET)
+	./$(TARGET) 2>/dev/null
+
+# Clean up build artifacts
 clean:
 	rm -f $(OBJ) $(TARGET)
+
+# Notes:
+# - You can still run the game normally with ./game; warnings will appear but it runs fine.
+# - Use `make run` if you want a cleaner terminal without Mesa/OpenGL warnings.
