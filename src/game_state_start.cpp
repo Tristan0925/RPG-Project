@@ -18,6 +18,7 @@ void GameStateStart::draw(const float dt)
     startgame.draw(this->game->window);
     settings.draw(this->game->window);
     endgame.draw(this->game->window);
+    
     if(startgame.isHovered(this->game->window)){
         this->game->window.draw(startgame.getUnderline());
     }
