@@ -75,10 +75,15 @@ void GameStateStart::handleInput()
                 this->game->window.setView(this->view); //updates view
                 this->game->background.setPosition(0.f, 0.f); //set background img to the top left
                 this->game->background.setScale(float(event.size.width) / this->game->background.getTexture()->getSize().x, float(event.size.height) / this->game->background.getTexture()->getSize().y); //scale background to new window size
-                title.setPosition(750.f, 400.f);
-                startgame.changePosition(750.f, 500.f);
-                settings.changePosition(750.f, 600.f);
-                endgame.changePosition(750.f, 700.f);
+    
+                // Scale text with background size 
+                float scaleRatio = (float(event.size.width) / this->game->background.getTexture()->getSize().x);
+                sf::Vector2f scale =   {static_cast<float>(event.size.width) / this->game->background.getTexture()->getSize().x, static_cast<float>(event.size.height) / this->game->background.getTexture()->getSize().y};
+                title.setPosition(event.size.width - (2200.f * scaleRatio),event.size.height - (1400.f * scaleRatio));
+                title.setScale(scale.x, scale.y); //scale background to new window size)
+                startgame.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1200.f * scaleRatio));
+                settings.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1100.f * scaleRatio));
+                endgame.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1000.f * scaleRatio));
 
                 break;
             }
@@ -96,9 +101,9 @@ void GameStateStart::handleInput()
 }
 
 GameStateStart::GameStateStart(Game* game):
-  startgame("Start Game", sf::Vector2f(0.f,0.f), 48, game),
-  settings("Settings", sf::Vector2f(0.f,0.f), 48, game),
-  endgame("End Game", sf::Vector2f(0.f,0.f), 48, game)
+  startgame("Start Game", sf::Vector2f(0.f,0.f), 34, game),
+  settings("Settings", sf::Vector2f(0.f,0.f), 34, game),
+  endgame("End Game", sf::Vector2f(0.f,0.f), 34, game)
    
 {
     this->game = game;
@@ -109,10 +114,9 @@ GameStateStart::GameStateStart(Game* game):
     
     title.setFont(this->game->font);
     title.setString("UNTITLED RPG GAME");
-    title.setCharacterSize(72); // in pixels
+    title.setCharacterSize(100); // in pixels
     title.setFillColor(sf::Color::Red);
     title.setStyle(sf::Text::Italic | sf::Text::Bold);
-   
     
  
    
@@ -125,3 +129,4 @@ void GameStateStart::loadgame()
     return;
 }
 //std::unique_ptr<GameState> state
+

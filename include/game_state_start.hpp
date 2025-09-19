@@ -11,6 +11,7 @@ class GameStateStart : public GameState
 
     sf::View view;
     sf::Text title;
+    
     Button startgame;
     Button settings;
     Button endgame;
