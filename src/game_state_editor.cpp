@@ -16,15 +16,15 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
     const int screenWidth = 1920;
     const int screenHeight = 1080;
 
-     sf::RectangleShape ceiling(sf::Vector2f(800, 300));
-        ceiling.setFillColor(sf::Color(30, 30, 30));
-        ceiling.setPosition(0, 0);
+     sf::RectangleShape ceiling(sf::Vector2f(1920, 1080));
+        ceiling.setFillColor(sf::Color(250, 250, 0));
+        ceiling.setPosition(0, -450);
         this->game->window.draw(ceiling);
         
         // Draw floor
-        sf::RectangleShape floor(sf::Vector2f(800, 300));
-        floor.setFillColor(sf::Color(50, 50, 50));
-        floor.setPosition(0, 300);
+        sf::RectangleShape floor(sf::Vector2f(1920, 1080));
+        floor.setFillColor(sf::Color(250, 0, 0));
+        floor.setPosition(0, 550);
         this->game->window.draw(floor);
 
         // Draw 3D world using raycasting
