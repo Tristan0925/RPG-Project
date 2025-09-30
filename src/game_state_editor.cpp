@@ -112,10 +112,67 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
                  this->game->window.draw(line, 2, sf::Lines);
             }
 
-        // DRaw world here 
-        // Draw minimap last (so it overlays)
-        this->game->map.renderMiniMap( this->game->window, this->game->player.getPosition(), this->game->player.getAngle());
-        
+        // Setup minimap
+        float mapSizePx = 200.f;
+        float padding = 10.f;
+
+        // Get window size
+        float winW = (float)this->game->window.getSize().x;
+        float winH = (float)this->game->window.getSize().y;
+        sf::Vector2f minimapCenterPos = this->game->player.getPosition();
+
+        // Minimap view
+        sf::View minimapView;
+        minimapView.setSize(400.f, 400.f);
+        minimapView.setCenter(minimapCenterPos);
+
+        // Initial rotation offset (since the player spawns looking east)
+        float initialRotationDeg = 90.f;
+        float playerAngleDeg = this->game->player.getAngle() * 180.f / 3.14159f;
+        minimapView.setRotation(initialRotationDeg - playerAngleDeg);
+
+        // Set viewport 
+        sf::FloatRect vp(
+            padding / winW,                    // left
+            (winH - mapSizePx - padding) / winH, // top (distance from top of window)
+            mapSizePx / winW,                  // width
+            mapSizePx / winH                   // height
+        );
+        minimapView.setViewport(vp);
+
+        // Draw minimap border
+        sf::RectangleShape minimapBorder(sf::Vector2f(mapSizePx, mapSizePx));
+        minimapBorder.setOrigin(mapSizePx/2, mapSizePx/2); // rotate around center
+        minimapBorder.setPosition(padding + mapSizePx/2, winH - mapSizePx/2 - padding);
+        minimapBorder.setFillColor(sf::Color(0,0,0,180));
+        minimapBorder.setOutlineThickness(2.f);
+        minimapBorder.setOutlineColor(sf::Color::White);
+        minimapBorder.setRotation(initialRotationDeg - playerAngleDeg); // same rotation as minimap
+        this->game->window.draw(minimapBorder);
+
+        // Render the actual minimap
+        this->game->map.renderMiniMap( this->game->window, minimapView, this->game->player.getPosition(), this->game->player.getAngle());
+
+        // Draw player icon on minimap
+        sf::CircleShape playerIcon(6, 3); // triangle with radius 6
+        playerIcon.setOrigin(6, 6);       // rotate around center
+        playerIcon.setPosition(this->game->player.getPosition());
+        playerIcon.setFillColor(sf::Color::Red);
+
+        // Player icon rotation relative to rotated minimap
+        float totalRotationDeg = playerAngleDeg - initialRotationDeg;
+        playerIcon.setRotation(totalRotationDeg);
+
+        // Draw player icon in minimap view
+        this->game->window.setView(minimapView);
+        this->game->window.draw(playerIcon);
+
+        // Reset view for HUD / other UI ---
+        this->game->window.setView(this->game->window.getDefaultView());
+
+
+
+        // draw HUD elements here
     return;
 }
 

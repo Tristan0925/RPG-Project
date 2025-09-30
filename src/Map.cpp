@@ -63,41 +63,39 @@ bool Map::isWall(int x, int y) const {
     return grid[y][x] == 1;
 }
 
-void Map::renderMiniMap(sf::RenderWindow& window, const sf::Vector2f& playerPos, float playerAngle) const {
-    const float TILE_SIZE = 64.f;
-    const float scale = 20.f; // pixels per grid tile on minimap
-    const sf::Vector2f offset(20.f, 400.f); // bottom-left corner
+void Map::renderMiniMap(sf::RenderWindow& window, const sf::View& miniMapView, const sf::Vector2f& playerPos, float playerAngle) const {
+    window.setView(miniMapView);
 
-    // draw walls from grid - Loops through the grid and if a tile is a wall, draws a gray rectangle at the right spot on the minimap.
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            if (grid[y][x] == 1) { // wall
-                sf::RectangleShape miniWall;
-                miniWall.setSize(sf::Vector2f(scale, scale));
-                miniWall.setFillColor(sf::Color(200, 200, 200));
-                miniWall.setPosition(offset.x + x * scale, offset.y + y * scale);
-                window.draw(miniWall);
+    const float TILE_SIZE = 64.f;
+    sf::RectangleShape tileShape(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+    tileShape.setFillColor(sf::Color::White);
+
+    // draw walls
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            if (isWall(x, y)) {
+                tileShape.setPosition(x * TILE_SIZE, y * TILE_SIZE);
+                window.draw(tileShape);
             }
         }
     }
+    
+    // Draw player arrow
+    sf::ConvexShape playerArrow;
+    playerArrow.setPointCount(3);
 
-    // convert player world pos -> minimap pos
-    float miniX = offset.x + (playerPos.x / TILE_SIZE) * scale;
-    float miniY = offset.y + (playerPos.y / TILE_SIZE) * scale;
+    float size = 16.f; // size of arrow
 
-    // Draw player as a circle
-    sf::CircleShape playerDot(5.f);
-    playerDot.setFillColor(sf::Color::Red);
-    playerDot.setOrigin(5.f, 5.f); // should set player in middle but currently not working
-    playerDot.setPosition(miniX, miniY);
-    window.draw(playerDot);
+    // Define a triangle pointing up by default
+    playerArrow.setPoint(0, sf::Vector2f(size, 0.f));      // tip
+    playerArrow.setPoint(1, sf::Vector2f(-size/2, -size/2));  // bottom left
+    playerArrow.setPoint(2, sf::Vector2f(-size/2, size/2));   // bottom right
 
-    // Draw facing direction
-    sf::VertexArray dirLine(sf::Lines, 2);
-    dirLine[0].position = playerDot.getPosition();
-    dirLine[0].color = sf::Color::Red;
-    dirLine[1].position = playerDot.getPosition() + 
-    sf::Vector2f(std::cos(playerAngle), std::sin(playerAngle)) * 20.f;
-    dirLine[1].color = sf::Color::Red;
-    window.draw(dirLine);
+    playerArrow.setFillColor(sf::Color::Red);
+    playerArrow.setOrigin(0.f, 0.f);      // origin at tip
+    playerArrow.setPosition(playerPos);
+    playerArrow.setRotation(playerAngle * 180.f / 3.14159f); // rotate to player facing
+
+    window.draw(playerArrow);
+
 }

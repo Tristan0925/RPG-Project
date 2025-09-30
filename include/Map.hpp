@@ -14,7 +14,8 @@ class Map {
         int width; // map width
         int height; // map height
 
-        float spawnX, spawnY = -1.0f; // in grid coordinates
+        float spawnX = -1.0f; // in grid coordinates
+        float spawnY = -1.0f;
     
     public:
         Map(); // constructor, sets up the grid when the object is created 
@@ -22,7 +23,7 @@ class Map {
     
         bool isWall(int x, int y) const; // Check if a given grid cell is a wall, basically collision detection
     
-        void renderMiniMap(sf::RenderWindow& window, const sf::Vector2f& playerPos, float playerAngle) const; // add mini map
+        void renderMiniMap(sf::RenderWindow& window, const sf::View& miniMapView, const sf::Vector2f& playerPos, float playerAngle) const; // add mini map
     
         // Getters for map size
         int getWidth() const { return width; }

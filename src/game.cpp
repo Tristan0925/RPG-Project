@@ -79,8 +79,8 @@ Game::Game() //i'm not sure what these things do just yet
         throw std::runtime_error("failed to load");
     }
 
-    sf::Vector2f spawn(99.0f,99.0f);
-    this->player.setPosition(spawn);
+    sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
+    this->player.setPosition(spawn * 64.f); // scale by tile size
 }
 
 Game::~Game() //get rid of all the things on the stack
