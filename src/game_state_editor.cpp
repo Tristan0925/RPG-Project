@@ -4,6 +4,8 @@
 #include <cmath>
 #include "game_state.hpp"
 #include "game_state_editor.hpp"
+#include "game_state_battle.hpp"
+
 
 void GameStateEditor::draw(const float dt) //If you draw things, put them here
 {
@@ -246,6 +248,27 @@ void GameStateEditor::handleInput() //Inputs go here
         } else {
             rightPressed = false;
         }
+
+        // Simple random encounter trigger (5% chance per movement key press)
+
+        sf::Vector2i currentTile(
+            int(this->game->player.getPosition().x / 64.f),
+            int(this->game->player.getPosition().y / 64.f)
+        );
+
+        if (currentTile != lastTile) {
+            lastTile = currentTile;
+
+            // 5% chance per new tile
+            if (rand() % 100 < 5) {
+                this->game->requestChange(
+                    std::make_unique<GameStateBattle>(this->game)
+                );
+                return; // exit handleInput immediately
+            }
+        }
+
+
                 
  
     return;
@@ -263,4 +286,8 @@ GameStateEditor::GameStateEditor(Game* game) //This is a constructor
     this->gameView.setCenter(pos);
 
     moveSpeed = 0.f;
+
+    // Initialize lastTile to the player's starting tile
+    sf::Vector2f playerPos = this->game->player.getPosition();
+    lastTile = sf::Vector2i(int(playerPos.x / 64.f), int(playerPos.y / 64.f));
 }

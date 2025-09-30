@@ -16,6 +16,7 @@ class GameStateEditor : public GameState
     Map map;
     const float PI = 3.14159f;
     const float FOV = PI / 3.0f; 
+    sf::Vector2i lastTile;  // track last tile player was on
 
     public:
  
@@ -25,5 +26,7 @@ class GameStateEditor : public GameState
  
     GameStateEditor(Game* game);
 };
+
+
  
 #endif

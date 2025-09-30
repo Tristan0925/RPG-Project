@@ -44,6 +44,49 @@ GameState* Game::peekState() //check game state
     return this->states.top().get();
 }
 
+// requestPush/requestPop/requestChange implementations
+void Game::requestPush(std::unique_ptr<GameState> state) {
+    pendingState.action = StateAction::Push;
+    pendingState.state = std::move(state);
+}
+
+void Game::requestPop() {
+    pendingState.action = StateAction::Pop;
+}
+
+void Game::requestChange(std::unique_ptr<GameState> state) {
+    pendingState.action = StateAction::Change;
+    pendingState.state = std::move(state);
+}
+
+void Game::applyPendingState() {
+    switch (pendingState.action) {
+        case StateAction::Push:
+            if (pendingState.state) {
+                pushState(std::move(pendingState.state));
+            }
+            break;
+        case StateAction::Pop:
+            popState();
+            break;
+        case StateAction::Change:
+            if (pendingState.state) {
+                changeState(std::move(pendingState.state));
+            } else {
+                // If state is null but action is Change, just pop then do nothing
+                popState();
+            }
+            break;
+        case StateAction::None:
+        default:
+            break;
+    }
+    // reset pendingState
+    pendingState.action = StateAction::None;
+    pendingState.state.reset();
+}
+
+
 
 void Game::gameLoop() //things that need to exist across gamestates go here
 {
@@ -56,6 +99,7 @@ void Game::gameLoop() //things that need to exist across gamestates go here
 
     if(peekState() == nullptr)
     {
+        // maybe sleep a bit here or continue
         continue;
     }
     peekState() -> handleInput();
@@ -63,8 +107,13 @@ void Game::gameLoop() //things that need to exist across gamestates go here
     this ->window.clear(sf::Color::Black);
     peekState()->draw(dt);
     this->window.display();
+
+    // <-- apply pending state changes safely after current state finished
+    applyPendingState();
    }
 }
+
+
 
 Game::Game() //i'm not sure what these things do just yet
 {

@@ -9,7 +9,6 @@
 void GameStateStart::draw(const float dt)
 {
     this->game->window.setView(this->view);
-    this->game->window.clear(sf::Color::Black);
     this->game->window.draw(this->game->background);
 
     return;
@@ -42,9 +41,12 @@ void GameStateStart::handleInput()
             case sf::Event::KeyPressed:
             {
                 if(event.key.code == sf::Keyboard::Escape) this->game->window.close();
-                else if(event.key.code == sf::Keyboard::Space) this->loadgame();
-                 break;
-            }
+                else if(event.key.code == sf::Keyboard::Space) {
+                    this->game->requestChange(std::make_unique<GameStateEditor>(this->game));
+                    return;  // 🔑 exit immediately
+                }
+                break;
+            }            
             
             default: break;
         }
@@ -63,7 +65,9 @@ GameStateStart::GameStateStart(Game* game)
 
 void GameStateStart::loadgame()
 {
-    this->game->pushState(std::make_unique<GameStateEditor>(this->game));
-    return;
+    this->game->requestChange(
+        std::make_unique<GameStateEditor>(this->game)
+    );
+    return;    
 }
 //std::unique_ptr<GameState> state
