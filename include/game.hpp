@@ -21,14 +21,16 @@ class Game
     Player player;
     Map map;
     sf::Font font;
-      
+    
 
     std::stack<std::unique_ptr<GameState>> states;
 
     sf::RenderWindow window;
     TextureManager texmgr;
     sf::Sprite background;
-
+    sf::Texture level1floor;
+    sf::Texture level1walls;
+    sf::Image level1wallsimage;
     void pushState(std::unique_ptr<GameState> state);
     void popState();
     void changeState(std::unique_ptr<GameState> state);

@@ -4,13 +4,14 @@
 #include <cmath>
 #include "game_state.hpp"
 #include "game_state_editor.hpp"
+#include <stdio.h>
 
 void GameStateEditor::draw(const float dt) //If you draw things, put them here
 {
     
     // Camera rotation angles
     const float PI = 3.14159f;
-    const float FOV = PI / 2.0f;  // 90 degree field of view
+    const float FOV = PI / 3.0f;  // 90 degree field of view
 
     // Screen size for calculations
     const int screenWidth = 1920;
@@ -22,22 +23,31 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         this->game->window.draw(ceiling);
         
         // Draw floor
-        sf::RectangleShape floor(sf::Vector2f(1920, 1080));
-        floor.setFillColor(sf::Color(250, 0, 0));
-        floor.setPosition(0, 550);
-        this->game->window.draw(floor);
+        sf::RectangleShape floory(sf::Vector2f(1920, 1080));
+        floory.setFillColor(sf::Color(129,133,137));
+        floory.setPosition(0, 550);
+        this->game->window.draw(floory);
 
         // Draw 3D world using raycasting
-        for (int x = 0; x < screenWidth; x++) {
-            // Calculate ray angle relative to player's facing
+        for (int x = 0; x < screenWidth; x++) {                       //for every pixel of the screen's width, make a vertical column
+            // Calculate ray angle relative to player's facing. This shows what the player is looking at
             float rayAngle = (this->game->player.getAngle() - FOV / 2.0f) + ((float)x / screenWidth) * FOV; // this means leftmost ray = left edge of vision, rightmost ray = right edge
+          
+
+
+
+
+
+
             
             // Ray position and direction
             float rayX = this->game->player.getPosition().x / 64.f; // scale to grid size (64px per cell)
             float rayY = this->game->player.getPosition().y / 64.f;
             float rayDirX = cos(rayAngle); // this gives you a unit vector pointing in the direction the ray should travel
             float rayDirY = sin(rayAngle); // Example: if angle = 0, direction = (1, 0) → to the right.
-            
+            //Above converts pixels to the map units, essentially dividing the map into separate cells.
+
+
             // DDA setup
             /*
             DDA = Digital Differential Analyzer - a step-by-step way to move through the grid.
@@ -48,15 +58,18 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
 
             - Keep stepping until you hit a wall.
             */
-            int mapX = int(rayX);
+            int mapX = int(rayX); //get player position
             int mapY = int(rayY);
             
-            float sideDistX;
+            float sideDistX; 
             float sideDistY;
+            float wallX;
             
             float deltaDistX = (rayDirX == 0) ? 1e30f : fabs(1 / rayDirX);
-            float deltaDistY = (rayDirY == 0) ? 1e30f : fabs(1 / rayDirY);
+            float deltaDistY = (rayDirY == 0) ? 1e30f : fabs(1 / rayDirY); 
+            //This figures out the distance needed to travel between cells
             float perpWallDist;
+            float rawDist;
             
             int stepX, stepY;
             int hit = 0;
@@ -89,13 +102,21 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
                     side = 1;
                 }
                 if (this->game->map.isWall(mapX, mapY)) hit = 1;
-            }
+            } //Send rays until they hit a wall
             
-            if (side == 0) // Once a wall is hit, you compute the distance from the player to the wall
-                perpWallDist = (sideDistX - deltaDistX);
-            else
-                perpWallDist = (sideDistY - deltaDistY);
+            float playerAngle = this->game->player.getAngle();
+
+            if (side == 0){ // Once a wall is hit, you compute the distance from the player to the wall
+                rawDist = sideDistX - deltaDistX;
+                perpWallDist = rawDist * cos(rayAngle - playerAngle);
+                wallX = rayY + rawDist * rayDirY;}
+            else{
+                rawDist = sideDistY - deltaDistY;
+                perpWallDist = rawDist * cos(rayAngle - playerAngle);
+                wallX = rayX + rawDist * rayDirX;}
             
+            printf("playerAngle: %f, rayAngle: %f, angleDiff: %f\n", this->game->player.getAngle(), rayAngle, rayAngle - this->game->player.getAngle());
+printf("rawDist: %f, perpWallDist: %f\n", rawDist, perpWallDist);
             // Wall height
             // Near wall = small denominator = tall line; Far wall = big denominator = short line.
             int lineHeight = (int)(screenHeight / perpWallDist);
@@ -104,12 +125,46 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
             if (drawStart < 0) drawStart = 0;
             int drawEnd = lineHeight / 2 + screenHeight / 2;
             if (drawEnd >= screenHeight) drawEnd = screenHeight - 1;
-            
-            sf::Vertex line[] = {
-                sf::Vertex(sf::Vector2f(x, drawStart), side == 1 ? sf::Color(180,180,180) : sf::Color::White),
-                sf::Vertex(sf::Vector2f(x, drawEnd),   side == 1 ? sf::Color(180,180,180) : sf::Color::White)
-                };
-                 this->game->window.draw(line, 2, sf::Lines);
+        wallX -= floor(wallX); //get fractional part of wallX
+        int texX = int(wallX * (this->game->texmgr.getRef("level1walls").getSize().x));
+        
+        if ((side == 0 && rayDirX > 0) || (side == 1 && rayDirY < 0)){
+            texX = this->game->texmgr.getRef("level1walls").getSize().x - texX - 1;
+        }
+
+   
+
+    // Create a quad for this vertical slice
+    sf::Vertex quad[4];
+
+    float texXf = static_cast<float>(texX);
+    float texXfNext = texXf + 1.0f; // one pixel width on texture
+
+    quad[0].position = sf::Vector2f(x, drawStart);
+    quad[1].position = sf::Vector2f(x + 1, drawStart);
+    quad[2].position = sf::Vector2f(x + 1, drawEnd);
+    quad[3].position = sf::Vector2f(x, drawEnd);
+
+    
+    quad[0].texCoords = sf::Vector2f(texXf, 0);
+    quad[1].texCoords = sf::Vector2f(texXfNext, 0);
+    quad[2].texCoords = sf::Vector2f(texXfNext, static_cast<float>(this->game->texmgr.getRef("level1walls").getSize().y));
+    quad[3].texCoords = sf::Vector2f(texXf, static_cast<float>(this->game->texmgr.getRef("level1walls").getSize().y));
+
+    // Optionally shade the quad for side walls
+    if (side == 1) {
+        for (int i = 0; i < 4; i++) {
+            quad[i].color = sf::Color(250, 250, 250);
+        }
+    } else {
+        for (int i = 0; i < 4; i++) {
+            quad[i].color = sf::Color::White;
+        }
+    }
+
+    this->game->window.draw(quad, 4, sf::Quads, &this->game->texmgr.getRef("level1walls"));
+
+
             }
 
         // Setup minimap

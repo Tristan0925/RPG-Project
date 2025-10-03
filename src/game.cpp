@@ -12,6 +12,8 @@
 void Game::loadTextures()
 {
     texmgr.loadTexture("background", "./assets/mainmenu.jpeg");
+    texmgr.loadTexture("level1floor", "./assets/level1floor.png");
+    texmgr.loadTexture("level1walls", "./assets/level1walls.png");
 }
 void Game::pushState(std::unique_ptr<GameState> state) //place game state onto stack
 {
@@ -72,13 +74,16 @@ Game::Game() //i'm not sure what these things do just yet
    this->window.create(sf::VideoMode(1920, 1080), "Untitled RPG Project"); // create a window
    this->window.setFramerateLimit(60); // set frame rate
    this->background.setTexture(this->texmgr.getRef("background"));
+
     if (!map.loadFromFile("assets/map1.txt")) {
         throw std::runtime_error("failed to load");
     }
     if (!font.loadFromFile("assets/Birch.ttf")){
         throw std::runtime_error("failed to load");
     }
-
+    if (!level1wallsimage.loadFromFile("assets/level1walls.png")){
+        throw std::runtime_error("failed to load walls");
+    }
     sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
     this->player.setPosition(spawn * 64.f); // scale by tile size
 }
