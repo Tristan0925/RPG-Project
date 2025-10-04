@@ -22,7 +22,7 @@ class Map {
         bool loadFromFile(const std::string& filename); //load map
     
         bool isWall(int x, int y) const; // Check if a given grid cell is a wall, basically collision detection
-    
+        bool isDoor(int x, int y) const; // Check if grid cell is a door
         void renderMiniMap(sf::RenderWindow& window, const sf::View& miniMapView, const sf::Vector2f& playerPos, float playerAngle) const; // add mini map
     
         // Getters for map size

@@ -88,7 +88,9 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
                     mapY += stepY;
                     side = 1;
                 }
+                if (this->game->map.isDoor(mapX,mapY)) hit = 1;
                 if (this->game->map.isWall(mapX, mapY)) hit = 1;
+                
             }
             
             if (side == 0) // Once a wall is hit, you compute the distance from the player to the wall
@@ -106,8 +108,8 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
             if (drawEnd >= screenHeight) drawEnd = screenHeight - 1;
             
             sf::Vertex line[] = {
-                sf::Vertex(sf::Vector2f(x, drawStart), side == 1 ? sf::Color(180,180,180) : sf::Color::Red),
-                sf::Vertex(sf::Vector2f(x, drawEnd),   side == 1 ? sf::Color(180,180,180) : sf::Color::White)
+                sf::Vertex(sf::Vector2f(x, drawStart), this->game->map.isDoor(mapX,mapY) ? sf::Color(0,180,180) : sf::Color::Red),
+                sf::Vertex(sf::Vector2f(x, drawEnd),   this->game->map.isDoor(mapX,mapY) ? sf::Color(0,180,180) : sf::Color::White)
                 };
                  this->game->window.draw(line, 2, sf::Lines);
             }

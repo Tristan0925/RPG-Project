@@ -37,6 +37,9 @@ bool Map::loadFromFile(const std::string& filename) {
                 spawnX = static_cast<float>(x);
                 spawnY = static_cast<float>(y);
             }
+            else if (c == '2'){
+                row.push_back(2);
+            }
             else row.push_back(0);          // empty
         }
         grid.push_back(row);
@@ -61,6 +64,13 @@ bool Map::isWall(int x, int y) const {
         return true; // outside bounds counts as wall - prevents player from going out of bounds... hopefully
     }
     return grid[y][x] == 1;
+}
+
+bool Map::isDoor(int x, int y) const {
+    if (x < 0 || x >= width || y < 0 || y >= height) {
+        return false; // outside bounds counts as wall - prevents player from going out of bounds... hopefully
+    }
+        return grid[y][x] == 2;
 }
 
 void Map::renderMiniMap(sf::RenderWindow& window, const sf::View& miniMapView, const sf::Vector2f& playerPos, float playerAngle) const {
