@@ -92,9 +92,9 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
             }
             
             if (side == 0) // Once a wall is hit, you compute the distance from the player to the wall
-                perpWallDist = (sideDistX - deltaDistX);
+                perpWallDist = (sideDistX - deltaDistX) * cos(rayAngle - this->game->player.getAngle());
             else
-                perpWallDist = (sideDistY - deltaDistY);
+                perpWallDist = (sideDistY - deltaDistY) * cos(rayAngle - this->game->player.getAngle());
             
             // Wall height
             // Near wall = small denominator = tall line; Far wall = big denominator = short line.
