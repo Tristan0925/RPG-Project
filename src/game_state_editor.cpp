@@ -16,15 +16,15 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
     const int screenWidth = 1920;
     const int screenHeight = 1080;
 
-     sf::RectangleShape ceiling(sf::Vector2f(800, 300));
-        ceiling.setFillColor(sf::Color(30, 30, 30));
+     sf::RectangleShape ceiling(sf::Vector2f(1920, 1080));
+        ceiling.setFillColor(sf::Color(0, 250, 0));
         ceiling.setPosition(0, 0);
         this->game->window.draw(ceiling);
         
         // Draw floor
-        sf::RectangleShape floor(sf::Vector2f(800, 300));
+        sf::RectangleShape floor(sf::Vector2f(1920, 1080));
         floor.setFillColor(sf::Color(50, 50, 50));
-        floor.setPosition(0, 300);
+        floor.setPosition(0, 550);
         this->game->window.draw(floor);
 
         // Draw 3D world using raycasting
@@ -106,7 +106,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
             if (drawEnd >= screenHeight) drawEnd = screenHeight - 1;
             
             sf::Vertex line[] = {
-                sf::Vertex(sf::Vector2f(x, drawStart), side == 1 ? sf::Color(180,180,180) : sf::Color::White),
+                sf::Vertex(sf::Vector2f(x, drawStart), side == 1 ? sf::Color(180,180,180) : sf::Color::Red),
                 sf::Vertex(sf::Vector2f(x, drawEnd),   side == 1 ? sf::Color(180,180,180) : sf::Color::White)
                 };
                  this->game->window.draw(line, 2, sf::Lines);
@@ -136,7 +136,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
             padding / winW,                    // left
             (winH - mapSizePx - padding) / winH, // top (distance from top of window)
             mapSizePx / winW,                  // width
-            mapSizePx / winH                   // height
+            mapSizePx / winH               // height
         );
         minimapView.setViewport(vp);
 
@@ -173,13 +173,25 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
 
 
         // draw HUD elements here
+        sf::RectangleShape locationBackground(sf::Vector2f(250.0f,45.0f));
+        locationBackground.setFillColor(sf::Color(150,150,150,100));
+        locationBackground.setPosition(0.0f, 100.0f);
+        sf::Text locationText;
+        locationText.setFont(this->game->font);
+        locationText.setString("Spooky Scary Dungeon 1F");
+        locationText.setCharacterSize(24);
+        locationText.setPosition(45.5f, 110.0f);
+        this->game->window.draw(locationBackground);
+        this->game->window.draw(locationText);
+
+
     return;
 }
 
 void GameStateEditor::update(const float dt) //If something needs to be updated based on dt, then go here
 {
 
-   moveSpeed = 100.f * dt;   // movement speed
+   moveSpeed = 128.f * dt;   // movement speed
   this->game->player.update(dt);
     return;
 }
