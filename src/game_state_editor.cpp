@@ -133,10 +133,13 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         float playerAngleDeg = this->game->player.getAngle() * 180.f / 3.14159f;
         minimapView.setRotation(initialRotationDeg - playerAngleDeg);
 
+
+        float vertOffset = 50.0f;
+
         // Set viewport 
         sf::FloatRect vp(
             padding / winW,                    // left
-            (winH - mapSizePx - padding) / winH, // top (distance from top of window)
+            (winH - mapSizePx - padding - vertOffset) / winH, // top (distance from top of window)
             mapSizePx / winW,                  // width
             mapSizePx / winH               // height
         );
@@ -145,7 +148,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         // Draw minimap border
         sf::RectangleShape minimapBorder(sf::Vector2f(mapSizePx, mapSizePx));
         minimapBorder.setOrigin(mapSizePx/2, mapSizePx/2); // rotate around center
-        minimapBorder.setPosition(padding + mapSizePx/2, winH - mapSizePx/2 - padding);
+        minimapBorder.setPosition(padding + mapSizePx/2, winH - mapSizePx/2 - padding - vertOffset);
         minimapBorder.setFillColor(sf::Color(0,0,0,180));
         minimapBorder.setOutlineThickness(2.f);
         minimapBorder.setOutlineColor(sf::Color::White);
@@ -175,16 +178,61 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
 
 
         // draw HUD elements here
+
+        //Background for locationText
         sf::RectangleShape locationBackground(sf::Vector2f(250.0f,45.0f));
-        locationBackground.setFillColor(sf::Color(150,150,150,100));
-        locationBackground.setPosition(0.0f, 100.0f);
+        locationBackground.setFillColor(sf::Color(0,0,0,100));
+        locationBackground.setPosition(15.0f, 100.0f);
+        locationBackground.setOutlineColor(sf::Color::Red);
+        locationBackground.setOutlineThickness(3.0f);
+
+        //locationText
         sf::Text locationText;
         locationText.setFont(this->game->font);
         locationText.setString("Spooky Scary Dungeon 1F");
         locationText.setCharacterSize(24);
-        locationText.setPosition(45.5f, 110.0f);
+        locationText.setPosition(60.5f, 110.0f);
         this->game->window.draw(locationBackground);
         this->game->window.draw(locationText);
+
+        //Cardinal Directions for minimap
+        // sf::ConvexShape triangleN;
+        // sf::ConvexShape triangleS;
+        // sf::ConvexShape triangleE;
+        // sf::ConvexShape triangleW;
+
+        // triangleN.setPointCount(3);
+        // triangleS.setPointCount(3);
+        // triangleE.setPointCount(3);
+        // triangleW.setPointCount(3);
+
+        //Player + Party Stats
+        // sf::Text playerHP;
+        // sf::Text playerMP;
+        // sf::RectangleShape playerHPBar;
+        // sf::RectangleShape playerMPBar;
+        // sf::RectangleShape playerBackground;
+
+        // sf::Text pmember2HP;
+        // sf::Text pmember2MP;
+        // sf::RectangleShape pmember2Bar;
+        // sf::RectangleShape pmember2Bar;
+        // sf::RectangleShape pmember2Background;
+
+        // sf::Text pmember3HP;
+        // sf::Text pmember3MP;
+        // sf::RectangleShape  pmember3HPBar;
+        // sf::RectangleShape  pmember3MPBar;
+        // sf::RectangleShape  pmember3Background;
+
+        // sf::Text pmember4HP;
+        // sf::Text pmember4MP;
+        // sf::RectangleShape pmember4HPBar;
+        // sf::RectangleShape pmember4MPBar;
+        // sf::RectangleShape pmember4Background;
+
+
+  
 
 
     return;
