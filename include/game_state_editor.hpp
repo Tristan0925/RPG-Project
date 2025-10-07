@@ -17,6 +17,12 @@ class GameStateEditor : public GameState
     const float PI = 3.14159f;
     const float FOV = PI / 2.0f; 
 
+    sf::Texture wallTexture;
+    sf::Image wallImage;
+    int textureWidth;
+    int textureHeight;
+
+
     public:
  
     virtual void draw(const float dt);
