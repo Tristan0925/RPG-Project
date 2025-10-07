@@ -78,14 +78,21 @@ void Map::renderMiniMap(sf::RenderWindow& window, const sf::View& miniMapView, c
 
     const float TILE_SIZE = 64.f;
     sf::RectangleShape tileShape(sf::Vector2f(TILE_SIZE, TILE_SIZE));
-    tileShape.setFillColor(sf::Color::White);
-
+    tileShape.setFillColor(sf::Color(211,211,211));
+    sf::RectangleShape doorSide(sf::Vector2f(TILE_SIZE, 10.0f));
+    doorSide.setFillColor(sf::Color::Yellow);
     // draw walls
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             if (isWall(x, y)) {
                 tileShape.setPosition(x * TILE_SIZE, y * TILE_SIZE);
                 window.draw(tileShape);
+            }
+            else if (isDoor(x,y)){ //add some checks for horizontal/vertical doors later
+                tileShape.setPosition(x * TILE_SIZE, y * TILE_SIZE);
+                window.draw(tileShape);
+                doorSide.setPosition(x * TILE_SIZE, y * TILE_SIZE);
+                window.draw(doorSide);
             }
         }
     }
