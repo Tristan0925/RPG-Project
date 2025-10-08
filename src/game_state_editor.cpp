@@ -197,23 +197,12 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
 
         //North Indicator for minimap
          sf::ConvexShape triangleN;
-         sf::Text N;
-         sf::FloatRect Nbounds = N.getLocalBounds();
-
-         
-         N.setFont(this->game->font);
-         N.setString("N");
-         N.setCharacterSize(24);
-         N.setRotation(initialRotationDeg - 90.0f - playerAngleDeg);
-         N.setOrigin(Nbounds.left + mapSizePx/2,Nbounds.top + mapSizePx/2);
-         N.setPosition(padding + mapSizePx/2, winH - mapSizePx/2 - padding - vertOffset);
-
          triangleN.setPointCount(3);
          triangleN.setPoint(0,sf::Vector2f(mapSizePx/2.0f - 50.0f,-3.0f));
          triangleN.setPoint(1, sf::Vector2f(mapSizePx/2.0f, - 50.0f));
          triangleN.setPoint(2, sf::Vector2f(mapSizePx/2.0f + 50.0f, -3.0f));  
 
-         triangleN.setFillColor(sf::Color(0,0,0,100));
+         triangleN.setFillColor(sf::Color(0,0,0,230));
          triangleN.setOutlineColor(sf::Color::Red);
          triangleN.setOutlineThickness(3.0f);
          triangleN.setRotation(initialRotationDeg - 90.0f - playerAngleDeg);
@@ -221,7 +210,6 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
          triangleN.setPosition(padding + mapSizePx/2, winH - mapSizePx/2 - padding - vertOffset);
 
 
-         this->game->window.draw(N);
          this->game->window.draw(triangleN);
         //Player + Party Stats
         // sf::Text playerHP;
