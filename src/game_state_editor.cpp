@@ -129,7 +129,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         minimapView.setSize(400.f, 400.f);
         minimapView.setCenter(minimapCenterPos);
 
-        // Initial rotation offset (since the player spawns looking North)
+        // Initial rotation offset (since the player spawns looking East)
         float initialRotationDeg = 90.f;
         float playerAngleDeg = this->game->player.getAngle() * 180.f / 3.14159f;
         minimapView.setRotation(initialRotationDeg - playerAngleDeg);
@@ -205,12 +205,13 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
          triangleN.setFillColor(sf::Color(0,0,0,230));
          triangleN.setOutlineColor(sf::Color::Red);
          triangleN.setOutlineThickness(3.0f);
-         triangleN.setRotation(initialRotationDeg - 90.0f - playerAngleDeg);
+         triangleN.setRotation(-90.0f + playerAngleDeg);
          triangleN.setOrigin(mapSizePx/2, mapSizePx/2);
          triangleN.setPosition(padding + mapSizePx/2, winH - mapSizePx/2 - padding - vertOffset);
 
 
          this->game->window.draw(triangleN);
+
         //Player + Party Stats
         // sf::Text playerHP;
         // sf::Text playerMP;

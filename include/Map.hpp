@@ -10,7 +10,7 @@ This file declares what map can do without the how. The how is map.cpp, hpp serv
 
 class Map {
     private:
-        std::vector<std::vector<int>> grid; // holds the map data - 0 = empty, 1 = wall
+        std::vector<std::vector<int>> grid; // holds the map data - 0 = empty, 1 = wall, 2 = door
         int width; // map width
         int height; // map height
 
