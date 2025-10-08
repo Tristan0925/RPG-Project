@@ -19,6 +19,8 @@ Handles keyboard input and updates the player's position in the world.
 }
 
 Player::Player() {
+    HP = 100;
+    MP = 100;
     position = sf::Vector2f(0.f, 0.f);
     angle = 0.f;
     targetAngle = 0.f;

@@ -13,7 +13,7 @@ Like having modules in python to handle classes and then you import the files yo
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
-
+#include <string>
 class Map;
 
 class Player {
@@ -24,6 +24,18 @@ class Player {
         float turnSpeed;    // turn speed
         void tryMove(sf::Vector2f delta, const Map& map); // checks for walls
         sf::Vector2f postion;
+        int HP;
+        int MP;
+        int STR;
+        int VIT;
+        int AGI;
+        int LU;
+        int XP;
+        int LVL;
+        int MONEY;
+        std::string affinities[5]; //Fire, Ice, Phys, Elec, Force
+        std::string skills[7]; // Attack + every affinity + almighty
+
        
     public:
         Player(); // Constructor
@@ -39,6 +51,15 @@ class Player {
 
         void moveForward(float distance, const Map& map); // moves forward, checks collisions
         void moveBackward(float distance, const Map& map); // same thing, but backwards
+
+        
+        void takeDamage();
+        void Heal();
+        void spendMP();
+        void regainMP();
+        int physATK(); //essentially skills will use either physATK/magATK then multi by a scalar, return the dmg number
+        int magATK();
+
 
         void turnLeft();
         void turnRight();
