@@ -33,7 +33,7 @@ class Player {
         int XP;
         int LVL;
         int MONEY;
-        std::string affinities[5]; //Fire, Ice, Phys, Elec, Force
+        std::string affinities[5]; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [RESIST/NEUTRAL/WEAK]) If resist, x0.5 dmg, If weak, 1.5x dmg.
         std::string skills[7]; // Attack + every affinity + almighty
 
        
@@ -52,7 +52,7 @@ class Player {
         void moveForward(float distance, const Map& map); // moves forward, checks collisions
         void moveBackward(float distance, const Map& map); // same thing, but backwards
 
-        
+
         void takeDamage();
         void Heal();
         void spendMP();
@@ -60,8 +60,12 @@ class Player {
         int physATK(); //essentially skills will use either physATK/magATK then multi by a scalar, return the dmg number
         int magATK();
 
-
         void turnLeft();
         void turnRight();
         void update(float dt);
+
+        int getHP();
+        int getMP();
+        int getMoney();
+        int getLVL();
 };
