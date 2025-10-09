@@ -22,10 +22,10 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         this->game->window.draw(ceiling);
         
         // Draw floor
-        sf::RectangleShape floor(sf::Vector2f(1920, 1080));
-        floor.setFillColor(sf::Color(50, 50, 50));
-        floor.setPosition(0, 550);
-        this->game->window.draw(floor);
+        sf::RectangleShape groundfloor(sf::Vector2f(1920, 1080));
+        groundfloor.setFillColor(sf::Color(50, 50, 50));
+        groundfloor.setPosition(0, 550);
+        this->game->window.draw(groundfloor);
 
         // Draw 3D world using raycasting
         for (int x = 0; x < screenWidth; x++) {
@@ -213,11 +213,72 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
          this->game->window.draw(triangleN);
 
         //Player + Party Stats
-        // sf::Text playerHP;
-        // sf::Text playerMP;
-        // sf::RectangleShape playerHPBar;
-        // sf::RectangleShape playerMPBar;
-        // sf::RectangleShape playerBackground;
+         sf::Text playerHP; 
+         float playerHPpercentage = ((float)this->game->player.getHP() / this->game->player.getmaxHP());
+         sf::Text playerMP;
+         float playerMPpercentage = ((float)this->game->player.getMP() / this->game->player.getmaxMP());
+
+
+
+        playerHP.setString(std::to_string(this->game->player.getHP()) + "/" + std::to_string(this->game->player.getmaxHP()));
+        playerHP.setFont(this->game->font);
+        playerHP.setCharacterSize(18);
+
+        playerMP.setString(std::to_string(this->game->player.getMP()) + "/" + std::to_string(this->game->player.getmaxMP()));
+        playerMP.setFont(this->game->font);
+        playerMP.setCharacterSize(18);
+
+        sf::RectangleShape playerHPBar(sf::Vector2f(100.0f * playerHPpercentage, 10.0f));
+        sf::RectangleShape playerHPBarBackground(sf::Vector2f(100.0f, 10.0f));
+        playerHPBar.setPosition(1740.0f,310.0f);
+        playerHPBar.setFillColor(sf::Color(127,255,0));
+        playerHPBarBackground.setFillColor(sf::Color(51,51,51));
+        playerHPBarBackground.setPosition(1740.0f,310.0f);
+        playerHPBarBackground.setOutlineThickness(1.2f);
+        playerHPBarBackground.setOutlineColor(sf::Color::Black);
+       
+
+        
+        sf::RectangleShape playerMPBar(sf::Vector2f(100.0f * playerMPpercentage, 10.0f));
+        sf::RectangleShape playerMPBarBackground(sf::Vector2f(100.0f, 10.0f));
+        playerMPBarBackground.setPosition(1740.0f,330.0f);
+        playerMPBar.setPosition(1740.0f,330.0f);
+        playerMPBarBackground.setFillColor(sf::Color(51,51,51));
+        playerMPBarBackground.setOutlineThickness(1.2f);
+        playerMPBarBackground.setOutlineColor(sf::Color::Black);
+        playerMPBar.setFillColor(sf::Color(0,0,255));
+
+
+        sf::VertexArray playerBackground(sf::Quads, 4);
+        playerBackground[0].position = sf::Vector2f(1920.0f, 260.0f);
+        playerBackground[1].position = sf::Vector2f(1920.0f, 350.0f);
+        playerBackground[2].position = sf::Vector2f(1690.0f, 350.0f);
+        playerBackground[3].position = sf::Vector2f(1690.0f, 260.0f);
+
+        playerBackground[0].color = sf::Color(255,0,0,200);
+        playerBackground[1].color = sf::Color(255,0,0,200);
+        playerBackground[2].color = sf::Color(0,0,0,200);
+        playerBackground[3].color = sf::Color(0,0,0,200);
+
+        sf::Sprite playerSprite = this->game->playerSprite;
+        playerSprite.setPosition(1740.0f, 260.0f);
+
+
+        playerHP.setPosition(1700.0f, 305.0f);
+
+        playerMP.setPosition(1700.0f,323.0f);
+
+
+        this->game->window.draw(playerBackground);
+        this->game->window.draw(playerHPBarBackground);
+        this->game->window.draw(playerHPBar);
+        this->game->window.draw(playerMPBarBackground);
+        this->game->window.draw(playerMPBar);
+        this->game->window.draw(playerSprite);
+        this->game->window.draw(playerHP);
+        this->game->window.draw(playerMP);
+        
+        // playerPicture; pass shader to grayscale the image when dead?
 
         // sf::Text pmember2HP;
         // sf::Text pmember2MP;

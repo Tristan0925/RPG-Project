@@ -14,6 +14,7 @@ Like having modules in python to handle classes and then you import the files yo
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
+#include <map>
 class Map;
 
 class Player {
@@ -25,7 +26,9 @@ class Player {
         void tryMove(sf::Vector2f delta, const Map& map); // checks for walls
         sf::Vector2f postion;
         int HP;
+        int maxHP;
         int MP;
+        int maxMP;
         int STR;
         int VIT;
         int AGI;
@@ -33,9 +36,9 @@ class Player {
         int XP;
         int LVL;
         int MONEY;
-        std::string affinities[5]; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [RESIST/NEUTRAL/WEAK]) If resist, x0.5 dmg, If weak, 1.5x dmg.
-        std::string skills[7]; // Attack + every affinity + almighty
-
+        std::map<std::string, int> affinities; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [RESIST(-1)/NEUTRAL(0)/WEAK(1)]) If resist, x0.5 dmg, If weak, 1.5x dmg.
+        std::string skills[7]; // Attack + every affinity + almighty. I think the battle_game_state should figure out damage #'s and stuff.
+        std::map<std::string, int> inventory; //dict that maps items to item amount
        
     public:
         Player(); // Constructor
@@ -64,8 +67,10 @@ class Player {
         void turnRight();
         void update(float dt);
 
-        int getHP();
-        int getMP();
-        int getMoney();
-        int getLVL();
+        int getHP() const;
+        int getmaxHP() const;
+        int getMP() const;
+        int getmaxMP() const;
+        int getMoney() const;
+        int getLVL() const;
 };

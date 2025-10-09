@@ -12,6 +12,7 @@
 void Game::loadTextures()
 {
     texmgr.loadTexture("background", "./assets/mainmenu.jpeg");
+    texmgr.loadTexture("playerSprite", "./assets/player.png");
 }
 void Game::pushState(std::unique_ptr<GameState> state) //place game state onto stack
 {
@@ -72,6 +73,7 @@ Game::Game() //i'm not sure what these things do just yet
    this->window.create(sf::VideoMode(1920, 1080), "Untitled RPG Project"); // create a window
    this->window.setFramerateLimit(60); // set frame rate
    this->background.setTexture(this->texmgr.getRef("background"));
+   this->playerSprite.setTexture(this->texmgr.getRef("playerSprite"));
     if (!map.loadFromFile("assets/map1.txt")) {
         throw std::runtime_error("failed to load");
     }

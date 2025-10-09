@@ -20,7 +20,9 @@ Handles keyboard input and updates the player's position in the world.
 
 Player::Player() {
     HP = 100;
+    maxHP = 100;
     MP = 100;
+    maxMP = 100;
     LVL = 1;
     XP = 0;
     position = sf::Vector2f(0.f, 0.f);
@@ -112,4 +114,20 @@ void Player::moveForward(float distance, const Map& map) { // Forward = add dire
 void Player::moveBackward(float distance, const Map& map) {
     sf::Vector2f dir(std::cos(angle), std::sin(angle)); // Backward = subtract direction × distance.
     tryMove(-dir * distance, map);
+}
+
+int Player::getHP() const {
+    return HP;
+}
+
+int Player::getMP() const {
+    return MP;
+}
+
+int Player::getmaxHP() const {
+    return maxHP;
+}
+
+int Player::getmaxMP() const {
+    return maxMP;
 }
