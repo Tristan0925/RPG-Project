@@ -7,6 +7,7 @@
 #include "texture_manager.hpp"
 #include "Player.hpp"
 #include "Map.hpp"
+#include "NPC.hpp"
 
 class GameState;
 
@@ -19,6 +20,10 @@ class Game
 
     public:
     Player player;
+    NPC pmember2;
+    NPC pmember3;
+    NPC pmember4;
+
     Map map;
     sf::Font font;
       
@@ -29,6 +34,9 @@ class Game
     TextureManager texmgr;
     sf::Sprite background;
     sf::Sprite playerSprite;
+    sf::Sprite pmember2Sprite;
+    sf::Sprite pmember3Sprite;
+    sf::Sprite pmember4Sprite;
 
     void pushState(std::unique_ptr<GameState> state);
     void popState();

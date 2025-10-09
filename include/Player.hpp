@@ -25,6 +25,10 @@ class Player {
         float turnSpeed;    // turn speed
         void tryMove(sf::Vector2f delta, const Map& map); // checks for walls
         sf::Vector2f postion;
+        int MONEY;
+        // Attack + every affinity + almighty. I think the battle_game_state should figure out damage #'s and stuff.
+        std::map<std::string, int> inventory; //dict that maps items to item amount
+    protected:
         int HP;
         int maxHP;
         int MP;
@@ -35,11 +39,9 @@ class Player {
         int LU;
         int XP;
         int LVL;
-        int MONEY;
         std::map<std::string, int> affinities; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [RESIST(-1)/NEUTRAL(0)/WEAK(1)]) If resist, x0.5 dmg, If weak, 1.5x dmg.
-        std::string skills[7]; // Attack + every affinity + almighty. I think the battle_game_state should figure out damage #'s and stuff.
-        std::map<std::string, int> inventory; //dict that maps items to item amount
-       
+        std::string skills[7];
+
     public:
         Player(); // Constructor
 
@@ -54,8 +56,6 @@ class Player {
 
         void moveForward(float distance, const Map& map); // moves forward, checks collisions
         void moveBackward(float distance, const Map& map); // same thing, but backwards
-
-
         void takeDamage();
         void Heal();
         void spendMP();

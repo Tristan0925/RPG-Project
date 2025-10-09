@@ -13,6 +13,9 @@ void Game::loadTextures()
 {
     texmgr.loadTexture("background", "./assets/mainmenu.jpeg");
     texmgr.loadTexture("playerSprite", "./assets/player.png");
+    texmgr.loadTexture("pmember2Sprite", "./assets/partymember2.png");
+    texmgr.loadTexture("pmember3Sprite", "./assets/partymember3.png");
+    texmgr.loadTexture("pmember4Sprite", "./assets/partymember4.png");
 }
 void Game::pushState(std::unique_ptr<GameState> state) //place game state onto stack
 {
@@ -74,6 +77,9 @@ Game::Game() //i'm not sure what these things do just yet
    this->window.setFramerateLimit(60); // set frame rate
    this->background.setTexture(this->texmgr.getRef("background"));
    this->playerSprite.setTexture(this->texmgr.getRef("playerSprite"));
+   this->pmember2Sprite.setTexture(this->texmgr.getRef("pmember2Sprite"));
+   this->pmember3Sprite.setTexture(this->texmgr.getRef("pmember3Sprite"));
+   this->pmember4Sprite.setTexture(this->texmgr.getRef("pmember4Sprite"));
     if (!map.loadFromFile("assets/map1.txt")) {
         throw std::runtime_error("failed to load");
     }
