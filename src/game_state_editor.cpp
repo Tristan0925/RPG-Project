@@ -4,6 +4,8 @@
 #include <cmath>
 #include "game_state.hpp"
 #include "game_state_editor.hpp"
+#include "iostream"
+#include "algorithm"
 
 void GameStateEditor::draw(const float dt) //If you draw things, put them here
 {
@@ -17,8 +19,11 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
     const int screenHeight = 1080;
 
     // --- New rendering parameters ---
-    const int rayCount = 1920;                    // fewer rays = big performance boost
+    const int rayCount = 640; // fewer rays = big performance boost
     const float columnWidth = (float)screenWidth / rayCount;
+    int mapWidth = this->game->map.getWidth();
+    int mapHeight = this->game->map.getHeight();
+
 
     // Ceiling
     sf::RectangleShape ceiling(sf::Vector2f(screenWidth, screenHeight / 2));
@@ -34,47 +39,45 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
 
     // Draw 3D world using raycasting
     for (int i = 0; i < rayCount; i++) {
-        // Calculate ray angle relative to player's facing
-        float rayAngle = (this->game->player.getAngle() - FOV / 2.0f) + ((float)i / rayCount) * FOV; 
-        
-        // Ray position and direction
+        // Ray angle relative to player
+        float rayAngle = this->game->player.getAngle() - FOV / 2.f + ((float)i / rayCount) * FOV;
+    
+        // Ray position in tile coordinates
         float rayX = this->game->player.getPosition().x / 64.f;
         float rayY = this->game->player.getPosition().y / 64.f;
+    
+        // Ray direction
         float rayDirX = cos(rayAngle);
         float rayDirY = sin(rayAngle);
-        
+    
         // DDA setup
-        int mapX = int(rayX);
-        int mapY = int(rayY);
-        
-        float sideDistX;
-        float sideDistY;
-        
+        int mapX = (int)rayX;
+        int mapY = (int)rayY;
+        float sideDistX, sideDistY;
         float deltaDistX = (rayDirX == 0) ? 1e30f : fabs(1 / rayDirX);
         float deltaDistY = (rayDirY == 0) ? 1e30f : fabs(1 / rayDirY);
-        float perpWallDist;
-        
-        int stepX, stepY;
+        int stepX = (rayDirX < 0) ? -1 : 1;
+        int stepY = (rayDirY < 0) ? -1 : 1;
+        sideDistX = (rayDirX < 0) ? (rayX - mapX) * deltaDistX : (mapX + 1.0f - rayX) * deltaDistX;
+        sideDistY = (rayDirY < 0) ? (rayY - mapY) * deltaDistY : (mapY + 1.0f - rayY) * deltaDistY;
+    
         int hit = 0;
-        int side;
-        
-        if (rayDirX < 0) {
-            stepX = -1;
-            sideDistX = (rayX - mapX) * deltaDistX;
-        } else {
-            stepX = 1;
-            sideDistX = (mapX + 1.0f - rayX) * deltaDistX;
-        }
-        if (rayDirY < 0) {
-            stepY = -1;
-            sideDistY = (rayY - mapY) * deltaDistY;
-        } else {
-            stepY = 1;
-            sideDistY = (mapY + 1.0f - rayY) * deltaDistY;
-        }
-        
-        // DDA loop - ray marching
-        while (hit == 0) {
+        int side = 0;
+    
+        // DDA loop — march ray
+        int maxSteps = std::max(mapWidth, mapHeight);
+        // prevent infinite loops
+        int stepsTaken = 0;
+    
+        while (hit == 0 && stepsTaken < maxSteps) {
+            stepsTaken++;
+    
+            // Bounds check
+            if (mapX < 0 || mapX >= mapWidth || mapY < 0 || mapY >= mapHeight) {
+                hit = 1;
+                break;
+            }
+    
             if (sideDistX < sideDistY) {
                 sideDistX += deltaDistX;
                 mapX += stepX;
@@ -84,54 +87,78 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
                 mapY += stepY;
                 side = 1;
             }
-            if (this->game->map.isWall(mapX, mapY)) hit = 1;
+    
+            if (this->game->map.isWall(mapX, mapY)) {
+                hit = 1;
+            }
         }
-        
-        if (side == 0)
-            perpWallDist = (sideDistX - deltaDistX) * cos(rayAngle - this->game->player.getAngle());
-        else
-            perpWallDist = (sideDistY - deltaDistY) * cos(rayAngle - this->game->player.getAngle());
-        
-        // Calculate where exactly the ray hit the wall (for texture sampling)
+    
+        // Calculate perpendicular wall distance (fish-eye correction)
+        float perpWallDist = (side == 0)
+            ? (sideDistX - deltaDistX)
+            : (sideDistY - deltaDistY);
+
+        float correctedAngle = rayAngle - this->game->player.getAngle();
+        perpWallDist *= std::max(std::cos(correctedAngle), 0.0f);
+
+        // Avoid division by zero for very close walls
+        if (perpWallDist <= 0.0001f) continue;
+
+        // Wall height in pixels
+        int lineHeight = static_cast<int>(screenHeight / perpWallDist);
+        int drawStart = -lineHeight / 2 + screenHeight / 2;
+        int drawEnd = lineHeight / 2 + screenHeight / 2;
+        if (drawStart < 0) drawStart = 0;
+        if (drawEnd >= screenHeight) drawEnd = screenHeight - 1;
+
+        // Texture X coordinate
         float wallX;
         if (side == 0)
-            wallX = this->game->player.getPosition().y / 64.f + perpWallDist * rayDirY;
+            wallX = rayY + perpWallDist * rayDirY;
         else
-            wallX = this->game->player.getPosition().x / 64.f + perpWallDist * rayDirX;
+            wallX = rayX + perpWallDist * rayDirX;
         wallX -= std::floor(wallX);
 
-        // texture column (X) in the wall image
-        int texX = int(wallX * float(textureWidth));
+        int texX = static_cast<int>(wallX * static_cast<float>(textureWidth));
         if (side == 0 && rayDirX > 0) texX = textureWidth - texX - 1;
         if (side == 1 && rayDirY < 0) texX = textureWidth - texX - 1;
 
-        // Wall height
-        int lineHeight = (int)(screenHeight / perpWallDist);
-        int drawStart = -lineHeight / 2 + screenHeight / 2;
-        if (drawStart < 0) drawStart = 0;
-        int drawEnd = lineHeight / 2 + screenHeight / 2;
-        if (drawEnd >= screenHeight) drawEnd = screenHeight - 1;
+        // Texture step per screen pixel (for mapping)
+        float step = 1.0f * textureHeight / lineHeight;
+        float texStart = (drawStart - screenHeight / 2 + lineHeight / 2) * step;
+        float texEnd = texStart + (drawEnd - drawStart) * step;
 
-        // --- Draw the wall slice as a textured rectangle ---
-        sf::RectangleShape wallColumn(sf::Vector2f(columnWidth + 1, drawEnd - drawStart));
+        // Use a single quad for the wall column
+        sf::VertexArray column(sf::Quads, 4);
 
-        // Pick color from the texture at texX (sample mid Y for simplicity)
-        int texY = textureHeight / 2;
-        sf::Color color = wallImage.getPixel(texX, texY);
+        float x = i * columnWidth;
+        column[0].position = sf::Vector2f(x, drawStart);
+        column[1].position = sf::Vector2f(x + columnWidth, drawStart);
+        column[2].position = sf::Vector2f(x + columnWidth, drawEnd);
+        column[3].position = sf::Vector2f(x, drawEnd);
 
-        // Make darker if side == 1 (for lighting)
+        // Correct vertical mapping (no stretching)
+        column[0].texCoords = sf::Vector2f(texX, texStart);
+        column[1].texCoords = sf::Vector2f(texX + 1, texStart);
+        column[2].texCoords = sf::Vector2f(texX + 1, texEnd);
+        column[3].texCoords = sf::Vector2f(texX, texEnd);
+
+        // Shading for Y-sides
+        sf::Color tint(255, 255, 255);
         if (side == 1) {
-            color.r *= 0.7;
-            color.g *= 0.7;
-            color.b *= 0.7;
+            tint.r = static_cast<sf::Uint8>(tint.r * 0.7f);
+            tint.g = static_cast<sf::Uint8>(tint.g * 0.7f);
+            tint.b = static_cast<sf::Uint8>(tint.b * 0.7f);
         }
+        for (int v = 0; v < 4; ++v)
+            column[v].color = tint;
 
-        wallColumn.setPosition(i * columnWidth, drawStart);
-        wallColumn.setFillColor(color);
-        this->game->window.draw(wallColumn);
+        // Draw this vertical slice
+        this->game->window.draw(column, &wallTexture);
+
     }
 
-    // --- Minimap and HUD section (unchanged) ---
+    // Minimap and HUD section
     float mapSizePx = 200.f;
     float padding = 10.f;
 
@@ -195,13 +222,13 @@ void GameStateEditor::handleInput() //Inputs go here
     {
         switch (event.type)
         {
-            /* Close the window */
+            // Close the window
             case sf::Event::Closed:
             {
                 this->game->window.close();
                 break;
             }
-            /* Resize the window */
+            // Resize the window 
             case sf::Event::Resized:
             {
                 gameView.setSize(event.size.width, event.size.height);
@@ -266,6 +293,9 @@ GameStateEditor::GameStateEditor(Game* game) //This is a constructor
 
     // Load texture once
     wallTexture.loadFromFile("assets/wall_texture.jpg");
+    wallTexture.setSmooth(false);   // prevents blur
+    wallTexture.setRepeated(true);
+    wallTexture.generateMipmap();   // improves close-up detail
     wallImage = wallTexture.copyToImage(); // for pixel-level access
     textureWidth = wallImage.getSize().x;
     textureHeight = wallImage.getSize().y;
