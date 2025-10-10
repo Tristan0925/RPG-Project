@@ -230,10 +230,10 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
 
         sf::RectangleShape playerHPBar(sf::Vector2f(100.0f * playerHPpercentage, 10.0f));
         sf::RectangleShape playerHPBarBackground(sf::Vector2f(100.0f, 10.0f));
-        playerHPBar.setPosition(1740.0f,310.0f);
+        playerHPBar.setPosition(1770.0f,310.0f);
         playerHPBar.setFillColor(sf::Color(127,255,0));
         playerHPBarBackground.setFillColor(sf::Color(51,51,51));
-        playerHPBarBackground.setPosition(1740.0f,310.0f);
+        playerHPBarBackground.setPosition(1770.0f,310.0f);
         playerHPBarBackground.setOutlineThickness(1.2f);
         playerHPBarBackground.setOutlineColor(sf::Color::Black);
        
@@ -241,8 +241,8 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         
         sf::RectangleShape playerMPBar(sf::Vector2f(100.0f * playerMPpercentage, 10.0f));
         sf::RectangleShape playerMPBarBackground(sf::Vector2f(100.0f, 10.0f));
-        playerMPBarBackground.setPosition(1740.0f,330.0f);
-        playerMPBar.setPosition(1740.0f,330.0f);
+        playerMPBarBackground.setPosition(1770.0f,330.0f);
+        playerMPBar.setPosition(1770.0f,330.0f);
         playerMPBarBackground.setFillColor(sf::Color(51,51,51));
         playerMPBarBackground.setOutlineThickness(1.2f);
         playerMPBarBackground.setOutlineColor(sf::Color::Black);
@@ -250,10 +250,10 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
 
 
         sf::VertexArray playerBackground(sf::Quads, 4);
-        playerBackground[0].position = sf::Vector2f(1920.0f, 260.0f);
-        playerBackground[1].position = sf::Vector2f(1920.0f, 350.0f);
-        playerBackground[2].position = sf::Vector2f(1690.0f, 350.0f);
-        playerBackground[3].position = sf::Vector2f(1690.0f, 260.0f);
+        playerBackground[0].position = sf::Vector2f(1960.0f, 260.0f);
+        playerBackground[1].position = sf::Vector2f(1960.0f, 350.0f);
+        playerBackground[2].position = sf::Vector2f(1730.0f, 350.0f);
+        playerBackground[3].position = sf::Vector2f(1730.0f, 260.0f);
 
         playerBackground[0].color = sf::Color(255,0,0,200);
         playerBackground[1].color = sf::Color(255,0,0,200);
@@ -261,12 +261,12 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         playerBackground[3].color = sf::Color(0,0,0,200);
 
         sf::Sprite playerSprite = this->game->playerSprite;
-        playerSprite.setPosition(1740.0f, 260.0f);
+        playerSprite.setPosition(1770.0f, 260.0f);
 
 
-        playerHP.setPosition(1700.0f, 305.0f);
+        playerHP.setPosition(1735.0f, 305.0f);
 
-        playerMP.setPosition(1700.0f,323.0f);
+        playerMP.setPosition(1735.0f,323.0f);
 
 
         this->game->window.draw(playerBackground);
@@ -278,7 +278,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         this->game->window.draw(playerHP);
         this->game->window.draw(playerMP);
         
-        
+        //Party Member 2 HUD element
 
         sf::Text pmember2HP; 
         float pmember2HPpercentage = ((float)this->game->pmember2.getHP() / this->game->pmember2.getmaxHP());
@@ -295,10 +295,10 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
 
         sf::RectangleShape pmember2HPBar(sf::Vector2f(100.0f * pmember2HPpercentage, 10.0f));
         sf::RectangleShape pmember2HPBarBackground(sf::Vector2f(100.0f, 10.0f));
-        pmember2HPBar.setPosition(1740.0f,417.0f);
+        pmember2HPBar.setPosition(1770.0f,417.0f);
         pmember2HPBar.setFillColor(sf::Color(127,255,0));
         pmember2HPBarBackground.setFillColor(sf::Color(51,51,51));
-        pmember2HPBarBackground.setPosition(1740.0f,417.0f);
+        pmember2HPBarBackground.setPosition(1770.0f,417.0f);
         pmember2HPBarBackground.setOutlineThickness(1.2f);
         pmember2HPBarBackground.setOutlineColor(sf::Color::Black);
        
@@ -306,8 +306,8 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         
         sf::RectangleShape pmember2MPBar(sf::Vector2f(100.0f * pmember2MPpercentage, 10.0f));
         sf::RectangleShape pmember2MPBarBackground(sf::Vector2f(100.0f, 10.0f));
-        pmember2MPBarBackground.setPosition(1740.0f,437.0f);
-        pmember2MPBar.setPosition(1740.0f,437.0f);
+        pmember2MPBarBackground.setPosition(1770.0f,437.0f);
+        pmember2MPBar.setPosition(1770.0f,437.0f);
         pmember2MPBarBackground.setFillColor(sf::Color(51,51,51));
         pmember2MPBarBackground.setOutlineThickness(1.2f);
         pmember2MPBarBackground.setOutlineColor(sf::Color::Black);
@@ -315,10 +315,10 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
 
 
         sf::VertexArray pmember2Background(sf::Quads, 4);
-        pmember2Background[0].position = sf::Vector2f(1920.0f, 370.0f);
-        pmember2Background[1].position = sf::Vector2f(1920.0f, 460.0f); // 20px spacing, 90px size
-        pmember2Background[2].position = sf::Vector2f(1690.0f, 460.0f);
-        pmember2Background[3].position = sf::Vector2f(1690.0f, 370.0f);
+        pmember2Background[0].position = sf::Vector2f(1960.0f, 370.0f);
+        pmember2Background[1].position = sf::Vector2f(1960.0f, 460.0f); // 20px spacing, 90px size
+        pmember2Background[2].position = sf::Vector2f(1730.0f, 460.0f);
+        pmember2Background[3].position = sf::Vector2f(1730.0f, 370.0f);
 
         pmember2Background[0].color = sf::Color(255,0,0,200);
         pmember2Background[1].color = sf::Color(255,0,0,200);
@@ -326,13 +326,13 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         pmember2Background[3].color = sf::Color(0,0,0,200);
 
         sf::Sprite pmember2Sprite = this->game->pmember2Sprite;
-        pmember2Sprite.setPosition(1740.0f, 370.0f);
+        pmember2Sprite.setPosition(1770.0f, 370.0f);
         pmember2Sprite.setScale(0.5f,0.5f);
 
 
-        pmember2HP.setPosition(1700.0f, 412.0f);
+        pmember2HP.setPosition(1735.0f, 412.0f);
 
-        pmember2MP.setPosition(1700.0f,432.0f);
+        pmember2MP.setPosition(1735.0f,432.0f);
 
         this->game->window.draw(pmember2Background);
         this->game->window.draw(pmember2HPBarBackground);
@@ -344,18 +344,137 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         this->game->window.draw(pmember2MP);
 
 
+        //Party Member 3 HUD element
 
-        // sf::Text pmember3HP;
-        // sf::Text pmember3MP;
-        // sf::RectangleShape  pmember3HPBar;
-        // sf::RectangleShape  pmember3MPBar;
-        // sf::RectangleShape  pmember3Background;
+      
 
-        // sf::Text pmember4HP;
-        // sf::Text pmember4MP;
-        // sf::RectangleShape pmember4HPBar;
-        // sf::RectangleShape pmember4MPBar;
-        // sf::RectangleShape pmember4Background;
+        sf::Text pmember3HP; 
+        float pmember3HPpercentage = ((float)this->game->pmember3.getHP() / this->game->pmember3.getmaxHP());
+        sf::Text pmember3MP;
+        float pmember3MPpercentage = ((float)this->game->pmember3.getMP() / this->game->pmember3.getmaxMP());
+
+        pmember3HP.setString(std::to_string(this->game->pmember3.getHP()) + "/" + std::to_string(this->game->pmember3.getmaxHP()));
+        pmember3HP.setFont(this->game->font);
+        pmember3HP.setCharacterSize(18);
+
+        pmember3MP.setString(std::to_string(this->game->pmember3.getMP()) + "/" + std::to_string(this->game->pmember3.getmaxMP()));
+        pmember3MP.setFont(this->game->font);
+        pmember3MP.setCharacterSize(18);
+
+        sf::RectangleShape pmember3HPBar(sf::Vector2f(100.0f * pmember3HPpercentage, 10.0f));
+        sf::RectangleShape pmember3HPBarBackground(sf::Vector2f(100.0f, 10.0f));
+        pmember3HPBar.setPosition(1770.0f,520.0f);
+        pmember3HPBar.setFillColor(sf::Color(127,255,0));
+        pmember3HPBarBackground.setFillColor(sf::Color(51,51,51));
+        pmember3HPBarBackground.setPosition(1770.0f,520.0f);
+        pmember3HPBarBackground.setOutlineThickness(1.2f);
+        pmember3HPBarBackground.setOutlineColor(sf::Color::Black);
+       
+
+        
+        sf::RectangleShape pmember3MPBar(sf::Vector2f(100.0f * pmember3MPpercentage, 10.0f));
+        sf::RectangleShape pmember3MPBarBackground(sf::Vector2f(100.0f, 10.0f));
+        pmember3MPBarBackground.setPosition(1770.0f,540.0f);
+        pmember3MPBar.setPosition(1770.0f,540.0f);
+        pmember3MPBarBackground.setFillColor(sf::Color(51,51,51));
+        pmember3MPBarBackground.setOutlineThickness(1.2f);
+        pmember3MPBarBackground.setOutlineColor(sf::Color::Black);
+        pmember3MPBar.setFillColor(sf::Color(0,0,255));
+
+
+        sf::VertexArray pmember3Background(sf::Quads, 4);
+        pmember3Background[0].position = sf::Vector2f(1960.0f, 480.0f);
+        pmember3Background[1].position = sf::Vector2f(1960.0f, 570.0f); // 20px spacing, 90px size
+        pmember3Background[2].position = sf::Vector2f(1730.0f, 570.0f);
+        pmember3Background[3].position = sf::Vector2f(1730.0f, 480.0f);
+
+        pmember3Background[0].color = sf::Color(255,0,0,200);
+        pmember3Background[1].color = sf::Color(255,0,0,200);
+        pmember3Background[2].color = sf::Color(0,0,0,200);
+        pmember3Background[3].color = sf::Color(0,0,0,200);
+
+        sf::Sprite pmember3Sprite = this->game->pmember3Sprite;
+        pmember3Sprite.setPosition(1770.0f, 480.0f);
+        
+
+        pmember3HP.setPosition(1735.0f, 515.0f);
+
+        pmember3MP.setPosition(1735.0f,535.0f);
+
+        this->game->window.draw(pmember3Background);
+        this->game->window.draw(pmember3HPBarBackground);
+        this->game->window.draw(pmember3HPBar);
+        this->game->window.draw(pmember3MPBarBackground);
+        this->game->window.draw(pmember3MPBar);
+        this->game->window.draw(pmember3Sprite);
+        this->game->window.draw(pmember3HP);
+        this->game->window.draw(pmember3MP);
+
+        //Party Member 4 HUD element
+
+
+          sf::Text pmember4HP; 
+        float pmember4HPpercentage = ((float)this->game->pmember3.getHP() / this->game->pmember3.getmaxHP());
+        sf::Text pmember4MP;
+        float pmember4MPpercentage = ((float)this->game->pmember3.getMP() / this->game->pmember3.getmaxMP());
+
+        pmember4HP.setString(std::to_string(this->game->pmember4.getHP()) + "/" + std::to_string(this->game->pmember4.getmaxHP()));
+        pmember4HP.setFont(this->game->font);
+        pmember4HP.setCharacterSize(18);
+
+        pmember4MP.setString(std::to_string(this->game->pmember4.getMP()) + "/" + std::to_string(this->game->pmember4.getmaxMP()));
+        pmember4MP.setFont(this->game->font);
+        pmember4MP.setCharacterSize(18);
+
+        sf::RectangleShape pmember4HPBar(sf::Vector2f(100.0f * pmember4HPpercentage, 10.0f));
+        sf::RectangleShape pmember4HPBarBackground(sf::Vector2f(100.0f, 10.0f));
+        pmember4HPBar.setPosition(1770.0f,627.0f);
+        pmember4HPBar.setFillColor(sf::Color(127,255,0));
+        pmember4HPBarBackground.setFillColor(sf::Color(51,51,51));
+        pmember4HPBarBackground.setPosition(1770.0f,627.0f);
+        pmember4HPBarBackground.setOutlineThickness(1.2f);
+        pmember4HPBarBackground.setOutlineColor(sf::Color::Black);
+       
+
+        
+        sf::RectangleShape pmember4MPBar(sf::Vector2f(100.0f * pmember4MPpercentage, 10.0f));
+        sf::RectangleShape pmember4MPBarBackground(sf::Vector2f(100.0f, 10.0f));
+        pmember4MPBarBackground.setPosition(1770.0f,650.0f);
+        pmember4MPBar.setPosition(1770.0f,650.0f);
+        pmember4MPBarBackground.setFillColor(sf::Color(51,51,51));
+        pmember4MPBarBackground.setOutlineThickness(1.2f);
+        pmember4MPBarBackground.setOutlineColor(sf::Color::Black);
+        pmember4MPBar.setFillColor(sf::Color(0,0,255));
+
+
+        sf::VertexArray pmember4Background(sf::Quads, 4);
+        pmember4Background[0].position = sf::Vector2f(1960.0f, 590.0f);
+        pmember4Background[1].position = sf::Vector2f(1960.0f, 680.0f); // 20px spacing, 90px size
+        pmember4Background[2].position = sf::Vector2f(1730.0f, 680.0f);
+        pmember4Background[3].position = sf::Vector2f(1730.0f, 590.0f);
+
+        pmember4Background[0].color = sf::Color(255,0,0,200);
+        pmember4Background[1].color = sf::Color(255,0,0,200);
+        pmember4Background[2].color = sf::Color(0,0,0,200);
+        pmember4Background[3].color = sf::Color(0,0,0,200);
+
+        sf::Sprite pmember4Sprite = this->game->pmember4Sprite;
+        pmember4Sprite.setPosition(1785.0f, 590.0f);
+        
+
+        pmember4HP.setPosition(1735.0f, 622.0f);
+
+        pmember4MP.setPosition(1735.0f,642.0f);
+
+        this->game->window.draw(pmember4Background);
+        this->game->window.draw(pmember4HPBarBackground);
+        this->game->window.draw(pmember4HPBar);
+        this->game->window.draw(pmember4MPBarBackground);
+        this->game->window.draw(pmember4MPBar);
+        this->game->window.draw(pmember4Sprite);
+        this->game->window.draw(pmember4HP);
+        this->game->window.draw(pmember4MP);
+
 
 
   
