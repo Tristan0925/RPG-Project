@@ -4,6 +4,8 @@
 #include <cmath>
 #include "game_state.hpp"
 #include "game_state_editor.hpp"
+#include "iostream"
+#include "algorithm"
 
 void GameStateEditor::draw(const float dt) //If you draw things, put them here
 {
@@ -16,58 +18,74 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
     const int screenWidth = 1920;
     const int screenHeight = 1080;
 
-     sf::RectangleShape ceiling(sf::Vector2f(1920, 1080));
-        ceiling.setFillColor(sf::Color(0, 250, 0));
-        ceiling.setPosition(0, 0);
-        this->game->window.draw(ceiling);
+    // --- New rendering parameters ---
+    const int rayCount = 640; // fewer rays = big performance boost
+    const float columnWidth = (float)screenWidth / rayCount;
+    int mapWidth = this->game->map.getWidth();
+    int mapHeight = this->game->map.getHeight();
+
+
+    // Ceiling
+    sf::RectangleShape ceiling(sf::Vector2f(screenWidth, screenHeight / 2));
+    ceiling.setFillColor(sf::Color(30, 30, 30));
+    ceiling.setPosition(0, 0);
+    this->game->window.draw(ceiling);
         
-        // Draw floor
-        sf::RectangleShape groundfloor(sf::Vector2f(1920, 1080));
-        groundfloor.setFillColor(sf::Color(50, 50, 50));
-        groundfloor.setPosition(0, 550);
-        this->game->window.draw(groundfloor);
+    // Floor
+    sf::RectangleShape floor(sf::Vector2f(screenWidth, screenHeight / 2));
+    floor.setFillColor(sf::Color(50, 50, 50));
+    floor.setPosition(0, screenHeight / 2);
+    this->game->window.draw(floor);
 
-        // Draw 3D world using raycasting
-        for (int x = 0; x < screenWidth; x++) {
-            // Calculate ray angle relative to player's facing
-            float rayAngle = (this->game->player.getAngle() - FOV / 2.0f) + ((float)x / screenWidth) * FOV; // this means leftmost ray = left edge of vision, rightmost ray = right edge
-            
-            // Ray position and direction
-            float rayX = this->game->player.getPosition().x / 64.f; // scale to grid size (64px per cell)
-            float rayY = this->game->player.getPosition().y / 64.f;
-            float rayDirX = cos(rayAngle); // this gives you a unit vector pointing in the direction the ray should travel
-            float rayDirY = sin(rayAngle); // Example: if angle = 0, direction = (1, 0) → to the right.
-            
-            // DDA setup
-            /*
-            DDA = Digital Differential Analyzer - a step-by-step way to move through the grid.
-
-            - You start from the player’s grid position.
-
-            - At each step, decide if the ray crosses into the next grid cell in X or Y.
-
-            - Keep stepping until you hit a wall.
-            */
-            int mapX = int(rayX);
-            int mapY = int(rayY);
-            
-            float sideDistX;
-            float sideDistY;
-            
-            float deltaDistX = (rayDirX == 0) ? 1e30f : fabs(1 / rayDirX);
-            float deltaDistY = (rayDirY == 0) ? 1e30f : fabs(1 / rayDirY);
-            float perpWallDist;
-            
-            int stepX, stepY;
-            int hit = 0;
-            int side;
-            
-            if (rayDirX < 0) {
-                stepX = -1;
-                sideDistX = (rayX - mapX) * deltaDistX;
+    // Draw 3D world using raycasting
+    for (int i = 0; i < rayCount; i++) {
+        // Ray angle relative to player
+        float rayAngle = this->game->player.getAngle() - FOV / 2.f + ((float)i / rayCount) * FOV;
+    
+        // Ray position in tile coordinates
+        float rayX = this->game->player.getPosition().x / 64.f;
+        float rayY = this->game->player.getPosition().y / 64.f;
+    
+        // Ray direction
+        float rayDirX = cos(rayAngle);
+        float rayDirY = sin(rayAngle);
+    
+        // DDA setup
+        int mapX = (int)rayX;
+        int mapY = (int)rayY;
+        float sideDistX, sideDistY;
+        float deltaDistX = (rayDirX == 0) ? 1e30f : fabs(1 / rayDirX);
+        float deltaDistY = (rayDirY == 0) ? 1e30f : fabs(1 / rayDirY);
+        int stepX = (rayDirX < 0) ? -1 : 1;
+        int stepY = (rayDirY < 0) ? -1 : 1;
+        sideDistX = (rayDirX < 0) ? (rayX - mapX) * deltaDistX : (mapX + 1.0f - rayX) * deltaDistX;
+        sideDistY = (rayDirY < 0) ? (rayY - mapY) * deltaDistY : (mapY + 1.0f - rayY) * deltaDistY;
+    
+        int hit = 0;
+        int side = 0;
+    
+        // DDA loop — march ray
+        int maxSteps = std::max(mapWidth, mapHeight);
+        // prevent infinite loops
+        int stepsTaken = 0;
+    
+        while (hit == 0 && stepsTaken < maxSteps) {
+            stepsTaken++;
+    
+            // Bounds check
+            if (mapX < 0 || mapX >= mapWidth || mapY < 0 || mapY >= mapHeight) {
+                hit = 1;
+                break;
+            }
+    
+            if (sideDistX < sideDistY) {
+                sideDistX += deltaDistX;
+                mapX += stepX;
+                side = 0;
             } else {
-                stepX = 1;
-                sideDistX = (mapX + 1.0f - rayX) * deltaDistX;
+                sideDistY += deltaDistY;
+                mapY += stepY;
+                side = 1;
             }
             if (rayDirY < 0) {
                 stepY = -1;
@@ -93,48 +111,89 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
                 
             }
             
-            if (side == 0) // Once a wall is hit, you compute the distance from the player to the wall
-                perpWallDist = (sideDistX - deltaDistX) * cos(rayAngle - this->game->player.getAngle());
-            else
-                perpWallDist = (sideDistY - deltaDistY) * cos(rayAngle - this->game->player.getAngle());
-            
-            // Wall height
-            // Near wall = small denominator = tall line; Far wall = big denominator = short line.
-            int lineHeight = (int)(screenHeight / perpWallDist);
-            
-            int drawStart = -lineHeight / 2 + screenHeight / 2;
-            if (drawStart < 0) drawStart = 0;
-            int drawEnd = lineHeight / 2 + screenHeight / 2;
-            if (drawEnd >= screenHeight) drawEnd = screenHeight - 1;
-            
-            sf::Vertex line[] = {
-                sf::Vertex(sf::Vector2f(x, drawStart), this->game->map.isDoor(mapX,mapY) ? sf::Color(0,180,180) : sf::Color::Red),
-                sf::Vertex(sf::Vector2f(x, drawEnd),   this->game->map.isDoor(mapX,mapY) ? sf::Color(0,180,180) : sf::Color::White)
-                };
-                 this->game->window.draw(line, 2, sf::Lines);
-            }
+    
+        }
+    
+        // Calculate perpendicular wall distance (fish-eye correction)
+        float perpWallDist = (side == 0)
+            ? (sideDistX - deltaDistX)
+            : (sideDistY - deltaDistY);
 
-        // Setup minimap
+        
+        // Get window size
+       
+        float correctedAngle = rayAngle - this->game->player.getAngle();
+        perpWallDist *= std::max(std::cos(correctedAngle), 0.0f);
+
+        // Avoid division by zero for very close walls
+        if (perpWallDist <= 0.0001f) continue;
+
+        // Wall height in pixels
+        int lineHeight = static_cast<int>(screenHeight / perpWallDist);
+        int drawStart = -lineHeight / 2 + screenHeight / 2;
+        int drawEnd = lineHeight / 2 + screenHeight / 2;
+        if (drawStart < 0) drawStart = 0;
+        if (drawEnd >= screenHeight) drawEnd = screenHeight - 1;
+
+     
+        // Texture X coordinate
+        float wallX;
+        if (side == 0)
+            wallX = rayY + perpWallDist * rayDirY;
+        else
+            wallX = rayX + perpWallDist * rayDirX;
+        wallX -= std::floor(wallX);
+
+        int texX = static_cast<int>(wallX * static_cast<float>(textureWidth));
+        if (side == 0 && rayDirX > 0) texX = textureWidth - texX - 1;
+        if (side == 1 && rayDirY < 0) texX = textureWidth - texX - 1;
+
+        // Texture step per screen pixel (for mapping)
+        float step = 1.0f * textureHeight / lineHeight;
+        float texStart = (drawStart - screenHeight / 2 + lineHeight / 2) * step;
+        float texEnd = texStart + (drawEnd - drawStart) * step;
+
+        // Use a single quad for the wall column
+        sf::VertexArray column(sf::Quads, 4);
+
+        float x = i * columnWidth;
+        column[0].position = sf::Vector2f(x, drawStart);
+        column[1].position = sf::Vector2f(x + columnWidth, drawStart);
+        column[2].position = sf::Vector2f(x + columnWidth, drawEnd);
+        column[3].position = sf::Vector2f(x, drawEnd);
+
+        // Correct vertical mapping (no stretching)
+        column[0].texCoords = sf::Vector2f(texX, texStart);
+        column[1].texCoords = sf::Vector2f(texX + 1, texStart);
+        column[2].texCoords = sf::Vector2f(texX + 1, texEnd);
+        column[3].texCoords = sf::Vector2f(texX, texEnd);
+
+        // Shading for Y-sides
+        sf::Color tint(255, 255, 255);
+        if (side == 1) {
+            tint.r = static_cast<sf::Uint8>(tint.r * 0.7f);
+            tint.g = static_cast<sf::Uint8>(tint.g * 0.7f);
+            tint.b = static_cast<sf::Uint8>(tint.b * 0.7f);
+        }
+        for (int v = 0; v < 4; ++v)
+            column[v].color = tint;
+
+        // Draw this vertical slice
+        this->game->window.draw(column, &wallTexture);
+
+    }
+       // Initial rotation offset (since the player spawns looking East)
+        float initialRotationDeg = 90.f;
+        float playerAngleDeg = this->game->player.getAngle() * 180.f / 3.14159f;
+       sf::View minimapView;
+
+    // Setup minimap
         float mapSizePx = 200.f;
         float padding = 100.f;
         float vertOffset = 50.0f;
-        
-        // Get window size
         float winW = (float)this->game->window.getSize().x;
         float winH = (float)this->game->window.getSize().y;
         sf::Vector2f minimapCenterPos = this->game->player.getPosition();
-
-        // Minimap view
-        sf::View minimapView;
-        minimapView.setSize(400.f, 400.f);
-        minimapView.setCenter(minimapCenterPos);
-
-        // Initial rotation offset (since the player spawns looking East)
-        float initialRotationDeg = 90.f;
-        float playerAngleDeg = this->game->player.getAngle() * 180.f / 3.14159f;
-        minimapView.setRotation(initialRotationDeg - playerAngleDeg);
-
-
        
         // Set viewport 
         sf::FloatRect vp(
@@ -144,7 +203,8 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
             mapSizePx / winH               // height
         );
         minimapView.setViewport(vp);
-
+        minimapView.setRotation(initialRotationDeg - playerAngleDeg);
+        minimapView.setCenter(minimapCenterPos);
         // Draw minimap border
         sf::RectangleShape minimapBorder(sf::Vector2f(mapSizePx, mapSizePx));
         minimapBorder.setOrigin(mapSizePx/2, mapSizePx/2); // rotate around center
@@ -154,27 +214,6 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         minimapBorder.setOutlineColor(sf::Color::Red);
         minimapBorder.setRotation(initialRotationDeg - playerAngleDeg); // same rotation as minimap
         this->game->window.draw(minimapBorder);
-
-        // Render the actual minimap
-        this->game->map.renderMiniMap( this->game->window, minimapView, this->game->player.getPosition(), this->game->player.getAngle());
-
-        // Draw player icon on minimap
-        sf::CircleShape playerIcon(6, 3); // triangle with radius 6
-        playerIcon.setOrigin(6, 6);       // rotate around center
-        playerIcon.setPosition(this->game->player.getPosition());
-        playerIcon.setFillColor(sf::Color::Red);
-
-        // Player icon rotation relative to rotated minimap
-        float totalRotationDeg = playerAngleDeg - initialRotationDeg;
-        playerIcon.setRotation(totalRotationDeg);
-
-        // Draw player icon in minimap view
-        this->game->window.setView(minimapView);
-        this->game->window.draw(playerIcon);
-
-        // Reset view for HUD / other UI ---
-        this->game->window.setView(this->game->window.getDefaultView());
-
 
 
         // draw HUD elements here
@@ -197,6 +236,8 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
 
         //North Indicator for minimap
          sf::ConvexShape triangleN;
+       
+       
          triangleN.setPointCount(3);
          triangleN.setPoint(0,sf::Vector2f(mapSizePx/2.0f - 50.0f,-3.0f));
          triangleN.setPoint(1, sf::Vector2f(mapSizePx/2.0f, - 50.0f));
@@ -480,14 +521,26 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
   
 
 
+    this->game->map.renderMiniMap(this->game->window, minimapView, this->game->player.getPosition(), this->game->player.getAngle());
+
+    sf::CircleShape playerIcon(6, 3);
+    playerIcon.setOrigin(6, 6);
+    playerIcon.setPosition(this->game->player.getPosition());
+    playerIcon.setFillColor(sf::Color::Red);
+    float totalRotationDeg = playerAngleDeg - initialRotationDeg;
+    playerIcon.setRotation(totalRotationDeg);
+    this->game->window.setView(minimapView);
+    this->game->window.draw(playerIcon);
+
+    this->game->window.setView(this->game->window.getDefaultView());
     return;
 }
 
+
 void GameStateEditor::update(const float dt) //If something needs to be updated based on dt, then go here
 {
-
-   moveSpeed = 128.f * dt;   // movement speed
-  this->game->player.update(dt);
+    moveSpeed = 100.f * dt;   // movement speed
+    this->game->player.update(dt);
     return;
 }
 
@@ -495,17 +548,17 @@ void GameStateEditor::handleInput() //Inputs go here
 {
     sf::Event event;
  
-    while(this->game->window.pollEvent(event))
+    while (this->game->window.pollEvent(event))
     {
-        switch(event.type)
+        switch (event.type)
         {
-            /* Close the window */
+            // Close the window
             case sf::Event::Closed:
             {
                 this->game->window.close();
                 break;
             }
-            /* Resize the window */
+            // Resize the window 
             case sf::Event::Resized:
             {
                 gameView.setSize(event.size.width, event.size.height);
@@ -520,47 +573,44 @@ void GameStateEditor::handleInput() //Inputs go here
         }
     }
     
-        // Foward movement
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            this->game->player.moveForward(moveSpeed, this->game->map); // collisions later
-        }
+    // Foward movement
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+        this->game->player.moveForward(moveSpeed, this->game->map);
+    }
 
-        // Backward movement
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            this->game->player.moveBackward(moveSpeed, this->game->map);
-        }
+    // Backward movement
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+        this->game->player.moveBackward(moveSpeed, this->game->map);
+    }
 
-        
-        static bool leftPressed = false;
-        static bool rightPressed = false;
-        
-        // Turn left
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            if (!leftPressed) {
-                this->game->player.turnLeft();
-                leftPressed = true;
-            }
-        } else {
-            leftPressed = false;
-        }
+    static bool leftPressed = false;
+    static bool rightPressed = false;
 
-        // Turn right
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            if (!rightPressed) {
-             this->game->player.turnRight();
-                rightPressed = true;
-            }
-        } else {
-            rightPressed = false;
+    // Turn left
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+        if (!leftPressed) {
+            this->game->player.turnLeft();
+            leftPressed = true;
         }
-                
- 
+    } else {
+        leftPressed = false;
+    }
+
+    // Turn right
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+        if (!rightPressed) {
+            this->game->player.turnRight();
+            rightPressed = true;
+        }
+    } else {
+        rightPressed = false;
+    }
+
     return;
 }
 
 GameStateEditor::GameStateEditor(Game* game) //This is a constructor
 {
-
     this->game = game;
     sf::Vector2f pos = sf::Vector2f(this->game->window.getSize());
     this->guiView.setSize(pos);
@@ -570,4 +620,13 @@ GameStateEditor::GameStateEditor(Game* game) //This is a constructor
     this->gameView.setCenter(pos);
 
     moveSpeed = 0.f;
+
+    // Load texture once
+    wallTexture.loadFromFile("assets/wall_texture.jpg");
+    wallTexture.setSmooth(false);   // prevents blur
+    wallTexture.setRepeated(true);
+    wallTexture.generateMipmap();   // improves close-up detail
+    wallImage = wallTexture.copyToImage(); // for pixel-level access
+    textureWidth = wallImage.getSize().x;
+    textureHeight = wallImage.getSize().y;
 }
