@@ -71,13 +71,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
     
         while (hit == 0 && stepsTaken < maxSteps) {
             stepsTaken++;
-    
-            // Bounds check
-            if (mapX < 0 || mapX >= mapWidth || mapY < 0 || mapY >= mapHeight) {
-                hit = 1;
-                break;
-            }
-    
+        
             if (sideDistX < sideDistY) {
                 sideDistX += deltaDistX;
                 mapX += stepX;
@@ -87,32 +81,18 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
                 mapY += stepY;
                 side = 1;
             }
-            if (rayDirY < 0) {
-                stepY = -1;
-                sideDistY = (rayY - mapY) * deltaDistY;
-            } else {
-                stepY = 1;
-                sideDistY = (mapY + 1.0f - rayY) * deltaDistY;
+        
+            // Check for wall hit
+            if (this->game->map.isWall(mapX, mapY) || this->game->map.isDoor(mapX, mapY))
+                hit = 1;
+        
+            // Bounds check
+            if (mapX < 0 || mapX >= mapWidth || mapY < 0 || mapY >= mapHeight) {
+                hit = 1;
+                break;
             }
-            
-            // DDA loop - ray marching
-            while (hit == 0) {
-                if (sideDistX < sideDistY) {
-                    sideDistX += deltaDistX;
-                    mapX += stepX;
-                    side = 0;
-                } else {
-                    sideDistY += deltaDistY;
-                    mapY += stepY;
-                    side = 1;
-                }
-                if (this->game->map.isDoor(mapX,mapY)) hit = 1;
-                if (this->game->map.isWall(mapX, mapY)) hit = 1;
-                
-            }
-            
-    
         }
+        
     
         // Calculate perpendicular wall distance (fish-eye correction)
         float perpWallDist = (side == 0)
