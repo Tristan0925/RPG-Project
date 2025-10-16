@@ -101,6 +101,7 @@ void Player::tryMove(sf::Vector2f delta, const Map& map) {
     if (!map.isWall(gridX, gridY)) {
         position = newPos;
     }
+    // if hitting door, load door gamestate 
 }
 
 

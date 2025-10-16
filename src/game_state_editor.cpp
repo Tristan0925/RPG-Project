@@ -124,10 +124,12 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
             wallX = rayX + perpWallDist * rayDirX;
         wallX -= std::floor(wallX);
 
+        
+     
         int texX = static_cast<int>(wallX * static_cast<float>(textureWidth));
         if (side == 0 && rayDirX > 0) texX = textureWidth - texX - 1;
         if (side == 1 && rayDirY < 0) texX = textureWidth - texX - 1;
-
+         
         // Texture step per screen pixel (for mapping)
         float step = 1.0f * textureHeight / lineHeight;
         float texStart = (drawStart - screenHeight / 2 + lineHeight / 2) * step;
@@ -143,11 +145,10 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         column[3].position = sf::Vector2f(x, drawEnd);
 
         // Correct vertical mapping (no stretching)
-        column[0].texCoords = sf::Vector2f(texX, texStart);
-        column[1].texCoords = sf::Vector2f(texX + 1, texStart);
-        column[2].texCoords = sf::Vector2f(texX + 1, texEnd);
-        column[3].texCoords = sf::Vector2f(texX, texEnd);
-
+         column[0].texCoords = sf::Vector2f(texX, texStart);
+         column[1].texCoords = sf::Vector2f(texX + 1, texStart);
+         column[2].texCoords = sf::Vector2f(texX + 1, texEnd);
+         column[3].texCoords = sf::Vector2f(texX, texEnd);
         // Shading for Y-sides
         sf::Color tint(255, 255, 255);
         if (side == 1) {
@@ -158,8 +159,11 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         for (int v = 0; v < 4; ++v)
             column[v].color = tint;
 
-        // Draw this vertical slice
+        // Draw this vertical slice, tex is dependent on door or not door
+     if (this->game->map.isDoor(mapX,mapY) == 0){
         this->game->window.draw(column, &wallTexture);
+     }
+     else this->game->window.draw(column, &doorTexture); 
 
     }
        // Initial rotation offset (since the player spawns looking East)
@@ -601,12 +605,16 @@ GameStateEditor::GameStateEditor(Game* game) //This is a constructor
 
     moveSpeed = 0.f;
 
-    // Load texture once
+    // Load textures once
+    doorTexture.loadFromFile("assets/door_texture.png");
+    doorTexture.setSmooth(false);
+    doorTexture.generateMipmap();
+    doorImage = wallTexture.copyToImage();
     wallTexture.loadFromFile("assets/wall_texture.jpg");
     wallTexture.setSmooth(false);   // prevents blur
     wallTexture.setRepeated(true);
     wallTexture.generateMipmap();   // improves close-up detail
     wallImage = wallTexture.copyToImage(); // for pixel-level access
     textureWidth = wallImage.getSize().x;
-    textureHeight = wallImage.getSize().y;
+    textureHeight = wallImage.getSize().y; //dont change these since tex are the same size
 }
