@@ -23,7 +23,7 @@ class GameStateEditor : public GameState
     sf::Image wallImage;
     int textureWidth;
     int textureHeight;
-
+    void enterDoor(int x, int y);
 
     public:
  

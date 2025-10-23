@@ -9,6 +9,8 @@ Handles keyboard input and updates the player's position in the world.
 #include "Map.hpp"
 #include <SFML/Window/Keyboard.hpp>
 #include <cmath>
+#include "game_state_door.hpp"
+
 
 
 // normalize angle helper
@@ -86,8 +88,6 @@ float Player::getAngle() const {
 }
 
 
-
-
 // Player collision detection
 void Player::tryMove(sf::Vector2f delta, const Map& map) {
     
@@ -101,7 +101,10 @@ void Player::tryMove(sf::Vector2f delta, const Map& map) {
     if (!map.isWall(gridX, gridY)) {
         position = newPos;
     }
-    // if hitting door, load door gamestate 
+    if (map.isDoor(gridX,gridY)){
+        inDoor = 1;
+        position = position - delta;
+    }
 }
 
 

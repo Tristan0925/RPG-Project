@@ -43,6 +43,7 @@ class Player {
         std::string skills[7];
 
     public:
+        int inDoor;
         Player(); // Constructor
 
         Player(const sf::Vector2f& spawnPos);

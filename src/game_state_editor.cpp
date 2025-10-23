@@ -4,6 +4,7 @@
 #include <cmath>
 #include "game_state.hpp"
 #include "game_state_editor.hpp"
+#include "game_state_door.hpp"
 #include "iostream"
 #include "algorithm"
 
@@ -520,11 +521,21 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
     return;
 }
 
+void GameStateEditor::enterDoor(int x, int y){
+    this->game->pushState(std::make_unique<GameStateDoor>(this->game, x, y));
+    return;
+}
 
 void GameStateEditor::update(const float dt) //If something needs to be updated based on dt, then go here
 {
     moveSpeed = 100.f * dt;   // movement speed
     this->game->player.update(dt);
+    if (this->game->player.inDoor){
+        int x = static_cast<int>(this->game->player.getPosition().x / 64);
+        int y = static_cast<int>(this->game->player.getPosition().y / 64);
+        enterDoor(x,y);
+        this->game->player.inDoor = 0;
+    }
     return;
 }
 

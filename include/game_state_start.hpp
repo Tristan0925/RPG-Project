@@ -8,10 +8,8 @@
 class GameStateStart : public GameState
 {
     private:
-
     sf::View view;
     sf::Text title;
-    
     Button startgame;
     Button settings;
     Button endgame;
