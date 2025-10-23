@@ -5,12 +5,15 @@
 #include "game_state.hpp"
 #include <iostream>
 
+
+
 void GameStateDoor::draw(const float dt)
 {
-   
- 
+    this->game->window.setView(this->view);
+ // long list of if elses which tell what to put in each room
+   this->game->window.draw(treasureSprite);
    this->game->window.draw(fader);
-  
+   
   
     
 }
@@ -19,25 +22,56 @@ void GameStateDoor::update(const float dt)
 {
 transparency -= static_cast<int>(100 * dt);
 if (transparency < 0) transparency = 0;
-   fader.setFillColor(sf::Color(255,0,0,static_cast<sf::Uint8>(transparency)));
+   fader.setFillColor(sf::Color(0,0,0,static_cast<sf::Uint8>(transparency)));
 }
 
 void GameStateDoor::handleInput()
 {
     sf::Event event;
-    while(this->game->window.pollEvent(event))
-    {}
-    return;
+  while (this->game->window.pollEvent(event)) //REMEMBER TO FIX THIS WHEN MERGING PAUSE MENU
+    {
+        switch (event.type)
+        {
+            // Close the window
+            case sf::Event::Closed:
+            {
+                this->game->window.close();
+                break;
+            }
+            // Resize the window 
+            case sf::Event::Resized:
+            {
+                this->view.setSize(static_cast<float>(event.size.width), static_cast<float>(event.size.height)); //resize window to new window size
+                this->view.setCenter(this->view.getSize() / 2.f); //center view 
+                this->game->window.setView(this->view); //updates view
+                break;
+            }
+            default: break;
+        }
+    }
 }
 
 GameStateDoor::GameStateDoor(Game* game, int x, int y)
 
 {
     this->game = game;
+    sf::Vector2f pos = sf::Vector2f(this->game->window.getSize());
+    this->view.setSize(pos);
+    pos *= 0.5f;
+    this->view.setCenter(pos);
+    
+
+    this->game = game;
     transparency = 255;
-  //create rooms based on x and y coords. 
-   fader.setSize(sf::Vector2f(1920,1080));
-   fader.setFillColor(sf::Color(255,0,0,static_cast<sf::Uint8>(transparency)));
+    fader.setSize(sf::Vector2f(1920,1080));
+    fader.setFillColor(sf::Color(0,0,0,static_cast<sf::Uint8>(transparency)));
+    if (!treasure.loadFromFile("./assets/treasure.jpg")){
+        printf("Error loading treasure.jpg");
+    }
+    treasureSprite.setTexture(treasure);
+    treasureSprite.setPosition(960,540);
+    
+   
   
 }
 

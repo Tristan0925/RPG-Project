@@ -8,17 +8,18 @@
 class GameStateDoor : public GameState
 {
     private: 
-    // this should have 3 sprites for funny characters, textbox, text, 
+    // this should have textbox, text, etc.
+    sf::View view;
     sf::RectangleShape fader;
-    sf::Image doorRoomImage;
-    sf::Text speaker;
+    sf::Sprite treasureSprite;
+    sf::Texture treasure; 
     sf::Text textInTextbox;
     sf::RectangleShape Textbox;
-    sf::RectangleShape speakerBackground;
     int transparency;
     //place item here
 
-
+    void drawTreasureRoom(); //i guess put item in the args
+    void drawBossBattle(); //WIP
     void backToGame();
     
     public:

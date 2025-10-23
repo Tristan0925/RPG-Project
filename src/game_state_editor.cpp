@@ -541,7 +541,7 @@ void GameStateEditor::update(const float dt) //If something needs to be updated 
         transparency += static_cast<int>(100 * dt);
 
         if (transparency > 255) transparency = 255;
-        fader.setFillColor(sf::Color(255,0,0,static_cast<sf::Uint8>(transparency)));
+        fader.setFillColor(sf::Color(0,0,0,static_cast<sf::Uint8>(transparency)));
         if (transparency == 255){
         enterDoor(x,y);
         this->game->player.inDoor = 0;
