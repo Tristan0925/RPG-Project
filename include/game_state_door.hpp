@@ -15,6 +15,7 @@ class GameStateDoor : public GameState
     sf::Text textInTextbox;
     sf::RectangleShape Textbox;
     sf::RectangleShape speakerBackground;
+    int transparency;
     //place item here
 
 
