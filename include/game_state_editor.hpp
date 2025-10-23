@@ -8,7 +8,9 @@
 class GameStateEditor : public GameState
 {
     private:
- 
+    int isPaused = 0;
+    int transparency;
+    sf::RectangleShape fader;
     sf::View gameView;
     sf::View guiView;
 
