@@ -1,5 +1,6 @@
 #include "Button.hpp"
 #include "game.hpp"
+#include "iostream"
 //later include a thing for audio params
 Button::Button(std::string words, sf::Vector2f location, int size, Game* game, sf::Color color): game(game) {
 
@@ -17,27 +18,22 @@ const sf::RectangleShape& Button::getUnderline() const{
     return underline;
 }
 
-bool Button::wasClicked(sf::RenderWindow& window){
+bool Button::wasClicked(sf::RenderWindow& window) {
+    sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
+    sf::Vector2f mouseWorld = window.mapPixelToCoords(mousePixel); 
+
     sf::FloatRect bounds = text.getGlobalBounds();
-    sf::Vector2i position = sf::Mouse::getPosition(window);
-    sf::Vector2f positionf(static_cast<float>(position.x), static_cast<float>(position.y));
-
-    if (bounds.contains(positionf)){
-        return true;
-    }
-return false;
+    return bounds.contains(mouseWorld);
 }
 
-bool Button::isHovered(sf::RenderWindow& window){ 
-    sf::FloatRect bounds = text.getGlobalBounds(); //i know these do the same thing, i am just using them for different purposes for the sake of clarity
-    sf::Vector2i position = sf::Mouse::getPosition(window);
-    sf::Vector2f positionf(static_cast<float>(position.x), static_cast<float>(position.y));
+bool Button::isHovered(sf::RenderWindow& window) {
+    sf::Vector2i mousePixel = sf::Mouse::getPosition(window); //i know these do the same thing, i am just using them for different purposes for the sake of clarity
+    sf::Vector2f mouseWorld = window.mapPixelToCoords(mousePixel); 
 
-     if (bounds.contains(positionf)){
-        return true;
-    }
-return false;
+    sf::FloatRect bounds = text.getGlobalBounds();
+    return bounds.contains(mouseWorld);
 }
+
 
 void Button::changePosition(float posx, float posy){
     text.setPosition(posx, posy);
