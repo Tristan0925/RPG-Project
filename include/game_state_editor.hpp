@@ -32,6 +32,8 @@ class GameStateEditor : public GameState
     int textureWidth;
     int textureHeight;
 
+    bool requestQuitToMenu = false;
+    
 
     public:
  

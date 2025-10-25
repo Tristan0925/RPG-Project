@@ -17,6 +17,10 @@ class GameStateStart : public GameState
     Button endgame;
     sf::RectangleShape underline;
 
+    sf::Vector2f defaultTitlePos;
+    sf::Vector2f defaultTitleScale;
+
+
     void loadgame();
 
     public:

@@ -522,6 +522,8 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
 
     // Pause menu
     if (isPaused) {
+        this->game->window.setView(this->game->window.getDefaultView());
+
         sf::RectangleShape overlay(sf::Vector2f(this->game->window.getSize()));
         overlay.setFillColor(sf::Color(0, 0, 0, 150)); // semi-transparent black
         this->game->window.draw(overlay);
@@ -581,14 +583,11 @@ void GameStateEditor::handleInput() // Inputs go here
         {
             // Close the window
             case sf::Event::Closed:
-            {
                 this->game->window.close();
                 break;
-            }
 
             // Resize the window 
             case sf::Event::Resized:
-            {
                 gameView.setSize(event.size.width, event.size.height);
                 guiView.setSize(event.size.width, event.size.height);
                 this->game->background.setPosition(
@@ -599,18 +598,15 @@ void GameStateEditor::handleInput() // Inputs go here
                     float(event.size.height) / float(this->game->background.getTexture()->getSize().y)
                 );
                 break;
-            }
 
             // Toggle pause
             case sf::Event::KeyPressed:
-            {
                 if (event.key.code == sf::Keyboard::Escape)
                 {
                     isPaused = !isPaused;
                     std::cout << "Paused: " << std::boolalpha << isPaused << std::endl;
                 }
                 break;
-            }
 
             default:
                 break;
@@ -635,17 +631,20 @@ void GameStateEditor::handleInput() // Inputs go here
                 }
                 else if (quitButton.wasClicked(this->game->window)) {
                     std::cout << "Quit clicked\n";
-                    this->game->popState(); // return to main menu
-                    if (this->game->states.empty()) {
-                        // If no main menu exists (e.g., started directly in editor), recreate it
-                        this->game->pushState(std::make_unique<GameStateStart>(this->game));
-                    }
+                    requestQuitToMenu = true; // just mark it, don’t change state here
+                    return; // stop further input for this frame
                 }
             }
 
-            // Important: skip gameplay input while paused
-            return;
+            // Skip gameplay input while paused
+            // just let the while loop finish naturally
         }
+    }
+
+    if (requestQuitToMenu) {
+        std::cout << "Changing to main menu...\n";
+        this->game->changeState(std::make_unique<GameStateStart>(this->game));
+        return; // stop further input for this frame
     }
 
     // Forward movement
@@ -683,6 +682,7 @@ void GameStateEditor::handleInput() // Inputs go here
 
     return;
 }
+
 
 
 GameStateEditor::GameStateEditor(Game* game) //This is a constructor

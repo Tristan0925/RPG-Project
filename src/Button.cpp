@@ -19,20 +19,37 @@ const sf::RectangleShape& Button::getUnderline() const{
 }
 
 bool Button::wasClicked(sf::RenderWindow& window) {
-    sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
-    sf::Vector2f mouseWorld = window.mapPixelToCoords(mousePixel); 
+    // Save the current view
+    sf::View oldView = window.getView();
 
+    // Switch to default (GUI) view so clicks line up with screen-space
+    window.setView(window.getDefaultView());
+
+    // Get mouse position in screen coordinates
+    sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
+    sf::Vector2f mouseScreen = window.mapPixelToCoords(mousePixel);
+
+    // Restore the old view
+    window.setView(oldView);
+
+    // Check if the mouse is inside the text bounds
     sf::FloatRect bounds = text.getGlobalBounds();
-    return bounds.contains(mouseWorld);
+    return bounds.contains(mouseScreen);
 }
 
 bool Button::isHovered(sf::RenderWindow& window) {
-    sf::Vector2i mousePixel = sf::Mouse::getPosition(window); //i know these do the same thing, i am just using them for different purposes for the sake of clarity
-    sf::Vector2f mouseWorld = window.mapPixelToCoords(mousePixel); 
+    sf::View oldView = window.getView();
+    window.setView(window.getDefaultView());
+
+    sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
+    sf::Vector2f mouseScreen = window.mapPixelToCoords(mousePixel);
+
+    window.setView(oldView);
 
     sf::FloatRect bounds = text.getGlobalBounds();
-    return bounds.contains(mouseWorld);
+    return bounds.contains(mouseScreen);
 }
+
 
 
 void Button::changePosition(float posx, float posy){
