@@ -13,7 +13,11 @@ class GameStateEditor : public GameState
  
     sf::View gameView;
     sf::View guiView;
-    
+
+
+    sf::Text saveText;
+    sf::Clock saveClock;
+    bool showSaveText = false;
     bool isPaused = false;
     float moveSpeed;
     Map map;

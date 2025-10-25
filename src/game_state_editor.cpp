@@ -561,7 +561,14 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
             this->game->window.draw(loadButton.getUnderline());    
         if (quitButton.isHovered(this->game->window))
             this->game->window.draw(quitButton.getUnderline());
-    }    
+    }
+    
+    if (showSaveText) {
+        this->game->window.draw(saveText);
+        if (saveClock.getElapsedTime().asSeconds() > 2.f) { // show for 2 seconds
+            showSaveText = false;
+        }
+    }
     return;
 }
 
@@ -632,6 +639,8 @@ void GameStateEditor::handleInput() // Inputs go here
                 else if (saveButton.wasClicked(this->game->window)) {
                     this->game->player.saveToFile("save.json");
                     std::cout << "Game saved!" << std::endl;
+                    showSaveText = true;
+                    saveClock.restart();
                 }
                 else if (loadButton.wasClicked(this->game->window)) {
                     this->game->player.loadFromFile("save.json");
@@ -724,7 +733,12 @@ GameStateEditor::GameStateEditor(Game* game) //This is a constructor
     textureWidth = wallImage.getSize().x;
     textureHeight = wallImage.getSize().y; //dont change these since tex are the same size
 
-    
+    saveText.setFont(this->game->font);
+    saveText.setCharacterSize(32);
+    saveText.setFillColor(sf::Color::White);
+    saveText.setString("Game Saved!");
+    saveText.setPosition(50.f, 400.f); 
+
     resumeButton.changePosition(50.f, 190.f);
     settingsButton.changePosition(50.f, 230.f);
     saveButton.changePosition(50.f, 270.f);
