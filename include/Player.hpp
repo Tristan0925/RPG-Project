@@ -30,21 +30,13 @@ class Player {
         // Attack + every affinity + almighty. I think the battle_game_state should figure out damage #'s and stuff.
         Item inventory[2]; // Only 2 items in game: Dragon Morsel (healing) and Energizing Moss (mana restoration) 
     protected:
-        int HP;
-        int maxHP;
-        int MP;
-        int maxMP;
-        int STR;
-        int VIT;
-        int AGI;
-        int LU;
-        int XP;
-        int LVL;
+        std::string name; //remember to add a change name function so when we start the game, we prompt to change the name
+        int HP, maxHP, MP, maxMP, STR, VIT, AGI, LU, XP, LVL;
         std::map<std::string, int> affinities; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [RESIST(0.5)/NEUTRAL(1.0)/WEAK(1.5)]) If resist, x0.5 dmg, If weak, 1.5x dmg.
         std::string skills[7];
     public:
         Player(); // Constructor
-
+        Player(std::string name, int HP, int maxHP, int MP, int maxMP, int STR, int VIT, int AGI, int LU, int XP, int LVL); //parameterized for NPCs as they inherit from player
         Player(const sf::Vector2f& spawnPos);
 
         void move(sf::Vector2f delta); // Handle input and updates the position

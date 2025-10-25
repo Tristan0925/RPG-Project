@@ -19,9 +19,7 @@ void addToQuantity(int amount);
 private:
 std::string description;
 std::string name;
-int healAmount; 
-int manaAmount;
-int quantity;
+int healAmount, manaAmount, quantity;
 
 };
 

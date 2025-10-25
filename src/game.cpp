@@ -9,7 +9,7 @@
 #include "Player.hpp"
 #include "Map.hpp"
 
-void Game::loadTextures()
+void Game::loadTextures() // load textures used everywhere
 {
     texmgr.loadTexture("background", "./assets/mainmenu.jpeg");
     texmgr.loadTexture("playerSprite", "./assets/player.png");
@@ -49,7 +49,7 @@ GameState* Game::peekState() //check game state
 }
 
 
-void Game::gameLoop() //things that need to exist across gamestates go here
+void Game::gameLoop() //handles the gameloop
 {
    sf::Clock clock;
 
@@ -71,7 +71,11 @@ void Game::gameLoop() //things that need to exist across gamestates go here
 }
 
 Game::Game() : hpItem("Dragon Morsel", "Makes you feel like something, but you can't put your finger on it. Heals 100HP.", 100, 0, 0), 
-manaItem("Energizing Moss", "Some moss you found in a chest. Not safe for human consumption, but somehow restores 100MP.", 0, 100, 0) //initialize all variables which are used throughout the game states here 
+manaItem("Energizing Moss", "Some moss you found in a chest. Not safe for human consumption, but somehow restores 100MP.", 0, 100, 0),
+pmember2("Maya",75, 75, 120, 120, 10, 20, 20, 20, 0, 11), //magic-y guy
+pmember3("Lisa", 125, 125, 75, 75, 15, 25, 15, 15, 0, 12), // punchy guy
+pmember4("Eikichi", 100, 100, 90, 90, 10, 10, 10, 10, 0, 10 ) //healer guy
+// init all variables which are used throughout the game states here 
 {
    this->loadTextures();
    this->window.create(sf::VideoMode(1920, 1080), "Untitled RPG Project"); // create a window

@@ -20,12 +20,13 @@ class Game
 
 
     public:
+    Item hpItem;
+    Item manaItem;
     Player player;
     NPC pmember2;
     NPC pmember3;
     NPC pmember4;
-    Item hpItem;
-    Item manaItem;
+  
 
 
     Map map;
