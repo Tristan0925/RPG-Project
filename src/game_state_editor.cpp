@@ -536,7 +536,7 @@ void GameStateEditor::update(const float dt) //If something needs to be updated 
     if (this->game->player.inDoor){
         int x = static_cast<int>(this->game->player.getPosition().x / 64);
         int y = static_cast<int>(this->game->player.getPosition().y / 64);
-        isPaused = 1;
+        doorState = 1;
         //play sound
         transparency += static_cast<int>(100 * dt);
 
@@ -545,7 +545,7 @@ void GameStateEditor::update(const float dt) //If something needs to be updated 
         if (transparency == 255){
         enterDoor(x,y);
         this->game->player.inDoor = 0;
-        isPaused = 0;
+        doorState = 0;
         }
     }
     return;
@@ -581,12 +581,12 @@ void GameStateEditor::handleInput() //Inputs go here
     }
     
     // Foward movement
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isPaused) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !doorState) {
         this->game->player.moveForward(moveSpeed, this->game->map);
     }
 
     // Backward movement
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S ) && !isPaused) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S ) && !doorState) {
         this->game->player.moveBackward(moveSpeed, this->game->map);
     }
 
@@ -594,7 +594,7 @@ void GameStateEditor::handleInput() //Inputs go here
     static bool rightPressed = false;
 
     // Turn left
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !isPaused) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !doorState) {
         if (!leftPressed) {
             this->game->player.turnLeft();
             leftPressed = true;
@@ -604,7 +604,7 @@ void GameStateEditor::handleInput() //Inputs go here
     }
 
     // Turn right
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && !isPaused) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && !doorState) {
         if (!rightPressed) {
             this->game->player.turnRight();
             rightPressed = true;

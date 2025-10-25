@@ -4,6 +4,7 @@
 #include "game_state_door.hpp"
 #include "game_state.hpp"
 #include <iostream>
+#include <string>
 
 
 
@@ -11,7 +12,29 @@ void GameStateDoor::draw(const float dt)
 {
     this->game->window.setView(this->view);
  // long list of if elses which tell what to put in each room
+//  if (x,y){
+//     textInTextbox.setString("You sense a terrifying presence ahead. Proceed?");
+//     this->game->window.draw(Textbox);
+//    this->game->window.draw(textInTextbox);
+//  }
+//  else
+ // basic treasure thing
+ //IDEA: HAVE AN ARRAY OF ALL THE KNOWN DOOR SPOTS (EXCEPT THE BOSS ROOM), 
    this->game->window.draw(treasureSprite);
+   textInTextbox.setString("- You entered the room and found a chest. In the chest contained ITEM.");
+   this->game->window.draw(Textbox);
+   this->game->window.draw(textInTextbox);
+
+ 
+
+
+
+
+
+
+
+
+
    this->game->window.draw(fader);
    
   
@@ -70,7 +93,14 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
     }
     treasureSprite.setTexture(treasure);
     treasureSprite.setPosition(960,540);
-    
+    textInTextbox.setFont(this->game->font);
+    textInTextbox.setCharacterSize(40);
+    Textbox.setOutlineColor(sf::Color::Red);
+    Textbox.setOutlineThickness(2.0f);
+    Textbox.setFillColor(sf::Color::Black);
+    Textbox.setSize(sf::Vector2(1720.0f,200.0f));
+    Textbox.setPosition(100,830);
+    textInTextbox.setPosition(120,830);
    
   
 }
