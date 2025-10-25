@@ -13,6 +13,7 @@ Like having modules in python to handle classes and then you import the files yo
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
+#include <array>
 #include <map>
 class Map;
 
@@ -34,7 +35,7 @@ struct PlayerData {
     int MONEY;
     std::map<std::string, int> inventory;
     std::map<std::string, int> affinities;
-    std::string skills[7];
+    std::array<std::string, 7> skills;
 };
 
 class Player {
@@ -60,7 +61,7 @@ class Player {
         int XP;
         int LVL;
         std::map<std::string, int> affinities; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [RESIST(-1)/NEUTRAL(0)/WEAK(1)]) If resist, x0.5 dmg, If weak, 1.5x dmg.
-        std::string skills[7];
+        std::array<std::string, 7> skills;
 
     public:
         Player(); // Constructor
@@ -96,6 +97,7 @@ class Player {
         void setData(const PlayerData&);  // Restore player state from snapshot
         bool saveToFile(const std::string& filename) const;
         bool loadFromFile(const std::string& filename);
+        void setDefault();
 
 };
 

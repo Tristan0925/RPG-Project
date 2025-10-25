@@ -13,118 +13,141 @@ void GameStateStart::draw(const float dt)
     this->game->window.setView(this->game->window.getDefaultView());
     this->game->window.clear(sf::Color::Black);
     this->game->window.draw(this->game->background);
+
     this->game->window.draw(title);
-    startgame.draw(this->game->window);
-    loadButton.draw(this->game->window);
-    settings.draw(this->game->window);
-    endgame.draw(this->game->window);
-    
-    if(startgame.isHovered(this->game->window)){
-        this->game->window.draw(startgame.getUnderline());
-    }
 
-    if(loadButton.isHovered(this->game->window)){
-        this->game->window.draw(loadButton.getUnderline());
-    }
+    if (!slotMenuActive) { // main menu buttons
+        startgame.draw(this->game->window);
+        loadButton.draw(this->game->window);
+        settings.draw(this->game->window);
+        endgame.draw(this->game->window);
 
-    if(settings.isHovered(this->game->window)){
-        this->game->window.draw(settings.getUnderline());
-    }
+        if(startgame.isHovered(this->game->window)) this->game->window.draw(startgame.getUnderline());
+        if(loadButton.isHovered(this->game->window)) this->game->window.draw(loadButton.getUnderline());
+        if(settings.isHovered(this->game->window)) this->game->window.draw(settings.getUnderline());
+        if(endgame.isHovered(this->game->window)) this->game->window.draw(endgame.getUnderline());
+    } 
+    else { // slot menu buttons
+        slot1.draw(this->game->window);
+        slot2.draw(this->game->window);
+        slot3.draw(this->game->window);
+        backButton.draw(this->game->window);
 
-    if(endgame.isHovered(this->game->window)){
-        this->game->window.draw(endgame.getUnderline());
+        if(slot1.isHovered(this->game->window)) this->game->window.draw(slot1.getUnderline());
+        if(slot2.isHovered(this->game->window)) this->game->window.draw(slot2.getUnderline());
+        if(slot3.isHovered(this->game->window)) this->game->window.draw(slot3.getUnderline());
+        if(backButton.isHovered(this->game->window)) this->game->window.draw(backButton.getUnderline());
     }
-
     return;
 }
 
 void GameStateStart::update(const float dt)
 {
-
+    // Could add animations here later
 }
 
 void GameStateStart::handleInput()
 {
     sf::Event event;
-    while(this->game->window.pollEvent(event))
-    {
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
-        {
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
-                if (startgame.wasClicked(this->game->window)){
-                    this->loadgame();
+    while(this->game->window.pollEvent(event)) {
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+
+            if (!slotMenuActive) { // main menu
+                if (startgame.wasClicked(this->game->window)) {
+                    this->game->player.setDefault();
+                    requestStartGame = true;
                 }
-            }
 
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
                 if (loadButton.wasClicked(this->game->window)) {
-                    this->game->player.loadFromFile("save.json");
-                    this->loadgame(); // load into the editor/game world
-                }            
-            }    
+                    slotMenuActive = true; // show the save/load slot menu
+                }
 
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
-                if (settings.wasClicked(this->game->window)){
+                if (settings.wasClicked(this->game->window)) {
                     std::cout << "Whenever we have settings to change, put it here." << std::endl;
                 }
-            }
 
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){ //for some reason, putting elseifs causes buttons to not work
-                if (endgame.wasClicked(this->game->window)){
+                if (endgame.wasClicked(this->game->window)) {
                     this->game->window.close();
                 }
             }
+            else { // slot menu active
+                if (slot1.wasClicked(this->game->window)) {
+                    this->game->player.loadFromFile("save1.json");
+                    this->game->changeState(std::make_unique<GameStateEditor>(this->game));
+                }
+                if (slot2.wasClicked(this->game->window)) {
+                    this->game->player.loadFromFile("save2.json");
+                    this->game->changeState(std::make_unique<GameStateEditor>(this->game));
+                }
+                if (slot3.wasClicked(this->game->window)) {
+                    this->game->player.loadFromFile("save3.json");
+                    this->game->changeState(std::make_unique<GameStateEditor>(this->game));
+                }
+                if (backButton.wasClicked(this->game->window)) {
+                    slotMenuActive = false; // go back to main menu
+                }
+            }
         }
+        
 
+        // Close or resize window
         switch(event.type)
         {
             case sf::Event::Closed:
-            {
                 game->window.close();
                 break;
-            }
 
             case sf::Event::Resized:
             {
-                this->view.setSize(static_cast<float>(event.size.width), static_cast<float>(event.size.height)); //resize window to new window size
-                this->view.setCenter(this->view.getSize() / 2.f); //center view 
-                this->game->window.setView(this->view); //updates view
-                this->game->background.setPosition(0.f, 0.f); //set background img to the top left
+                this->view.setSize(static_cast<float>(event.size.width), static_cast<float>(event.size.height));
+                this->view.setCenter(this->view.getSize() / 2.f);
+                this->game->window.setView(this->view);
+                this->game->background.setPosition(0.f, 0.f);
                 this->game->background.setScale(
                     float(event.size.width) / this->game->background.getTexture()->getSize().x,
                     float(event.size.height) / this->game->background.getTexture()->getSize().y
-                ); //scale background to new window size
+                );
 
-                // Keep original positions relative to window size
-                float scaleRatio = (float(event.size.width) / this->game->background.getTexture()->getSize().x);
-
-                // Reposition and rescale title the same way as the buttons
+                // Scale & reposition main menu elements
+                float scaleRatio = float(event.size.width) / this->game->background.getTexture()->getSize().x;
                 title.setPosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1400.f * scaleRatio));
                 startgame.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1200.f * scaleRatio));
                 loadButton.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1100.f * scaleRatio));
                 settings.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1000.f * scaleRatio));
                 endgame.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (900.f * scaleRatio));
 
+                // Slot buttons
+                slot1.changePosition(800.f, 400.f);
+                slot2.changePosition(800.f, 500.f);
+                slot3.changePosition(800.f, 600.f);
+                backButton.changePosition(800.f, 700.f);
+
                 break;
             }
 
             case sf::Event::KeyPressed:
-            {
                 if(event.key.code == sf::Keyboard::Escape) this->game->window.close();
                 break;
-            }
 
             default: break;
         }
     }
-    return;
+    if (requestStartGame) {
+        this->game->changeState(std::make_unique<GameStateEditor>(this->game));
+        return; // stop further input for this frame
+    }
 }
+
 
 GameStateStart::GameStateStart(Game* game):
   startgame("Start Game", sf::Vector2f(0.f,0.f), 34, game),
   loadButton("Load Game", sf::Vector2f(0.f,0.f), 34, game), 
   settings("Settings", sf::Vector2f(0.f,0.f), 34, game),
-  endgame("End Game", sf::Vector2f(0.f,0.f), 34, game)
+  endgame("End Game", sf::Vector2f(0.f,0.f), 34, game),
+  slot1("Slot 1", sf::Vector2f(100.f, 200.f), 34, game),
+  slot2("Slot 2", sf::Vector2f(100.f, 250.f), 34, game),
+  slot3("Slot 3", sf::Vector2f(100.f, 300.f), 34, game),
+  backButton("Back", sf::Vector2f(100.f, 350.f), 34, game)
 {
     this->game = game;
     sf::Vector2f pos = sf::Vector2f(this->game->window.getSize());

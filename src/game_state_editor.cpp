@@ -9,6 +9,9 @@
 #include "Button.hpp"
 #include "game_state_start.hpp"
 
+const std::string saveFiles[3] = { "save1.json", "save2.json", "save3.json" };
+
+
 void GameStateEditor::draw(const float dt) //If you draw things, put them here
 {
     
@@ -528,39 +531,35 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         overlay.setFillColor(sf::Color(0, 0, 0, 150)); // semi-transparent black
         this->game->window.draw(overlay);
     
-        sf::Text pauseText;
-        pauseText.setFont(this->game->font);
-        pauseText.setCharacterSize(48);
-        pauseText.setFillColor(sf::Color::White);
-    
-        // Center the text
-        sf::FloatRect bounds = pauseText.getLocalBounds();
-        pauseText.setOrigin(bounds.width / 2, bounds.height / 2);
-        pauseText.setPosition(
-            this->game->window.getSize().x / 2.f,
-            this->game->window.getSize().y / 2.f
-        );
-    
-        this->game->window.draw(pauseText);
+        if (!slotMenuActive)
+        {
+            resumeButton.draw(this->game->window);
+            settingsButton.draw(this->game->window);
+            saveButton.draw(this->game->window);
+            loadButton.draw(this->game->window);
+            quitButton.draw(this->game->window);
 
-        // Draw buttons
-        resumeButton.draw(this->game->window);
-        settingsButton.draw(this->game->window);
-        saveButton.draw(this->game->window);
-        loadButton.draw(this->game->window);
-        quitButton.draw(this->game->window);
+            // Hover underline effect
+            if (resumeButton.isHovered(this->game->window)) this->game->window.draw(resumeButton.getUnderline());
+            if (settingsButton.isHovered(this->game->window)) this->game->window.draw(settingsButton.getUnderline());
+            if (saveButton.isHovered(this->game->window)) this->game->window.draw(saveButton.getUnderline());
+            if (loadButton.isHovered(this->game->window)) this->game->window.draw(loadButton.getUnderline());
+            if (quitButton.isHovered(this->game->window)) this->game->window.draw(quitButton.getUnderline());
+        }
+        else // slot menu active
+        {
+            // Draw slot buttons
+            slot1.draw(this->game->window);
+            slot2.draw(this->game->window);
+            slot3.draw(this->game->window);
+            backButton.draw(this->game->window);
 
-        // Hover underline effect
-        if (resumeButton.isHovered(this->game->window))
-            this->game->window.draw(resumeButton.getUnderline());
-        if (settingsButton.isHovered(this->game->window))
-            this->game->window.draw(settingsButton.getUnderline());
-        if (saveButton.isHovered(this->game->window))
-            this->game->window.draw(saveButton.getUnderline());
-        if (loadButton.isHovered(this->game->window))
-            this->game->window.draw(loadButton.getUnderline());    
-        if (quitButton.isHovered(this->game->window))
-            this->game->window.draw(quitButton.getUnderline());
+            // Hover underline effect for slots
+            if (slot1.isHovered(this->game->window)) this->game->window.draw(slot1.getUnderline());
+            if (slot2.isHovered(this->game->window)) this->game->window.draw(slot2.getUnderline());
+            if (slot3.isHovered(this->game->window)) this->game->window.draw(slot3.getUnderline());
+            if (backButton.isHovered(this->game->window)) this->game->window.draw(backButton.getUnderline());
+        }
     }
     
     if (showSaveText) {
@@ -586,17 +585,14 @@ void GameStateEditor::handleInput() // Inputs go here
 {
     sf::Event event;
 
-    // Poll all events from the window
     while (this->game->window.pollEvent(event))
     {
         switch (event.type)
         {
-            // Close the window
             case sf::Event::Closed:
                 this->game->window.close();
                 break;
 
-            // Resize the window 
             case sf::Event::Resized:
                 gameView.setSize(event.size.width, event.size.height);
                 guiView.setSize(event.size.width, event.size.height);
@@ -609,54 +605,83 @@ void GameStateEditor::handleInput() // Inputs go here
                 );
                 break;
 
-            // Toggle pause
             case sf::Event::KeyPressed:
                 if (event.key.code == sf::Keyboard::Escape)
                 {
-                    isPaused = !isPaused;
-                    std::cout << "Paused: " << std::boolalpha << isPaused << std::endl;
+                    if (slotMenuActive) {
+                        slotMenuActive = false;
+                        slotMenuMode = SlotMenuMode::None;
+                    } else {
+                        isPaused = !isPaused;
+                        std::cout << "Paused: " << std::boolalpha << isPaused << std::endl;
+                    }
                 }
                 break;
 
             default:
                 break;
-        } // end switch
+        }
 
         if (isPaused)
         {
-            // Only handle mouse clicks while paused
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
             {
-                std::cout << "Mouse click while paused\n";
-
-                if (resumeButton.wasClicked(this->game->window)) {
-                    std::cout << "Resume clicked\n";
-                    isPaused = false; // resume game
+                if (!slotMenuActive) // Normal pause menu buttons
+                {
+                    if (resumeButton.wasClicked(this->game->window)) {
+                        isPaused = false;
+                    } else if (settingsButton.wasClicked(this->game->window)) {
+                        std::cout << "Settings clicked (placeholder)\n";
+                    } else if (saveButton.wasClicked(this->game->window)) {
+                        slotMenuActive = true;
+                        slotMenuMode = SlotMenuMode::Save;
+                    } else if (loadButton.wasClicked(this->game->window)) {
+                        slotMenuActive = true;
+                        slotMenuMode = SlotMenuMode::Load;
+                    } else if (quitButton.wasClicked(this->game->window)) {
+                        requestQuitToMenu = true;
+                        return;
+                    }
                 }
-                else if (settingsButton.wasClicked(this->game->window)) {
-                    std::cout << "Settings clicked (placeholder)\n";
+                if (slotMenuActive && event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+                {
+                    Button* slots[3] = { &slot1, &slot2, &slot3 };
+                
+                    for (int i = 0; i < 3; ++i)
+                    {
+                        if (slots[i]->wasClicked(this->game->window))
+                        {
+                            if (slotMenuMode == SlotMenuMode::Save)
+                            {
+                                this->game->player.saveToFile(saveFiles[i]);
+                                showSaveText = true;
+                                saveClock.restart();
+                            }
+                            else if (slotMenuMode == SlotMenuMode::Load)
+                            {
+                                this->game->player.loadFromFile(saveFiles[i]);
+                            }
+                
+                            slotMenuActive = false;
+                            slotMenuMode = SlotMenuMode::None;
+                            return; // stop checking other slots
+                        }
+                    }
+                
+                    if (backButton.wasClicked(this->game->window))
+                    {
+                        slotMenuActive = false;
+                        slotMenuMode = SlotMenuMode::None;
+                    }
                 }
-                else if (saveButton.wasClicked(this->game->window)) {
-                    this->game->player.saveToFile("save.json");
-                    std::cout << "Game saved!" << std::endl;
-                    showSaveText = true;
-                    saveClock.restart();
-                }
-                else if (loadButton.wasClicked(this->game->window)) {
-                    this->game->player.loadFromFile("save.json");
-                    std::cout << "Game loaded!" << std::endl;
-                }                
-                else if (quitButton.wasClicked(this->game->window)) {
-                    std::cout << "Quit clicked\n";
-                    requestQuitToMenu = true; // just mark it, don’t change state here
-                    return; // stop further input for this frame
-                }
+                
             }
+        }
+    }
+
 
             // Skip gameplay input while paused
             // just let the while loop finish naturally
-        }
-    }
 
     if (requestQuitToMenu) {
         std::cout << "Changing to main menu...\n";
@@ -708,7 +733,11 @@ GameStateEditor::GameStateEditor(Game* game) //This is a constructor
   settingsButton("Settings", sf::Vector2f(0.f, 0.f), 40, game),
   saveButton("Save", sf::Vector2f(0.f, 0.f), 40, game),
   loadButton("Load", sf::Vector2f(0.f,0.f), 40, game),
-  quitButton("Quit to Menu", sf::Vector2f(0.f, 0.f), 40, game)
+  quitButton("Quit to Menu", sf::Vector2f(0.f, 0.f), 40, game),
+  slot1("Slot 1", sf::Vector2f(0.f, 0.f), 36, game),
+  slot2("Slot 2", sf::Vector2f(0.f, 0.f), 36, game),
+  slot3("Slot 3", sf::Vector2f(0.f, 0.f), 36, game),
+  backButton("Back", sf::Vector2f(0.f, 0.f), 36, game)
 {
     this->game = game;
     sf::Vector2f pos = sf::Vector2f(this->game->window.getSize());
@@ -744,4 +773,9 @@ GameStateEditor::GameStateEditor(Game* game) //This is a constructor
     saveButton.changePosition(50.f, 270.f);
     loadButton.changePosition(50.f, 310.f);
     quitButton.changePosition(50.f, 350.f);
+
+    slot1.changePosition(100.f, 200.f);
+    slot2.changePosition(100.f, 260.f);
+    slot3.changePosition(100.f, 320.f);
+    backButton.changePosition(100.f, 380.f);
 }

@@ -13,11 +13,6 @@ class GameStateEditor : public GameState
  
     sf::View gameView;
     sf::View guiView;
-
-
-    sf::Text saveText;
-    sf::Clock saveClock;
-    bool showSaveText = false;
     bool isPaused = false;
     float moveSpeed;
     Map map;
@@ -38,6 +33,23 @@ class GameStateEditor : public GameState
     int textureHeight;
 
     bool requestQuitToMenu = false;
+
+    bool slotMenuActive = false;
+
+    enum class SlotMenuMode {
+        None,
+        Save,
+        Load
+    } slotMenuMode = SlotMenuMode::None;
+
+    Button slot1;
+    Button slot2;
+    Button slot3;
+    Button backButton;
+
+    bool showSaveText = false;
+    sf::Text saveText;
+    sf::Clock saveClock;
     
 
     public:

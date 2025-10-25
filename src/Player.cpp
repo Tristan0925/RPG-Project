@@ -11,6 +11,7 @@ Handles keyboard input and updates the player's position in the world.
 #include <cmath>
 #include <nlohmann/json.hpp>
 #include <fstream>
+#include <iostream>
 using json = nlohmann::json;
 
 
@@ -87,6 +88,19 @@ void Player::update(float dt) {
 
 float Player::getAngle() const {
     return angle; // for recognition in minimap
+}
+
+void Player::setDefault()
+{
+    position = sf::Vector2f(100.f, 100.f); // starting coordinates
+    angle = 0.f; // facing forward
+    // reset inventory, health, etc.
+    HP = 100;
+    maxHP = 100;
+    MP = 100;
+    maxMP = 100;
+    LVL = 1;
+    XP = 0;
 }
 
 
@@ -203,9 +217,8 @@ bool Player::saveToFile(const std::string& filename) const {
     j["affinities"] = data.affinities;
 
     // skills array
-    for (int i = 0; i < 7; ++i) {
-        j["skills"].push_back(data.skills[i]);
-    }
+    j["skills"] = data.skills;
+
 
     std::ofstream file(filename);
     if (!file.is_open()) return false;
@@ -215,15 +228,22 @@ bool Player::saveToFile(const std::string& filename) const {
 
 bool Player::loadFromFile(const std::string& filename) {
     std::ifstream file(filename);
-    if (!file.is_open()) return false;
+    if (!file.is_open()) {
+        std::cerr << "[ERROR] Could not open " << filename << std::endl;
+        return false;
+    } 
 
     json j;
     file >> j;
 
     PlayerData data;
+    if (j.contains("position") && j["position"].is_array() && j["position"].size() >= 2)
     data.position = sf::Vector2f(j["position"][0], j["position"][1]);
-    data.angle = j["angle"];
-    data.HP = j["HP"];
+    else
+        data.position = {0.f, 0.f};
+
+    data.angle = j.value("angle", 0.f);
+    data.HP = j.value("HP", 100);
     data.maxHP = j["maxHP"];
     data.MP = j["MP"];
     data.maxMP = j["maxMP"];
@@ -234,12 +254,25 @@ bool Player::loadFromFile(const std::string& filename) {
     data.XP = j["XP"];
     data.LVL = j["LVL"];
     data.MONEY = j["MONEY"];
-    data.inventory = j["inventory"].get<std::map<std::string, int>>();
-    data.affinities = j["affinities"].get<std::map<std::string, int>>();
-    
-    for (int i = 0; i < 7; ++i) {
-        data.skills[i] = j["skills"][i];
+    if (j.contains("inventory") && j["inventory"].is_object())
+        data.inventory = j["inventory"].get<std::map<std::string,int>>();
+    else
+        data.inventory.clear();
+
+    if (j.contains("affinities") && j["affinities"].is_object())
+        data.affinities = j["affinities"].get<std::map<std::string,int>>();
+    else
+        data.affinities.clear();
+
+    // Safe skills load (assumes skills are strings)
+    if (j.contains("skills") && j["skills"].is_array() && j["skills"].size() == 7) {
+        for (size_t i = 0; i < 7; ++i)
+            data.skills[i] = j["skills"][i].get<std::string>();
+    } else {
+        for (size_t i = 0; i < 7; ++i)
+            data.skills[i] = "";
     }
+
 
     setData(data);
     return true;

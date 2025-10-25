@@ -8,6 +8,7 @@
 #include "texture_manager.hpp"
 #include "Player.hpp"
 #include "Map.hpp"
+#include "iostream"
 
 void Game::loadTextures()
 {
@@ -83,9 +84,13 @@ Game::Game() //i'm not sure what these things do just yet
    if (!map.loadFromFile("assets/map1.txt")) {
     throw std::runtime_error("failed to load");
    }
-   if (!font.loadFromFile("assets/Birch.ttf")){
-    throw std::runtime_error("failed to load");
-   } 
+    if (!font.loadFromFile("assets/Birch.ttf")) {
+        std::cerr << "Failed to load font!" << std::endl;
+        std::exit(1);
+    } else {
+        std::cout << "Font loaded: " << font.getInfo().family << std::endl;
+    }
+
 
     sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
     this->player.setPosition(spawn * 64.f); // scale by tile size
