@@ -14,6 +14,7 @@ int getHealAmount();
 int getManaAmount();
 int getQuantity();
 void addToQuantity(int amount);
+void subFromQuantity();
 
 
 private:
