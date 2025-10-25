@@ -8,6 +8,7 @@
 #include "Player.hpp"
 #include "Map.hpp"
 #include "NPC.hpp"
+#include "item.hpp"
 
 class GameState;
 
@@ -23,6 +24,9 @@ class Game
     NPC pmember2;
     NPC pmember3;
     NPC pmember4;
+    Item hpItem;
+    Item manaItem;
+
 
     Map map;
     sf::Font font;

@@ -70,7 +70,8 @@ void Game::gameLoop() //things that need to exist across gamestates go here
    }
 }
 
-Game::Game() //i'm not sure what these things do just yet
+Game::Game() : hpItem("Dragon Morsel", "Makes you feel like something, but you can't put your finger on it. Heals 100HP.", 100, 0, 0), 
+manaItem("Energizing Moss", "Some moss you found in a chest. Not safe for human consumption, but somehow restores 100MP.", 0, 100, 0) //initialize all variables which are used throughout the game states here 
 {
    this->loadTextures();
    this->window.create(sf::VideoMode(1920, 1080), "Untitled RPG Project"); // create a window
@@ -89,6 +90,7 @@ Game::Game() //i'm not sure what these things do just yet
 
     sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
     this->player.setPosition(spawn * 64.f); // scale by tile size
+    
 }
 
 Game::~Game() //get rid of all the things on the stack
