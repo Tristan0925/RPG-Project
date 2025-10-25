@@ -547,6 +547,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         resumeButton.draw(this->game->window);
         settingsButton.draw(this->game->window);
         saveButton.draw(this->game->window);
+        loadButton.draw(this->game->window);
         quitButton.draw(this->game->window);
 
         // Hover underline effect
@@ -556,6 +557,8 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
             this->game->window.draw(settingsButton.getUnderline());
         if (saveButton.isHovered(this->game->window))
             this->game->window.draw(saveButton.getUnderline());
+        if (loadButton.isHovered(this->game->window))
+            this->game->window.draw(loadButton.getUnderline());    
         if (quitButton.isHovered(this->game->window))
             this->game->window.draw(quitButton.getUnderline());
     }    
@@ -627,8 +630,13 @@ void GameStateEditor::handleInput() // Inputs go here
                     std::cout << "Settings clicked (placeholder)\n";
                 }
                 else if (saveButton.wasClicked(this->game->window)) {
-                    std::cout << "Save clicked (placeholder)\n";
+                    this->game->player.saveToFile("save.json");
+                    std::cout << "Game saved!" << std::endl;
                 }
+                else if (loadButton.wasClicked(this->game->window)) {
+                    this->game->player.loadFromFile("save.json");
+                    std::cout << "Game loaded!" << std::endl;
+                }                
                 else if (quitButton.wasClicked(this->game->window)) {
                     std::cout << "Quit clicked\n";
                     requestQuitToMenu = true; // just mark it, don’t change state here
@@ -690,6 +698,7 @@ GameStateEditor::GameStateEditor(Game* game) //This is a constructor
   resumeButton("Resume", sf::Vector2f(0.f, 0.f), 40, game),
   settingsButton("Settings", sf::Vector2f(0.f, 0.f), 40, game),
   saveButton("Save", sf::Vector2f(0.f, 0.f), 40, game),
+  loadButton("Load", sf::Vector2f(0.f,0.f), 40, game),
   quitButton("Quit to Menu", sf::Vector2f(0.f, 0.f), 40, game)
 {
     this->game = game;
@@ -719,5 +728,6 @@ GameStateEditor::GameStateEditor(Game* game) //This is a constructor
     resumeButton.changePosition(50.f, 190.f);
     settingsButton.changePosition(50.f, 230.f);
     saveButton.changePosition(50.f, 270.f);
-    quitButton.changePosition(50.f, 310.f);
+    loadButton.changePosition(50.f, 310.f);
+    quitButton.changePosition(50.f, 350.f);
 }

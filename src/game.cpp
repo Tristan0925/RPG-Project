@@ -80,12 +80,12 @@ Game::Game() //i'm not sure what these things do just yet
    this->pmember2Sprite.setTexture(this->texmgr.getRef("pmember2Sprite"));
    this->pmember3Sprite.setTexture(this->texmgr.getRef("pmember3Sprite"));
    this->pmember4Sprite.setTexture(this->texmgr.getRef("pmember4Sprite"));
-    if (!map.loadFromFile("assets/map1.txt")) {
-        throw std::runtime_error("failed to load");
-    }
-    if (!font.loadFromFile("assets/Birch.ttf")){
-        throw std::runtime_error("failed to load");
-    }
+   if (!map.loadFromFile("assets/map1.txt")) {
+    throw std::runtime_error("failed to load");
+   }
+   if (!font.loadFromFile("assets/Birch.ttf")){
+    throw std::runtime_error("failed to load");
+   } 
 
     sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
     this->player.setPosition(spawn * 64.f); // scale by tile size

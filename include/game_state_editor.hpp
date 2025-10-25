@@ -23,6 +23,7 @@ class GameStateEditor : public GameState
     Button resumeButton;
     Button settingsButton;
     Button saveButton;
+    Button loadButton;
     Button quitButton;
 
     sf::Texture wallTexture;

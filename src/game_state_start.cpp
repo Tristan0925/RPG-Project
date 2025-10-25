@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "Button.hpp"
+#include "Player.hpp"
 #include "game_state_start.hpp"
 #include "game_state_editor.hpp"
 #include "game_state.hpp"
@@ -14,11 +15,16 @@ void GameStateStart::draw(const float dt)
     this->game->window.draw(this->game->background);
     this->game->window.draw(title);
     startgame.draw(this->game->window);
+    loadButton.draw(this->game->window);
     settings.draw(this->game->window);
     endgame.draw(this->game->window);
     
     if(startgame.isHovered(this->game->window)){
         this->game->window.draw(startgame.getUnderline());
+    }
+
+    if(loadButton.isHovered(this->game->window)){
+        this->game->window.draw(loadButton.getUnderline());
     }
 
     if(settings.isHovered(this->game->window)){
@@ -49,6 +55,13 @@ void GameStateStart::handleInput()
                     this->loadgame();
                 }
             }
+
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+                if (loadButton.wasClicked(this->game->window)) {
+                    this->game->player.loadFromFile("save.json");
+                    this->loadgame(); // load into the editor/game world
+                }            
+            }    
 
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
                 if (settings.wasClicked(this->game->window)){
@@ -88,8 +101,9 @@ void GameStateStart::handleInput()
                 // Reposition and rescale title the same way as the buttons
                 title.setPosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1400.f * scaleRatio));
                 startgame.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1200.f * scaleRatio));
-                settings.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1100.f * scaleRatio));
-                endgame.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1000.f * scaleRatio));
+                loadButton.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1100.f * scaleRatio));
+                settings.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1000.f * scaleRatio));
+                endgame.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (900.f * scaleRatio));
 
                 break;
             }
@@ -108,6 +122,7 @@ void GameStateStart::handleInput()
 
 GameStateStart::GameStateStart(Game* game):
   startgame("Start Game", sf::Vector2f(0.f,0.f), 34, game),
+  loadButton("Load Game", sf::Vector2f(0.f,0.f), 34, game), 
   settings("Settings", sf::Vector2f(0.f,0.f), 34, game),
   endgame("End Game", sf::Vector2f(0.f,0.f), 34, game)
 {
@@ -131,9 +146,9 @@ GameStateStart::GameStateStart(Game* game):
 
     title.setPosition(width - (2200.f * scaleRatio), height - (1400.f * scaleRatio));
     startgame.changePosition(width - (2200.f * scaleRatio), height - (1200.f * scaleRatio));
-    settings.changePosition(width - (2200.f * scaleRatio), height - (1100.f * scaleRatio));
-    endgame.changePosition(width - (2200.f * scaleRatio), height - (1000.f * scaleRatio));
-    
+    loadButton.changePosition(width - (2200.f * scaleRatio), height - (1100.f * scaleRatio));
+    settings.changePosition(width - (2200.f * scaleRatio), height - (1000.f * scaleRatio));
+    endgame.changePosition(width - (2200.f * scaleRatio), height - (900.f * scaleRatio));
 }
 
 void GameStateStart::loadgame()

@@ -13,6 +13,7 @@ class GameStateStart : public GameState
     sf::Text title;
     
     Button startgame;
+    Button loadButton;
     Button settings;
     Button endgame;
     sf::RectangleShape underline;

@@ -9,6 +9,10 @@ Handles keyboard input and updates the player's position in the world.
 #include "Map.hpp"
 #include <SFML/Window/Keyboard.hpp>
 #include <cmath>
+#include <nlohmann/json.hpp>
+#include <fstream>
+using json = nlohmann::json;
+
 
 
 // normalize angle helper
@@ -131,4 +135,112 @@ int Player::getmaxHP() const {
 
 int Player::getmaxMP() const {
     return maxMP;
+}
+
+PlayerData Player::getData() const {
+    PlayerData data;
+    data.position = position;
+    data.angle = angle;
+    data.HP = HP;
+    data.maxHP = maxHP;
+    data.MP = MP;
+    data.maxMP = maxMP;
+    data.STR = STR;
+    data.VIT = VIT;
+    data.AGI = AGI;
+    data.LU = LU;
+    data.XP = XP;
+    data.LVL = LVL;
+    data.MONEY = MONEY;
+    data.inventory = inventory;
+    data.affinities = affinities;
+
+    for (int i = 0; i < 7; ++i)
+        data.skills[i] = skills[i];
+
+    return data;
+}
+
+void Player::setData(const PlayerData& data) {
+    position = data.position;
+    angle = data.angle;
+    HP = data.HP;
+    maxHP = data.maxHP;
+    MP = data.MP;
+    maxMP = data.maxMP;
+    STR = data.STR;
+    VIT = data.VIT;
+    AGI = data.AGI;
+    LU = data.LU;
+    XP = data.XP;
+    LVL = data.LVL;
+    MONEY = data.MONEY;
+    inventory = data.inventory;
+    affinities = data.affinities;
+
+    for (int i = 0; i < 7; ++i)
+        skills[i] = data.skills[i];
+}
+
+bool Player::saveToFile(const std::string& filename) const {
+    PlayerData data = getData();
+
+    json j;
+    j["position"] = { data.position.x, data.position.y };
+    j["angle"] = data.angle;
+    j["HP"] = data.HP;
+    j["maxHP"] = data.maxHP;
+    j["MP"] = data.MP;
+    j["maxMP"] = data.maxMP;
+    j["STR"] = data.STR;
+    j["VIT"] = data.VIT;
+    j["AGI"] = data.AGI;
+    j["LU"] = data.LU;
+    j["XP"] = data.XP;
+    j["LVL"] = data.LVL;
+    j["MONEY"] = data.MONEY;
+    j["inventory"] = data.inventory;
+    j["affinities"] = data.affinities;
+
+    // skills array
+    for (int i = 0; i < 7; ++i) {
+        j["skills"].push_back(data.skills[i]);
+    }
+
+    std::ofstream file(filename);
+    if (!file.is_open()) return false;
+    file << j.dump(4); // pretty-print with indent of 4
+    return true;
+}
+
+bool Player::loadFromFile(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) return false;
+
+    json j;
+    file >> j;
+
+    PlayerData data;
+    data.position = sf::Vector2f(j["position"][0], j["position"][1]);
+    data.angle = j["angle"];
+    data.HP = j["HP"];
+    data.maxHP = j["maxHP"];
+    data.MP = j["MP"];
+    data.maxMP = j["maxMP"];
+    data.STR = j["STR"];
+    data.VIT = j["VIT"];
+    data.AGI = j["AGI"];
+    data.LU = j["LU"];
+    data.XP = j["XP"];
+    data.LVL = j["LVL"];
+    data.MONEY = j["MONEY"];
+    data.inventory = j["inventory"].get<std::map<std::string, int>>();
+    data.affinities = j["affinities"].get<std::map<std::string, int>>();
+    
+    for (int i = 0; i < 7; ++i) {
+        data.skills[i] = j["skills"][i];
+    }
+
+    setData(data);
+    return true;
 }
