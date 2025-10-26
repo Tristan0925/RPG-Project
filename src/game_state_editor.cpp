@@ -7,6 +7,8 @@
 #include "game_state_door.hpp"
 #include "iostream"
 #include "algorithm"
+#include "Button.hpp"
+#include "game_state_start.hpp"
 
 void GameStateEditor::draw(const float dt) //If you draw things, put them here
 {
@@ -519,6 +521,46 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
 
     this->game->window.setView(this->game->window.getDefaultView());
     this->game->window.draw(fader);
+
+    // Pause menu
+    if (isPaused) {
+        this->game->window.setView(this->game->window.getDefaultView());
+
+        sf::RectangleShape overlay(sf::Vector2f(this->game->window.getSize()));
+        overlay.setFillColor(sf::Color(0, 0, 0, 150)); // semi-transparent black
+        this->game->window.draw(overlay);
+    
+        sf::Text pauseText;
+        pauseText.setFont(this->game->font);
+        pauseText.setCharacterSize(48);
+        pauseText.setFillColor(sf::Color::White);
+    
+        // Center the text
+        sf::FloatRect bounds = pauseText.getLocalBounds();
+        pauseText.setOrigin(bounds.width / 2, bounds.height / 2);
+        pauseText.setPosition(
+            this->game->window.getSize().x / 2.f,
+            this->game->window.getSize().y / 2.f
+        );
+    
+        this->game->window.draw(pauseText);
+
+        // Draw buttons
+        resumeButton.draw(this->game->window);
+        settingsButton.draw(this->game->window);
+        saveButton.draw(this->game->window);
+        quitButton.draw(this->game->window);
+
+        // Hover underline effect
+        if (resumeButton.isHovered(this->game->window))
+            this->game->window.draw(resumeButton.getUnderline());
+        if (settingsButton.isHovered(this->game->window))
+            this->game->window.draw(settingsButton.getUnderline());
+        if (saveButton.isHovered(this->game->window))
+            this->game->window.draw(saveButton.getUnderline());
+        if (quitButton.isHovered(this->game->window))
+            this->game->window.draw(quitButton.getUnderline());
+    }    
     return;
 }
 
@@ -529,6 +571,8 @@ void GameStateEditor::enterDoor(int x, int y){
 
 void GameStateEditor::update(const float dt) //If something needs to be updated based on dt, then go here
 {
+    if (isPaused)
+        return;
     moveSpeed = 100.f * dt;   // movement speed
     this->game->player.update(dt);
     
@@ -551,37 +595,83 @@ void GameStateEditor::update(const float dt) //If something needs to be updated 
     return;
 }
 
-void GameStateEditor::handleInput() //Inputs go here
+void GameStateEditor::handleInput() // Inputs go here
 {
     sf::Event event;
- 
-    while (this->game->window.pollEvent(event)) //REMEMBER TO FIX THIS WHEN MERGING PAUSE MENU
+
+    // Poll all events from the window
+    while (this->game->window.pollEvent(event))
     {
         switch (event.type)
         {
             // Close the window
             case sf::Event::Closed:
-            {
                 this->game->window.close();
                 break;
-            }
+
             // Resize the window 
             case sf::Event::Resized:
-            {
                 gameView.setSize(event.size.width, event.size.height);
                 guiView.setSize(event.size.width, event.size.height);
-                this->game->background.setPosition(this->game->window.mapPixelToCoords(sf::Vector2i(0, 0), this->guiView));
+                this->game->background.setPosition(
+                    this->game->window.mapPixelToCoords(sf::Vector2i(0, 0), this->guiView)
+                );
                 this->game->background.setScale(
                     float(event.size.width) / float(this->game->background.getTexture()->getSize().x),
-                    float(event.size.height) / float(this->game->background.getTexture()->getSize().y));
+                    float(event.size.height) / float(this->game->background.getTexture()->getSize().y)
+                );
                 break;
+
+            // Toggle pause
+            case sf::Event::KeyPressed:
+                if (event.key.code == sf::Keyboard::Escape)
+                {
+                    isPaused = !isPaused;
+                    std::cout << "Paused: " << std::boolalpha << isPaused << std::endl;
+                }
+                break;
+
+            default:
+                break;
+        } // end switch
+
+        if (isPaused)
+        {
+            // Only handle mouse clicks while paused
+            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+            {
+                std::cout << "Mouse click while paused\n";
+
+                if (resumeButton.wasClicked(this->game->window)) {
+                    std::cout << "Resume clicked\n";
+                    isPaused = false; // resume game
+                }
+                else if (settingsButton.wasClicked(this->game->window)) {
+                    std::cout << "Settings clicked (placeholder)\n";
+                }
+                else if (saveButton.wasClicked(this->game->window)) {
+                    std::cout << "Save clicked (placeholder)\n";
+                }
+                else if (quitButton.wasClicked(this->game->window)) {
+                    std::cout << "Quit clicked\n";
+                    requestQuitToMenu = true; // just mark it, don’t change state here
+                    return; // stop further input for this frame
+                }
             }
-            default: break;
+
+            // Skip gameplay input while paused
+            // just let the while loop finish naturally
         }
     }
-    
-    // Foward movement
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !doorState) {
+
+    if (requestQuitToMenu) {
+        std::cout << "Changing to main menu...\n";
+        this->game->changeState(std::make_unique<GameStateStart>(this->game));
+        return; // stop further input for this frame
+    }
+
+    // Forward movement
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !doorState) { 
         this->game->player.moveForward(moveSpeed, this->game->map);
     }
 
@@ -616,7 +706,14 @@ void GameStateEditor::handleInput() //Inputs go here
     return;
 }
 
+
+
 GameStateEditor::GameStateEditor(Game* game) //This is a constructor
+: game(game),
+  resumeButton("Resume", sf::Vector2f(0.f, 0.f), 40, game),
+  settingsButton("Settings", sf::Vector2f(0.f, 0.f), 40, game),
+  saveButton("Save", sf::Vector2f(0.f, 0.f), 40, game),
+  quitButton("Quit to Menu", sf::Vector2f(0.f, 0.f), 40, game)
 {
     this->game = game;
     sf::Vector2f pos = sf::Vector2f(this->game->window.getSize());
@@ -645,4 +742,10 @@ GameStateEditor::GameStateEditor(Game* game) //This is a constructor
     wallImage = wallTexture.copyToImage(); // for pixel-level access
     textureWidth = wallImage.getSize().x;
     textureHeight = wallImage.getSize().y; //dont change these since tex are the same size
+
+    
+    resumeButton.changePosition(50.f, 190.f);
+    settingsButton.changePosition(50.f, 230.f);
+    saveButton.changePosition(50.f, 270.f);
+    quitButton.changePosition(50.f, 310.f);
 }

@@ -20,7 +20,8 @@ Handles keyboard input and updates the player's position in the world.
     return a;
 }
 
-Player::Player() {
+Player::Player() { //default constructor
+    name = "Tatsuya";
     HP = 100;
     maxHP = 100;
     MP = 100;
@@ -32,6 +33,9 @@ Player::Player() {
     targetAngle = 0.f;
     turnSpeed = 3.0f; // radians/sec, tweak to taste
 }
+
+Player::Player(std::string name, int HP, int maxHP, int MP, int maxMP, int STR, int VIT, int AGI, int LU, int XP, int LVL) : 
+    name(name), HP(HP), maxHP(maxHP), MP(MP), maxMP(maxMP), STR(STR), VIT(VIT), AGI(AGI), LU(LU), XP(XP), LVL(LVL){} //parametized constructor (mainly used for NPCs)
 
 Player::Player(const sf::Vector2f& spawnPos) {
     position = spawnPos * 64.0f; // Start the player in the center of the screen

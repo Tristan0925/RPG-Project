@@ -1,5 +1,6 @@
 #include "Button.hpp"
 #include "game.hpp"
+#include "iostream"
 //later include a thing for audio params
 Button::Button(std::string words, sf::Vector2f location, int size, Game* game, sf::Color color): game(game) {
 
@@ -17,27 +18,39 @@ const sf::RectangleShape& Button::getUnderline() const{
     return underline;
 }
 
-bool Button::wasClicked(sf::RenderWindow& window){
+bool Button::wasClicked(sf::RenderWindow& window) {
+    // Save the current view
+    sf::View oldView = window.getView();
+
+    // Switch to default (GUI) view so clicks line up with screen-space
+    window.setView(window.getDefaultView());
+
+    // Get mouse position in screen coordinates
+    sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
+    sf::Vector2f mouseScreen = window.mapPixelToCoords(mousePixel);
+
+    // Restore the old view
+    window.setView(oldView);
+
+    // Check if the mouse is inside the text bounds
     sf::FloatRect bounds = text.getGlobalBounds();
-    sf::Vector2i position = sf::Mouse::getPosition(window);
-    sf::Vector2f positionf(static_cast<float>(position.x), static_cast<float>(position.y));
-
-    if (bounds.contains(positionf)){
-        return true;
-    }
-return false;
+    return bounds.contains(mouseScreen);
 }
 
-bool Button::isHovered(sf::RenderWindow& window){ 
-    sf::FloatRect bounds = text.getGlobalBounds(); //i know these do the same thing, i am just using them for different purposes for the sake of clarity
-    sf::Vector2i position = sf::Mouse::getPosition(window);
-    sf::Vector2f positionf(static_cast<float>(position.x), static_cast<float>(position.y));
+bool Button::isHovered(sf::RenderWindow& window) {
+    sf::View oldView = window.getView();
+    window.setView(window.getDefaultView());
 
-     if (bounds.contains(positionf)){
-        return true;
-    }
-return false;
+    sf::Vector2i mousePixel = sf::Mouse::getPosition(window);
+    sf::Vector2f mouseScreen = window.mapPixelToCoords(mousePixel);
+
+    window.setView(oldView);
+
+    sf::FloatRect bounds = text.getGlobalBounds();
+    return bounds.contains(mouseScreen);
 }
+
+
 
 void Button::changePosition(float posx, float posy){
     text.setPosition(posx, posy);
