@@ -8,6 +8,8 @@
 #include "texture_manager.hpp"
 #include "Player.hpp"
 #include "Map.hpp"
+#include <string>
+#include <iostream>
 
 void Game::loadTextures() // load textures used everywhere
 {
@@ -70,7 +72,7 @@ void Game::gameLoop() //handles the gameloop
    }
 }
 
-Game::Game() : hpItem("Dragon Morsel", "Makes you feel like something, but you can't put your finger on it. Heals 100HP.", 100, 0, 0), 
+Game::Game() : hpItem("Dragon Morsel", "Makes you feel like something, but you can't put your finger on it. Heals 100HP.", 100, 0, 0),  //when saves work, conditionally create these constructors
 manaItem("Energizing Moss", "Some moss you found in a chest. Not safe for human consumption, but somehow restores 100MP.", 0, 100, 0),
 pmember2("Maya",75, 75, 120, 120, 10, 20, 20, 20, 0, 11), //magic-y guy
 pmember3("Lisa", 125, 125, 75, 75, 15, 25, 15, 15, 0, 12), // punchy guy
@@ -94,6 +96,12 @@ pmember4("Eikichi", 100, 100, 90, 90, 10, 10, 10, 10, 0, 10 ) //healer guy
 
     sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
     this->player.setPosition(spawn * 64.f); // scale by tile size
+
+    this->doorCoordinates = map.getDoorCoordinates();
+    for (const auto& coord : doorCoordinates) {
+        std::cout << coord << " ";
+    }
+    std::cout << std::endl;
     
 }
 

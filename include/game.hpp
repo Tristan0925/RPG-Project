@@ -9,6 +9,8 @@
 #include "Map.hpp"
 #include "NPC.hpp"
 #include "item.hpp"
+#include <string>
+#include <vector>
 
 class GameState;
 
@@ -30,6 +32,7 @@ class Game
 
 
     Map map;
+    std::vector<std::string> doorCoordinates;
     sf::Font font;
       
 
