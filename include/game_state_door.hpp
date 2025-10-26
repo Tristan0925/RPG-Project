@@ -19,12 +19,10 @@ class GameStateDoor : public GameState
     sf::RectangleShape Textbox;
     int transparency, quantity, gridX, gridY;
     Item hpItem;
-    std::string hpItemName;
+    std::string itemName;
     Item mpItem;
-    std::string mpItemName;
     Player player;
     std::string coordinatePair;
-    std::unordered_map<std::string, bool> doorCoordinatesToHasLoot;
     bool isItemRoom, isBossRoom, isEmptyRoom;
     
 
@@ -39,6 +37,8 @@ class GameStateDoor : public GameState
     virtual void handleInput();
 
     GameStateDoor(Game* game, int x, int y);
+
+   virtual ~GameStateDoor();
 };
 
 #endif
