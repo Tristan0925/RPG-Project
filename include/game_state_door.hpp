@@ -23,7 +23,9 @@ class GameStateDoor : public GameState
     Item mpItem;
     std::string mpItemName;
     Player player;
-    std::unordered_map<std::string, bool> doorCoordsToHasLoot;
+    std::string coordinatePair;
+    std::unordered_map<std::string, bool> doorCoordinatesToHasLoot;
+    bool isItemRoom, isBossRoom, isEmptyRoom;
     
 
     void drawTreasureRoom(); 

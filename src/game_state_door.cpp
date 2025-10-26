@@ -9,6 +9,8 @@
 #include "Player.hpp"
 #include <iostream>
 #include <array>
+#include <random>
+
 void GameStateDoor::draw(const float dt)
 {
     this->game->window.setView(this->view);
@@ -22,8 +24,8 @@ void GameStateDoor::draw(const float dt)
  // basic treasure thing
  //IDEA: HAVE AN ARRAY OF ALL THE KNOWN DOOR SPOTS (EXCEPT THE BOSS ROOM), 
  //IDEA: have a hashmap of all the locations of doors, (location -> 1), if 1, give an item with a 50/50 of being hp or mana. If 0, say you've been there already.
- //str-ify the coords: (1,7), (1,0), (34,8), (16,5), 
- if (gridX == 1 && gridY == 0){
+
+ if (isItemRoom){
    this->game->window.draw(treasureSprite);
    std::array<Item, 2> playerinv = this->game->player.getInventory();
    for (const auto& item : playerinv) {
@@ -35,13 +37,21 @@ std::cout << std::endl;
    this->game->window.draw(Textbox);
    this->game->window.draw(textInTextbox);
  }
- 
- else{
+ else if (isEmptyRoom){
     std::cout << "door position: (" << gridX << ", " << gridY << ")" << std::endl;
    this->game->window.draw(treasureSprite);
    textInTextbox.setString("- You entered the room and found a chest. In the chest contained NOTHING.");
    this->game->window.draw(Textbox);
    this->game->window.draw(textInTextbox);
+ }
+
+ else if(isBossRoom){
+    
+ }
+
+ else{
+    std::cout << "Something went horribly wrong if you are seeing this" << std::endl;
+    std::exit(99);
  }
 
  
@@ -89,7 +99,7 @@ void GameStateDoor::handleInput()
                 break;
             }
             case sf::Event::KeyPressed:{
-                if (event.key.code == sf::Keyboard::Space){
+                if (event.key.code == sf::Keyboard::Space){ // && !isBossRoom
                     backToGame();
                     return;
                 }
@@ -130,17 +140,36 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
     hpItemName = hpItem.showName();
     mpItem = this->game->manaItem;
     mpItemName = mpItem.showName();
-    quantity = 1;
-    gridX = x;
-    gridY = y;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> chanceOfItem(1,2);
+    std::uniform_int_distribution<> quantityOfItem(1,3);
+    quantity = quantityOfItem(gen);
+    coordinatePair = ("(" + std::to_string(x) + ", " + std::to_string(y) + ")");
     player = this->game->player;
+    doorCoordinatesToHasLoot = this->game->doorCoordinatesToHasLoot;
     std::array<Item, 2> playerinv = this->game->player.getInventory(); 
-    for (const auto& item : playerinv) {
-    std::cout << item.showName() << " ";
-}
-std::cout << std::endl;
- //take coords and stringify. compare to list. 
-if (gridX == 1 && gridY == 0) this->game->player.addToInventory(hpItem, quantity); 
+
+//     for (const auto& item : playerinv) {
+//     std::cout << item.showName() << " ";
+// }
+// std::cout << std::endl;
+
+ for (const auto& pair : doorCoordinatesToHasLoot) {
+        if (pair.first == coordinatePair && pair.second == true){
+            isItemRoom = true;
+            if (chanceOfItem(gen) == 1)this->game->player.addToInventory(hpItem, quantity); 
+            else this->game->player.addToInventory(hpItem, quantity);
+        } 
+        else if (pair.first == coordinatePair && pair.second == false){
+            isEmptyRoom = true;
+        }
+        else{
+            isBossRoom = true;
+        }
+    }
+
+
 
    
   
