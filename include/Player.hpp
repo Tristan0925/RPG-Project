@@ -56,6 +56,7 @@ class Player {
         void regainMP();
         int physATK(); //essentially skills will use either physATK/magATK then multi by a scalar, return the dmg number
         int magATK();
+        int doorX, doorY; //track last door entered
 
         void turnLeft();
         void turnRight();

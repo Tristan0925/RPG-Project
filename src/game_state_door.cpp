@@ -14,18 +14,16 @@
 void GameStateDoor::draw(const float dt)
 {
     this->game->window.setView(this->view);
- // long list of if elses which tell what to put in each room
+
 //  if (x,y){
 //     textInTextbox.setString("You sense a terrifying presence ahead. Proceed?");
 //     this->game->window.draw(Textbox);
 //    this->game->window.draw(textInTextbox);
 //  }
 //  else
- // basic treasure thing
- //IDEA: HAVE AN ARRAY OF ALL THE KNOWN DOOR SPOTS (EXCEPT THE BOSS ROOM), 
- //IDEA: have a hashmap of all the locations of doors, (location -> 1), if 1, give an item with a 50/50 of being hp or mana. If 0, say you've been there already.
 
  if (isItemRoom){
+    
    this->game->window.draw(treasureSprite);
    std::array<Item, 2> playerinv = this->game->player.getInventory();
    for (const auto& item : playerinv) {
@@ -38,7 +36,7 @@ std::cout << std::endl;
    this->game->window.draw(textInTextbox);
  }
  else if (isEmptyRoom){
-    std::cout << "door position: (" << gridX << ", " << gridY << ")" << std::endl;
+      std::cout << coordinatePair << std::endl;
    this->game->window.draw(treasureSprite);
    textInTextbox.setString("- You entered the room and found a chest. In the chest contained NOTHING.");
    this->game->window.draw(Textbox);
@@ -51,6 +49,8 @@ std::cout << std::endl;
 
  else{
     std::cout << "Something went horribly wrong if you are seeing this" << std::endl;
+    std::cout << coordinatePair << std::endl;
+    
     std::exit(99);
  }
 
@@ -72,7 +72,7 @@ std::cout << std::endl;
 
 void GameStateDoor::update(const float dt)
 {
-transparency -= static_cast<int>(100 * dt);
+transparency -= static_cast<int>(100 * 2 * dt);
 if (transparency < 0) transparency = 0;
    fader.setFillColor(sf::Color(0,0,0,static_cast<sf::Uint8>(transparency)));
 }
@@ -143,7 +143,8 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
     std::uniform_int_distribution<> chanceOfItem(1,2);
     std::uniform_int_distribution<> quantityOfItem(1,3);
     quantity = quantityOfItem(gen);
-    coordinatePair = ("(" + std::to_string(x) + ", " + std::to_string(y) + ")");
+      std::cout << x << y << std::endl;
+    coordinatePair = ("(" + std::to_string(x) + ", " + std::to_string(y+1) + ")"); //adding 1 is a band-aid to the real problem (idk what it is)
     player = this->game->player;
     std::array<Item, 2> playerinv = this->game->player.getInventory(); 
 
@@ -154,10 +155,10 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
 
  for (const auto& pair : this->game->doorCoordinatesToHasLoot) {
         if (pair.first == coordinatePair && pair.second == true){
+      
             isItemRoom = true;
             isEmptyRoom = false;
             isBossRoom = false;
-            std::cout << pair.second << std::endl;
             this->game->doorCoordinatesToHasLoot[pair.first] = false;
             if (chanceOfItem(gen) == 1) {
                 itemName = hpItem.showName();
@@ -175,7 +176,7 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
             isBossRoom = false;
            
         }
-        else{
+        else if (pair.first == coordinatePair && coordinatePair == "hi"){ //replace with bossCoordinates
             isBossRoom = true;
             isEmptyRoom = false;
             isItemRoom = false;

@@ -107,10 +107,14 @@ void Player::tryMove(sf::Vector2f delta, const Map& map) {
     if (!map.isWall(gridX, gridY)) {
         position = newPos;
     }
-    if (map.isDoor(gridX,gridY)){
+    if (map.isDoor(gridX,gridY) && !inDoor){
         inDoor = 1;
+        doorX = gridX;
+        doorY = gridY;
         position = position - delta;
         std::cout <<"door position: (" << gridX << ", " << gridY << ")" << std::endl;
+        std::cout <<"door position: (" << doorX << ", " << doorY << ")" << std::endl;
+     
     }
 }
 

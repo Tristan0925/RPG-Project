@@ -23,7 +23,7 @@ class GameStateDoor : public GameState
     Item mpItem;
     Player player;
     std::string coordinatePair;
-    bool isItemRoom, isBossRoom, isEmptyRoom;
+    bool isItemRoom = false, isBossRoom = false, isEmptyRoom = false;
     
 
     void drawTreasureRoom(); 
