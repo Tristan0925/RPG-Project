@@ -5,6 +5,7 @@
 #include "game_state.hpp"
 #include "game.hpp"
 #include "item.hpp"
+#include <unordered_map>
 //import item here
 class GameStateDoor : public GameState
 {
@@ -22,8 +23,10 @@ class GameStateDoor : public GameState
     Item mpItem;
     std::string mpItemName;
     Player player;
+    std::unordered_map<std::string, bool> doorCoordsToHasLoot;
+    
 
-    void drawTreasureRoom(); //i guess put item in the args
+    void drawTreasureRoom(); 
     void drawBossBattle(); //WIP
     void backToGame();
     

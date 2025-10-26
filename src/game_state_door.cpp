@@ -134,12 +134,12 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
     gridX = x;
     gridY = y;
     player = this->game->player;
-    std::array<Item, 2> playerinv = this->game->player.getInventory();
+    std::array<Item, 2> playerinv = this->game->player.getInventory(); 
     for (const auto& item : playerinv) {
     std::cout << item.showName() << " ";
 }
 std::cout << std::endl;
-
+ //take coords and stringify. compare to list. 
 if (gridX == 1 && gridY == 0) this->game->player.addToInventory(hpItem, quantity); 
 
    

@@ -102,6 +102,12 @@ pmember4("Eikichi", 100, 100, 90, 90, 10, 10, 10, 10, 0, 10 ) //healer guy
         std::cout << coord << " ";
     }
     std::cout << std::endl;
+    for (const auto& coord : doorCoordinates) {
+        doorCoordinatesToHasLoot[coord] = 1;
+    }
+   
+  
+    
     
 }
 

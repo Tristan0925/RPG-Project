@@ -11,6 +11,7 @@
 #include "item.hpp"
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 class GameState;
 
@@ -33,6 +34,7 @@ class Game
 
     Map map;
     std::vector<std::string> doorCoordinates;
+    std::unordered_map<std::string, bool> doorCoordinatesToHasLoot;
     sf::Font font;
       
 
