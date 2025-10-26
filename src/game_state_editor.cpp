@@ -565,33 +565,55 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
 }
 
 void GameStateEditor::enterDoor(int x, int y){
-    this->game->pushState(std::make_unique<GameStateDoor>(this->game, x, y));
+    this->game->pushState(std::make_unique<GameStateDoor>(this->game, x, y-1));
     return;
 }
 
 void GameStateEditor::update(const float dt) //If something needs to be updated based on dt, then go here
 {
+
     if (isPaused)
         return;
     moveSpeed = 100.f * dt;   // movement speed
     this->game->player.update(dt);
     
-
-    if (this->game->player.inDoor){
-        int x = static_cast<int>(this->game->player.getPosition().x / 64);
-        int y = static_cast<int>(this->game->player.getPosition().y / 64);
-        doorState = 1;
-        //play sound
-        transparency += static_cast<int>(100 * dt);
-
-        if (transparency > 255) transparency = 255;
-        fader.setFillColor(sf::Color(0,0,0,static_cast<sf::Uint8>(transparency)));
-        if (transparency == 255){
-        enterDoor(x,y);
+   
+    if (this->game->player.inDoor && !enteringDoor){
+        enteringDoor = true;
         this->game->player.inDoor = 0;
-        doorState = 0;
+        doorState = 1;
+    }       
+        //play sound
+        if (doorState & !exitingDoor){
+         transparency += static_cast<int>(100 * dt);
+         if (transparency >= 255) transparency = 255;
+         fader.setFillColor(sf::Color(255,0,0,static_cast<sf::Uint8>(transparency)));
         }
-    }
+        
+        
+        
+        if (transparency >= 100 && !exitingDoor){
+            int x = static_cast<int>(this->game->player.getPosition().x / 64);
+            int y = static_cast<int>(this->game->player.getPosition().y / 64);
+            enterDoor(x,y);
+            exitingDoor = true;
+            exitTimer = exitDuration;
+            
+           
+        }
+
+        if (exitingDoor){
+            exitTimer -= dt;
+            this->game->player.moveBackward(moveSpeed, this->game->map);
+            if (exitTimer <= 0.0f){
+                exitingDoor = false;
+                enteringDoor = false;
+                doorState = 0;
+                transparency = 0;
+                fader.setFillColor(sf::Color(255,0,0,static_cast<sf::Uint8>(transparency)));
+            }
+        }
+    
     return;
 }
 

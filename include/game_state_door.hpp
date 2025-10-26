@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "game_state.hpp"
 #include "game.hpp"
+#include "item.hpp"
 //import item here
 class GameStateDoor : public GameState
 {
@@ -15,8 +16,12 @@ class GameStateDoor : public GameState
     sf::Texture treasure; 
     sf::Text textInTextbox;
     sf::RectangleShape Textbox;
-    int transparency;
-    //place item here
+    int transparency, quantity, gridX, gridY;
+    Item hpItem;
+    std::string hpItemName;
+    Item mpItem;
+    std::string mpItemName;
+    Player player;
 
     void drawTreasureRoom(); //i guess put item in the args
     void drawBossBattle(); //WIP

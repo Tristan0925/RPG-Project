@@ -7,7 +7,7 @@ class Item
 {
 public:
 Item(); //default constructor
-Item(std::string description, std::string name, int healAmount, int manaAmount,int quantity); //constructor with params
+Item( std::string name, std::string description, int healAmount, int manaAmount,int quantity); //constructor with params
 std::string showDescription();
 std::string showName();
 int getHealAmount();
@@ -18,8 +18,8 @@ void subFromQuantity();
 
 
 private:
-std::string description;
 std::string name;
+std::string description;
 int healAmount, manaAmount, quantity;
 
 };

@@ -5,9 +5,9 @@
 #include "game_state.hpp"
 #include <iostream>
 #include <string>
-
-
-
+#include "item.hpp"
+#include "Player.hpp"
+#include <iostream>
 void GameStateDoor::draw(const float dt)
 {
     this->game->window.setView(this->view);
@@ -20,10 +20,22 @@ void GameStateDoor::draw(const float dt)
 //  else
  // basic treasure thing
  //IDEA: HAVE AN ARRAY OF ALL THE KNOWN DOOR SPOTS (EXCEPT THE BOSS ROOM), 
+ //IDEA: have a hashmap of all the locations of doors, (location -> 1), if 1, give an item with a 50/50 of being hp or mana. If 0, say you've been there already.
+ //str-ify the coords: (1,7), (1,0), (34,8), (16,5), 
+ if (gridX == 1 && gridY == 0){
    this->game->window.draw(treasureSprite);
-   textInTextbox.setString("- You entered the room and found a chest. In the chest contained ITEM.");
+   textInTextbox.setString("- You entered the room and found a chest. In the chest contained x" + std::to_string(quantity) + " " + hpItemName +".");
    this->game->window.draw(Textbox);
    this->game->window.draw(textInTextbox);
+ }
+ 
+ else{
+    std::cout << "door position: (" << gridX << ", " << gridY << ")" << std::endl;
+   this->game->window.draw(treasureSprite);
+   textInTextbox.setString("- You entered the room and found a chest. In the chest contained NOTHING.");
+   this->game->window.draw(Textbox);
+   this->game->window.draw(textInTextbox);
+ }
 
  
 
@@ -69,6 +81,12 @@ void GameStateDoor::handleInput()
                 this->game->window.setView(this->view); //updates view
                 break;
             }
+            case sf::Event::KeyPressed:{
+                if (event.key.code == sf::Keyboard::Space){
+                    backToGame();
+                    return;
+                }
+            }
             default: break;
         }
     }
@@ -83,7 +101,6 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
     pos *= 0.5f;
     this->view.setCenter(pos);
     
-
     this->game = game;
     transparency = 255;
     fader.setSize(sf::Vector2f(1920,1080));
@@ -101,6 +118,15 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
     Textbox.setSize(sf::Vector2(1720.0f,200.0f));
     Textbox.setPosition(100,830);
     textInTextbox.setPosition(120,830);
+
+    hpItem = this->game->hpItem;
+    hpItemName = hpItem.showName();
+    mpItem = this->game->manaItem;
+    mpItemName = mpItem.showName();
+    quantity = 1;
+    gridX = x;
+    gridY = y;
+    player = this->game->player;
    
   
 }

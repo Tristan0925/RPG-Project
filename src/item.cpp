@@ -1,7 +1,7 @@
 #include "item.hpp"
 #include <string>
-Item::Item(std::string description, std::string name, int healAmount, int manaAmount,int quantity) : description(description), name(name), healAmount(healAmount), manaAmount(manaAmount), quantity(quantity){} //params
-Item::Item() : description("None"), name("Empty Slot"), healAmount(0), manaAmount(0), quantity(0){} //default
+Item::Item(std::string name,std::string description, int healAmount, int manaAmount,int quantity) : name(name), description(description), healAmount(healAmount), manaAmount(manaAmount), quantity(quantity){} //params
+Item::Item() :  name("Empty Slot"), description("None"),healAmount(0), manaAmount(0), quantity(0){} //default
 std::string Item::showDescription(){
     return description;
 }

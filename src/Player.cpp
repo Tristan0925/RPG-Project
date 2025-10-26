@@ -10,6 +10,7 @@ Handles keyboard input and updates the player's position in the world.
 #include <SFML/Window/Keyboard.hpp>
 #include <cmath>
 #include "game_state_door.hpp"
+#include <iostream>
 
 
 
@@ -108,6 +109,7 @@ void Player::tryMove(sf::Vector2f delta, const Map& map) {
     if (map.isDoor(gridX,gridY)){
         inDoor = 1;
         position = position - delta;
+        std::cout <<"door position: (" << gridX << ", " << gridY << ")" << std::endl;
     }
 }
 

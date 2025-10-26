@@ -37,6 +37,10 @@ class GameStateEditor : public GameState
     void enterDoor(int x, int y);
 
     bool requestQuitToMenu = false;
+
+    bool exitingDoor, enteringDoor = false;
+    float exitTimer = 0.0f;
+    const float exitDuration = 0.25f;
     
 
     public:
