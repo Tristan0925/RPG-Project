@@ -598,7 +598,7 @@ void GameStateEditor::update(const float dt) //If something needs to be updated 
             enterDoor(x,y);
             exitingDoor = true;
             exitTimer = exitDuration;
-            transparency = 0;
+            transparency = 0; //add transition if you want around here
             fader.setFillColor(sf::Color(255,0,0,static_cast<sf::Uint8>(transparency)));
         }
 

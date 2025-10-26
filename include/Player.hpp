@@ -16,6 +16,7 @@ Like having modules in python to handle classes and then you import the files yo
 #include <string>
 #include <map>
 #include "item.hpp"
+#include <array>
 class Map;
 
 class Player {
@@ -28,7 +29,7 @@ class Player {
         sf::Vector2f postion;
         int MONEY;
         // Attack + every affinity + almighty. I think the battle_game_state should figure out damage #'s and stuff.
-        Item inventory[2]; // Only 2 items in game: Dragon Morsel (healing) and Energizing Moss (mana restoration) 
+        std::array<Item, 2> inventory; // Only 2 items in game: Dragon Morsel (healing) and Energizing Moss (mana restoration) 
     protected:
         std::string name; //remember to add a change name function so when we start the game, we prompt to change the name
         int HP, maxHP, MP, maxMP, STR, VIT, AGI, LU, XP, LVL;
@@ -60,11 +61,9 @@ class Player {
         void turnRight();
         void update(float dt);
 
-        int getHP() const;
-        int getmaxHP() const;
-        int getMP() const;
-        int getmaxMP() const;
-        int getMoney() const;
-        int getLVL() const;
+        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getMoney() const, getLVL() const;
+        std::array<Item, 2> getInventory() const;
+        void addToInventory(Item item, int quantity);
+    
         
 };

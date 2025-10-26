@@ -8,6 +8,7 @@
 #include "item.hpp"
 #include "Player.hpp"
 #include <iostream>
+#include <array>
 void GameStateDoor::draw(const float dt)
 {
     this->game->window.setView(this->view);
@@ -24,6 +25,12 @@ void GameStateDoor::draw(const float dt)
  //str-ify the coords: (1,7), (1,0), (34,8), (16,5), 
  if (gridX == 1 && gridY == 0){
    this->game->window.draw(treasureSprite);
+   std::array<Item, 2> playerinv = this->game->player.getInventory();
+   for (const auto& item : playerinv) {
+    std::cout << item.showName() << " ";
+    std::cout << item.getQuantity() << " ";
+}
+std::cout << std::endl;
    textInTextbox.setString("- You entered the room and found a chest. In the chest contained x" + std::to_string(quantity) + " " + hpItemName +".");
    this->game->window.draw(Textbox);
    this->game->window.draw(textInTextbox);
@@ -127,6 +134,14 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
     gridX = x;
     gridY = y;
     player = this->game->player;
+    std::array<Item, 2> playerinv = this->game->player.getInventory();
+    for (const auto& item : playerinv) {
+    std::cout << item.showName() << " ";
+}
+std::cout << std::endl;
+
+if (gridX == 1 && gridY == 0) this->game->player.addToInventory(hpItem, quantity); 
+
    
   
 }

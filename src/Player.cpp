@@ -11,6 +11,7 @@ Handles keyboard input and updates the player's position in the world.
 #include <cmath>
 #include "game_state_door.hpp"
 #include <iostream>
+#include <array>
 
 
 
@@ -126,6 +127,28 @@ void Player::moveBackward(float distance, const Map& map) {
     tryMove(-dir * distance, map);
 }
 
+void Player::addToInventory(Item item, int quantity){
+    int firstemptyslot = -1;
+    for (size_t i = 0; i < inventory.size(); i++){ 
+        if (inventory[i].showName() == item.showName()){ 
+            inventory[i].addToQuantity(quantity);
+            return;
+        } 
+        if (inventory[i].showName() == "Empty Slot" && firstemptyslot == -1){
+          firstemptyslot = i;
+        }
+    }
+    if (firstemptyslot != -1){ 
+    inventory[firstemptyslot] = item;
+    inventory[firstemptyslot].addToQuantity(quantity);
+    }
+    else std::cout << "Error: item not found." << std::endl;
+}
+
+std::array<Item, 2> Player::getInventory() const{
+    return inventory;
+}
+
 int Player::getHP() const {
     return HP;
 }
@@ -141,3 +164,5 @@ int Player::getmaxHP() const {
 int Player::getmaxMP() const {
     return maxMP;
 }
+
+

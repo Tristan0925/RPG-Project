@@ -8,11 +8,11 @@ class Item
 public:
 Item(); //default constructor
 Item( std::string name, std::string description, int healAmount, int manaAmount,int quantity); //constructor with params
-std::string showDescription();
-std::string showName();
-int getHealAmount();
-int getManaAmount();
-int getQuantity();
+std::string showDescription() const;
+std::string showName() const;
+int getHealAmount() const;
+int getManaAmount() const;
+int getQuantity() const;
 void addToQuantity(int amount);
 void subFromQuantity();
 
