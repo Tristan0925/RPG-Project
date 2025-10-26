@@ -587,19 +587,19 @@ void GameStateEditor::update(const float dt) //If something needs to be updated 
         if (doorState & !exitingDoor){
          transparency += static_cast<int>(100 * dt);
          if (transparency >= 255) transparency = 255;
-         fader.setFillColor(sf::Color(255,0,0,static_cast<sf::Uint8>(transparency)));
+         fader.setFillColor(sf::Color(0,0,0,static_cast<sf::Uint8>(transparency)));
         }
         
         
         
-        if (transparency >= 100 && !exitingDoor){
+        if (transparency >= 255 && !exitingDoor){
             int x = static_cast<int>(this->game->player.getPosition().x / 64);
             int y = static_cast<int>(this->game->player.getPosition().y / 64);
             enterDoor(x,y);
             exitingDoor = true;
             exitTimer = exitDuration;
-            
-           
+            transparency = 0;
+            fader.setFillColor(sf::Color(255,0,0,static_cast<sf::Uint8>(transparency)));
         }
 
         if (exitingDoor){
@@ -609,8 +609,7 @@ void GameStateEditor::update(const float dt) //If something needs to be updated 
                 exitingDoor = false;
                 enteringDoor = false;
                 doorState = 0;
-                transparency = 0;
-                fader.setFillColor(sf::Color(255,0,0,static_cast<sf::Uint8>(transparency)));
+               
             }
         }
     
