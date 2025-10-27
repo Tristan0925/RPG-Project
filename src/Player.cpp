@@ -216,6 +216,8 @@ int Player::getmaxMP() const {
             MAG += skillPoints;
         }
     }
+    HP = maxHP;
+    MP = maxMP;
  }
 
 
