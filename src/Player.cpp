@@ -29,6 +29,12 @@ Player::Player() { //default constructor
     MP = 100;
     maxMP = 100;
     LVL = 1;
+    STR;
+    VIT;
+    MAG;
+    AGI;
+    LU;
+    affinities = {{"Fire", 0.0}, {"Ice", 1.5}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.0}, {"Almighty", 1.1}};
     XP = 0;
     position = sf::Vector2f(0.f, 0.f);
     angle = 0.f;

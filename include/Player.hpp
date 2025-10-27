@@ -32,7 +32,7 @@ class Player {
     protected:
         std::string name; //remember to add a change name function so when we start the game, we prompt to change the name
         int HP, maxHP, MP, maxMP, STR, VIT, MAG, AGI, LU, XP, LVL;
-        std::map<std::string, float> affinities; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [RESIST(0.5)/NEUTRAL(1.0)/WEAK(1.5)]) If resist, x0.5 dmg, If weak, 1.5x dmg.
+        std::map<std::string, float> affinities; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [NULL(0)/RESIST(0.5)/NEUTRAL(1.0)/WEAK(1.5)]) If resist, x0.5 dmg, If weak, 1.5x dmg.
         std::string skills[7];  // Attack + every affinity + almighty. I think the battle_game_state should figure out damage #'s and stuff.
     public:
         int inDoor;
