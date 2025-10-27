@@ -90,9 +90,9 @@ float Player::getAngle() const {
     return angle; // for recognition in minimap
 }
 
-void Player::setDefault()
+void Player::setDefault(const Map& map)
 {
-    position = sf::Vector2f(100.f, 100.f); // starting coordinates
+    position = sf::Vector2f(map.getSpawnX() * 64.f, map.getSpawnY() * 64.f);; // starting coordinates
     angle = 0.f; // facing forward
     // reset inventory, health, etc.
     HP = 100;
@@ -244,16 +244,17 @@ bool Player::loadFromFile(const std::string& filename) {
 
     data.angle = j.value("angle", 0.f);
     data.HP = j.value("HP", 100);
-    data.maxHP = j["maxHP"];
-    data.MP = j["MP"];
-    data.maxMP = j["maxMP"];
-    data.STR = j["STR"];
-    data.VIT = j["VIT"];
-    data.AGI = j["AGI"];
-    data.LU = j["LU"];
-    data.XP = j["XP"];
-    data.LVL = j["LVL"];
-    data.MONEY = j["MONEY"];
+    data.maxHP = j.value("maxHP", 100);
+    data.MP = j.value("MP", 100);
+    data.maxMP = j.value("maxMP", 100);
+    data.STR = j.value("STR", 10);
+    data.VIT = j.value("VIT", 10);
+    data.AGI = j.value("AGI", 10);
+    data.LU = j.value("LU", 10);
+    data.XP = j.value("XP", 0);
+    data.LVL = j.value("LVL", 1);
+    data.MONEY = j.value("MONEY", 0);
+        
     if (j.contains("inventory") && j["inventory"].is_object())
         data.inventory = j["inventory"].get<std::map<std::string,int>>();
     else

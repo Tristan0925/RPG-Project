@@ -54,7 +54,9 @@ void GameStateStart::handleInput()
 
             if (!slotMenuActive) { // main menu
                 if (startgame.wasClicked(this->game->window)) {
-                    this->game->player.setDefault();
+                    Map map;
+                    map.loadFromFile("assets/map1.txt");
+                    this->game->player.setDefault(map);
                     requestStartGame = true;
                 }
 
@@ -74,14 +76,17 @@ void GameStateStart::handleInput()
                 if (slot1.wasClicked(this->game->window)) {
                     this->game->player.loadFromFile("save1.json");
                     this->game->changeState(std::make_unique<GameStateEditor>(this->game));
+                    return;
                 }
                 if (slot2.wasClicked(this->game->window)) {
                     this->game->player.loadFromFile("save2.json");
                     this->game->changeState(std::make_unique<GameStateEditor>(this->game));
+                    return;
                 }
                 if (slot3.wasClicked(this->game->window)) {
                     this->game->player.loadFromFile("save3.json");
                     this->game->changeState(std::make_unique<GameStateEditor>(this->game));
+                    return;
                 }
                 if (backButton.wasClicked(this->game->window)) {
                     slotMenuActive = false; // go back to main menu

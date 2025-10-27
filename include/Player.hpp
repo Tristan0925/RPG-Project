@@ -97,7 +97,8 @@ class Player {
         void setData(const PlayerData&);  // Restore player state from snapshot
         bool saveToFile(const std::string& filename) const;
         bool loadFromFile(const std::string& filename);
-        void setDefault();
+        void setDefault(const Map& map);
+
 
 };
 

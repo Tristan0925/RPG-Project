@@ -660,6 +660,11 @@ void GameStateEditor::handleInput() // Inputs go here
                             else if (slotMenuMode == SlotMenuMode::Load)
                             {
                                 this->game->player.loadFromFile(saveFiles[i]);
+                                std::cout << "Loaded position: " << this->game->player.getPosition().x
+                                << ", " << this->game->player.getPosition().y << std::endl;
+                                // Force camera to follow new player position
+                                sf::Vector2f playerPos = this->game->player.getPosition();
+                                gameView.setCenter(playerPos);
                             }
                 
                             slotMenuActive = false;
