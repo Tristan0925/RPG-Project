@@ -36,8 +36,8 @@ Player::Player() { //default constructor
     turnSpeed = 3.0f; // radians/sec, tweak to taste
 }
 
-Player::Player(std::string name, int HP, int maxHP, int MP, int maxMP, int STR, int VIT, int AGI, int LU, int XP, int LVL) : 
-    name(name), HP(HP), maxHP(maxHP), MP(MP), maxMP(maxMP), STR(STR), VIT(VIT), AGI(AGI), LU(LU), XP(XP), LVL(LVL){} //parametized constructor (mainly used for NPCs)
+Player::Player(std::string name, int HP, int maxHP, int MP, int maxMP, int STR, int VIT, int MAG, int AGI, int LU, int XP, int LVL) : 
+    name(name), HP(HP), maxHP(maxHP), MP(MP), maxMP(maxMP), STR(STR), VIT(VIT), MAG(MAG), AGI(AGI), LU(LU), XP(XP), LVL(LVL){} //parametized constructor (mainly used for NPCs)
 
 Player::Player(const sf::Vector2f& spawnPos) {
     position = spawnPos * 64.0f; // Start the player in the center of the screen
@@ -114,7 +114,6 @@ void Player::tryMove(sf::Vector2f delta, const Map& map) {
         position = position - delta;
         std::cout <<"door position: (" << gridX << ", " << gridY << ")" << std::endl;
         std::cout <<"door position: (" << doorX << ", " << doorY << ")" << std::endl;
-     
     }
 }
 
@@ -168,5 +167,49 @@ int Player::getmaxHP() const {
 int Player::getmaxMP() const {
     return maxMP;
 }
+ void Player::takeDamage(int damage){
+    if (HP - damage < 0) HP = 0;
+    else HP -= damage;
+ }
+ void Player::heal(int healAmount){
+    if (HP + healAmount > maxHP) HP = maxHP;
+    else HP += healAmount;
+ }
+ void Player::spendMP(int mpSpent){
+    if (MP - mpSpent < 0) MP = 0;
+    else MP -= mpSpent; 
+ }
+ void Player::regainMP(int mpGained){
+    if (MP + mpGained > maxMP) MP = maxMP;
+    else MP += mpGained;
+ }
+ int Player::physATK(float scalar, int baseAtk){ //base atk + scalar * STR 
+    return (int) (baseAtk + (scalar * STR));
+ }
+ int Player::magATK(float scalar, int baseAtk){
+    return (int) (baseAtk + (scalar * MAG));
+
+ }
+ void Player::levelUp(std::map<std::string, int> skillPointDistribution){
+    for (auto distribution : skillPointDistribution){
+        std::string trait = distribution.first;
+        int skillPoints = distribution.second;
+        if (trait == "STR"){
+            STR += skillPoints;
+        }
+        else if (trait == "VIT"){
+            VIT += skillPoints;
+        }
+        else if (trait == "AGI"){
+            AGI += skillPoints;
+        }
+        else if (trait == "LU"){
+            LU += skillPoints;
+        }
+        else if (trait == "MAG"){
+            MAG += skillPoints;
+        }
+    }
+ }
 
 

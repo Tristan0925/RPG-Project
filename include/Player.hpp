@@ -17,6 +17,7 @@ Like having modules in python to handle classes and then you import the files yo
 #include <map>
 #include "item.hpp"
 #include <array>
+
 class Map;
 
 class Player {
@@ -27,18 +28,16 @@ class Player {
         float turnSpeed;    // turn speed
         void tryMove(sf::Vector2f delta, const Map& map); // checks for walls
         sf::Vector2f postion;
-        int MONEY;
-        // Attack + every affinity + almighty. I think the battle_game_state should figure out damage #'s and stuff.
         std::array<Item, 2> inventory; // Only 2 items in game: Dragon Morsel (healing) and Energizing Moss (mana restoration) 
     protected:
         std::string name; //remember to add a change name function so when we start the game, we prompt to change the name
-        int HP, maxHP, MP, maxMP, STR, VIT, AGI, LU, XP, LVL;
-        std::map<std::string, int> affinities; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [RESIST(0.5)/NEUTRAL(1.0)/WEAK(1.5)]) If resist, x0.5 dmg, If weak, 1.5x dmg.
-        std::string skills[7];
+        int HP, maxHP, MP, maxMP, STR, VIT, MAG, AGI, LU, XP, LVL;
+        std::map<std::string, float> affinities; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [RESIST(0.5)/NEUTRAL(1.0)/WEAK(1.5)]) If resist, x0.5 dmg, If weak, 1.5x dmg.
+        std::string skills[7];  // Attack + every affinity + almighty. I think the battle_game_state should figure out damage #'s and stuff.
     public:
         int inDoor;
         Player(); // Constructor
-        Player(std::string name, int HP, int maxHP, int MP, int maxMP, int STR, int VIT, int AGI, int LU, int XP, int LVL); //parameterized for NPCs as they inherit from player
+        Player(std::string name, int HP, int maxHP, int MP, int maxMP, int STR, int VIT, int MAG, int AGI, int LU, int XP, int LVL); //parameterized for NPCs as they inherit from player
         Player(const sf::Vector2f& spawnPos);
 
         void move(sf::Vector2f delta); // Handle input and updates the position
@@ -50,12 +49,13 @@ class Player {
 
         void moveForward(float distance, const Map& map); // moves forward, checks collisions
         void moveBackward(float distance, const Map& map); // same thing, but backwards
-        void takeDamage();
-        void Heal();
-        void spendMP();
-        void regainMP();
-        int physATK(); //essentially skills will use either physATK/magATK then multi by a scalar, return the dmg number
-        int magATK();
+        void takeDamage(int damage);
+        void heal(int healAmount);
+        void spendMP(int mpSpent);
+        void regainMP(int mpGained);
+        int physATK(float scalar, int baseAtk); //essentially skills will use either physATK/magATK then multi by a scalar, return the dmg number
+        int magATK(float scalar, int baseAtk); 
+        void levelUp(std::map<std::string, int> skillPointDistribution);
         int doorX, doorY; //track last door entered
 
         void turnLeft();
