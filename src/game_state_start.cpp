@@ -122,10 +122,10 @@ void GameStateStart::handleInput()
                 endgame.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (900.f * scaleRatio));
 
                 // Slot buttons
-                slot1.changePosition(800.f, 400.f);
-                slot2.changePosition(800.f, 500.f);
-                slot3.changePosition(800.f, 600.f);
-                backButton.changePosition(800.f, 700.f);
+                slot1.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1200.f * scaleRatio));
+                slot2.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1100.f * scaleRatio));
+                slot3.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1000.f * scaleRatio));
+                backButton.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (900.f * scaleRatio));
 
                 break;
             }
@@ -155,11 +155,14 @@ GameStateStart::GameStateStart(Game* game):
   backButton("Back", sf::Vector2f(100.f, 350.f), 34, game)
 {
     this->game = game;
+
+    // Setup view
     sf::Vector2f pos = sf::Vector2f(this->game->window.getSize());
     this->view.setSize(pos);
     pos *= 0.5f;
     this->view.setCenter(pos);
-    
+
+    // Setup title
     title.setFont(this->game->font);
     title.setString("UNTITLED RPG GAME");
     title.setCharacterSize(100); // in pixels
@@ -172,12 +175,21 @@ GameStateStart::GameStateStart(Game* game):
     float height = static_cast<float>(this->game->window.getSize().y);
     float scaleRatio = width / this->game->background.getTexture()->getSize().x;
 
+    // Main menu buttons
     title.setPosition(width - (2200.f * scaleRatio), height - (1400.f * scaleRatio));
     startgame.changePosition(width - (2200.f * scaleRatio), height - (1200.f * scaleRatio));
     loadButton.changePosition(width - (2200.f * scaleRatio), height - (1100.f * scaleRatio));
     settings.changePosition(width - (2200.f * scaleRatio), height - (1000.f * scaleRatio));
     endgame.changePosition(width - (2200.f * scaleRatio), height - (900.f * scaleRatio));
+
+    // Slot menu buttons (same positions as main menu buttons)
+    slot1.changePosition(width - (2200.f * scaleRatio), height - (1200.f * scaleRatio));
+    slot2.changePosition(width - (2200.f * scaleRatio), height - (1100.f * scaleRatio));
+    slot3.changePosition(width - (2200.f * scaleRatio), height - (1000.f * scaleRatio));
+    backButton.changePosition(width - (2200.f * scaleRatio), height - (900.f * scaleRatio));    
+
 }
+
 
 void GameStateStart::loadgame()
 {
