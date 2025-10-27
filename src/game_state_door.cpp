@@ -155,7 +155,6 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
 
  for (const auto& pair : this->game->doorCoordinatesToHasLoot) {
         if (pair.first == coordinatePair && pair.second == true){
-      
             isItemRoom = true;
             isEmptyRoom = false;
             isBossRoom = false;
