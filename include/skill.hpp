@@ -22,7 +22,7 @@ class Skill{
     float damageAmp = 0.0;
     float hitEvadeBoost = 0.0;
     float hitEvadeReduction = 0.0;
-    int healthRestore = 0.0;
+    float healthRestorePercent = 0.0;
 
     public:
     std::string getName() const { return name; }
@@ -37,8 +37,16 @@ class Skill{
     float getMissRate() const { return missRate; }
     int getLimit() const { return limit; }
     int getCorrection() const { return correction; }
+    float getDamageResist() const { return damageResist; } //im not sure if i want to do this
+    float getDamageAmp() const { return damageAmp; }
+    float getHitEvadeBoost() const {return hitEvadeBoost;}
+    float getHitEvadeReduction() const {return hitEvadeReduction; }
+    float getHealthRestorePercent() const { return healthRestorePercent; }
+
+
+    Skill() = default;
     Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, int baseAtk, float hpCost, float baseHitRate, float missRate, float critRate); //phys skill constructor
     Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, int baseAtk, int mpCost, float baseHitRate, float missRate, int limit, int correction); //magic skill constructor
     Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, float damageResist, float damageAmp, float hitEvadeBoost, float hitEvadeReduction); //magic utility skills constructor (damage boost, damage resist, evasion/accuracy boost)
-    Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, int healthRestore); //magic healing skills constructor 
+    Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, int mpCost, float healthRestorePercent); //magic healing skills constructor 
 };
