@@ -25,3 +25,5 @@ void Item::addToQuantity(int amount){
 void Item::subFromQuantity(){
     this->quantity -= 1;
 }
+
+//add use item method later...
