@@ -2,14 +2,29 @@
 #define GAME_STATE_START_HPP
 
 #include <SFML/Graphics.hpp>
-
+#include "Button.hpp"
 #include "game_state.hpp"
 
 class GameStateStart : public GameState
 {
     private:
-
     sf::View view;
+    sf::Text title;
+    Button startgame;
+    Button loadButton;
+    Button settings;
+    Button endgame;
+    bool slotMenuActive = false; // are we showing the slot menu?
+    Button slot1;
+    Button slot2;
+    Button slot3;
+    Button backButton; // to exit slot menu
+    sf::RectangleShape underline;
+
+    sf::Vector2f defaultTitlePos;
+    sf::Vector2f defaultTitleScale;
+
+    bool requestStartGame = false;
 
     void loadgame();
 

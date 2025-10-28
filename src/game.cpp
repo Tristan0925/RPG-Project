@@ -8,10 +8,16 @@
 #include "texture_manager.hpp"
 #include "Player.hpp"
 #include "Map.hpp"
+#include <string>
+#include <iostream>
 
-void Game::loadTextures()
+void Game::loadTextures() // load textures used everywhere
 {
-    texmgr.loadTexture("background", "./assets/peripeteia.jpg");
+    texmgr.loadTexture("background", "./assets/mainmenu.jpeg");
+    texmgr.loadTexture("playerSprite", "./assets/player.png");
+    texmgr.loadTexture("pmember2Sprite", "./assets/partymember2.png");
+    texmgr.loadTexture("pmember3Sprite", "./assets/partymember3.png");
+    texmgr.loadTexture("pmember4Sprite", "./assets/partymember4.png");
 }
 void Game::pushState(std::unique_ptr<GameState> state) //place game state onto stack
 {
@@ -88,7 +94,7 @@ void Game::applyPendingState() {
 
 
 
-void Game::gameLoop() //things that need to exist across gamestates go here
+void Game::gameLoop() //handles the gameloop
 {
    sf::Clock clock;
 
@@ -113,20 +119,47 @@ void Game::gameLoop() //things that need to exist across gamestates go here
    }
 }
 
-
-
-Game::Game() //i'm not sure what these things do just yet
+Game::Game() : hpItem("Dragon Morsel", "Makes you feel like something, but you can't put your finger on it. Heals 100HP.", 100, 0, 0),  //when saves work, conditionally create these constructors
+manaItem("Energizing Moss", "Some moss you found in a chest. Not safe for human consumption, but somehow restores 100MP.", 0, 100, 0),
+pmember2("Maya",75, 75, 120, 120, 10, 20, 20, 20, 0, 11), //magic-y gal
+pmember3("Lisa", 125, 125, 75, 75, 15, 25, 15, 15, 0, 12), // punchy guy
+pmember4("Eikichi", 100, 100, 90, 90, 10, 10, 10, 10, 0, 10 ) //healer guy
+// init all variables which are used throughout the game states here 
 {
    this->loadTextures();
-   this->window.create(sf::VideoMode(800, 600), "Untitled RPG Project"); // create a window
+   this->window.create(sf::VideoMode(1920, 1080), "Untitled RPG Project"); // create a window
    this->window.setFramerateLimit(60); // set frame rate
    this->background.setTexture(this->texmgr.getRef("background"));
-    if (!map.loadFromFile("assets/map1.txt")) {
-        throw std::runtime_error("failed to load");
+   this->playerSprite.setTexture(this->texmgr.getRef("playerSprite"));
+   this->pmember2Sprite.setTexture(this->texmgr.getRef("pmember2Sprite"));
+   this->pmember3Sprite.setTexture(this->texmgr.getRef("pmember3Sprite"));
+   this->pmember4Sprite.setTexture(this->texmgr.getRef("pmember4Sprite"));
+   if (!map.loadFromFile("assets/map1.txt")) {
+    throw std::runtime_error("failed to load");
+   }
+    if (!font.loadFromFile("assets/Birch.ttf")) {
+        std::cerr << "Failed to load font!" << std::endl;
+        std::exit(1);
+    } else {
+        std::cout << "Font loaded: " << font.getInfo().family << std::endl;
     }
+
 
     sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
     this->player.setPosition(spawn * 64.f); // scale by tile size
+
+    this->doorCoordinates = map.getDoorCoordinates();
+    for (const auto& coord : doorCoordinates) {
+        std::cout << coord << " ";
+    }
+    std::cout << std::endl;
+    for (const auto& coord : doorCoordinates) {
+        doorCoordinatesToHasLoot[coord] = 1;
+    }
+   
+  
+    
+    
 }
 
 Game::~Game() //get rid of all the things on the stack

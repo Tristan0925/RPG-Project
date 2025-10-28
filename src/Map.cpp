@@ -10,7 +10,7 @@ It’s essentially the world manager — it knows what the world looks like and 
 #include <cmath> 
 #include <fstream>
 #include <iostream>
-
+#include <string>
 Map::Map() {
     width = 0; // set to empty so we can fill the empty space with the txt file 
     height = 0;
@@ -36,6 +36,10 @@ bool Map::loadFromFile(const std::string& filename) {
                 row.push_back(0); // it's floor, not wall
                 spawnX = static_cast<float>(x);
                 spawnY = static_cast<float>(y);
+            }
+            else if (c == '2'){ // door
+                row.push_back(2);
+                doorCoordinates.push_back("(" + std::to_string(x) + ", " + std::to_string(y) + ")");
             }
             else row.push_back(0);          // empty
         }
@@ -63,19 +67,55 @@ bool Map::isWall(int x, int y) const {
     return grid[y][x] == 1;
 }
 
+bool Map::isDoor(int x, int y) const {
+    if (x < 0 || x >= width || y < 0 || y >= height) {
+        return false; // outside bounds counts as wall - prevents player from going out of bounds... hopefully
+    }
+        return grid[y][x] == 2;
+}
+
 void Map::renderMiniMap(sf::RenderWindow& window, const sf::View& miniMapView, const sf::Vector2f& playerPos, float playerAngle) const {
     window.setView(miniMapView);
 
     const float TILE_SIZE = 64.f;
     sf::RectangleShape tileShape(sf::Vector2f(TILE_SIZE, TILE_SIZE));
-    tileShape.setFillColor(sf::Color::White);
-
+    tileShape.setFillColor(sf::Color(211,211,211));
+    
     // draw walls
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             if (isWall(x, y)) {
                 tileShape.setPosition(x * TILE_SIZE, y * TILE_SIZE);
                 window.draw(tileShape);
+            }
+            else if (isDoor(x,y)){ //add some checks for horizontal/vertical doors later
+                tileShape.setPosition(x * TILE_SIZE, y * TILE_SIZE);
+                window.draw(tileShape);
+                if  (((y + 1 < height && y - 1 >= 0)) && (isWall(x,y+1) || isWall(x,y-1))){ //Case 1: check if up or down are walls (theoretically catches some corners, doors midway through a wall, and walls with space either above or below)
+                    sf::RectangleShape doorSide(sf::Vector2f(10.0f, TILE_SIZE));  //Case is complicated because we have to create doorSide depending on the case
+                    doorSide.setFillColor(sf::Color::Yellow);
+                    if (isWall(x-1,y) == 0){ //If there is no wall to the left door goes there, otherwise put it on the right
+                        doorSide.setPosition(x * TILE_SIZE, y * TILE_SIZE);
+                        window.draw(doorSide); 
+                    }
+                    else{
+                         doorSide.setPosition((x + 0.85) * TILE_SIZE, y * TILE_SIZE);
+                         window.draw(doorSide);
+                    }
+                }
+                else if (((x + 1 < width && x - 1 >= 0)) && (isWall(x+1,y) || isWall(x-1,y))){ //Case 2: check if in bounds + left or right are walls
+                    sf::RectangleShape doorSide(sf::Vector2f(TILE_SIZE, 10.0f));  //Case is complicated because we have to create doorSide depending on the case
+                    doorSide.setFillColor(sf::Color::Yellow);
+                 if (isWall(x,y-1) == 0){ //If there is no wall to the bottom
+                        doorSide.setPosition(x * TILE_SIZE, y * TILE_SIZE);
+                        window.draw(doorSide); 
+                    }
+                    else{
+                         doorSide.setPosition(x * TILE_SIZE, (y + 0.85) * TILE_SIZE);
+                         window.draw(doorSide);
+                    }
+                   
+                }
             }
         }
     }
@@ -99,3 +139,4 @@ void Map::renderMiniMap(sf::RenderWindow& window, const sf::View& miniMapView, c
     window.draw(playerArrow);
 
 }
+
