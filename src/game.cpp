@@ -74,9 +74,15 @@ void Game::gameLoop() //handles the gameloop
 
 Game::Game() : hpItem("Dragon Morsel", "Makes you feel like something, but you can't put your finger on it. Heals 100HP.", 100, 0, 0),  //when saves work, conditionally create these constructors
 manaItem("Energizing Moss", "Some moss you found in a chest. Not safe for human consumption, but somehow restores 100MP.", 0, 100, 0),
-pmember2("Maya",1, 2, 3, 5, 3, 3, 0, {{"Fire", 1.0}, {"Ice", 0.5}, {"Physical", 1.0}, {"Force", 1.5}, {"Electric", 1.0}}), //magic-y guy
-pmember3("Lisa", 1, 3, 3, 4, 3, 2, 0, {{"Fire", 1.5}, {"Ice", 1.0}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.5}}), // healer guy
-pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0, {{"Fire", 1.0}, {"Ice", 1.5}, {"Physical", 0.5}, {"Force", 1.0}, {"Electric", 1.0}}) //punchy guy
+pmember2("Maya", 1, 2, 3, 5, 3, 3, 0,
+     {{"Fire", 1.0}, {"Ice", 0.5}, {"Physical", 1.0}, {"Force", 1.5}, {"Electric", 1.0}}
+    ), //magic-y guy, SKILLS: low elec, damage debuff to all, low phys, medium ice, mediarama, omni dimension (20% instant kill (does not factor resistances)) ?
+pmember3("Lisa", 1, 3, 3, 4, 3, 2, 0, 
+    {{"Fire", 1.5}, {"Ice", 1.0}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.5}}
+), // healer guy, SKILLS: medium force single, diarama, damage resist down, medium almighty all, Sharpshoot(40% Instant Kill (factors in phys resistance)), mediarama
+pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0, 
+    {{"Fire", 1.0}, {"Ice", 1.5}, {"Physical", 0.5}, {"Force", 1.0}, {"Electric", 1.0}}
+) //punchy guy, SKILLS: medium ice single, low phys all, medium ice all, attack boost all, medium force one, high phys single
 // init all variables which are used throughout the game states here 
    
 {

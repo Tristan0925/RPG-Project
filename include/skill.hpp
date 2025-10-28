@@ -23,6 +23,7 @@ class Skill{
     float hitEvadeBoost = 0.0;
     float hitEvadeReduction = 0.0;
     float healthRestorePercent = 0.0;
+    bool isInstantKill = false;
 
     public:
     std::string getName() const { return name; }
@@ -49,4 +50,5 @@ class Skill{
     Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, int baseAtk, int mpCost, float baseHitRate, float missRate, int limit, int correction); //magic skill constructor
     Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, float damageResist, float damageAmp, float hitEvadeBoost, float hitEvadeReduction); //magic utility skills constructor (damage boost, damage resist, evasion/accuracy boost)
     Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, int mpCost, float healthRestorePercent); //magic healing skills constructor 
+    Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, bool isInstantKill, int mpCost, float baseHitRate); //instant kill skills constructor
 };

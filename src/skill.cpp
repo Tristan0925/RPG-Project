@@ -12,3 +12,6 @@ name(name), description(description), type(type), isSingleTarget(isSingleTarget)
 
 Skill::Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, int mpCost, float healthRestorePercent) :
 name(name), description(description), type(type), isSingleTarget(isSingleTarget), unlockLevel(unlockLevel), mpCost(mpCost), healthRestorePercent(healthRestorePercent) {}
+
+Skill::Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, bool isInstantKill, int mpCost, float baseHitRate) :
+name(name), description(description), type(type), isSingleTarget(isSingleTarget), unlockLevel(unlockLevel), isInstantKill(isInstantKill), mpCost(mpCost), baseHitRate(baseHitRate){}
