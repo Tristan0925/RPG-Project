@@ -11,8 +11,8 @@
 #include <string>
 #include <iostream>
 
-void Game::loadTextures() // load textures used everywhere
-{
+void Game::loadTextures() // load textures used in game_state_start and game_state_editor (for the most part anyway)
+{ 
     texmgr.loadTexture("background", "./assets/mainmenu.jpeg");
     texmgr.loadTexture("playerSprite", "./assets/player.png");
     texmgr.loadTexture("pmember2Sprite", "./assets/partymember2.png");
@@ -77,26 +77,26 @@ manaItem("Energizing Moss", "Some moss you found in a chest. Not safe for human 
 pmember2("Maya", 1, 2, 3, 5, 3, 3, 0,
      {{"Fire", 1.0}, {"Ice", 0.5}, {"Physical", 1.0}, {"Force", 1.5}, {"Electric", 1.0}},
 std::array<Skill, 9>{{ 
-        Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), //basic attack
-        Skill("Zio","Low electric damage to a single foe. High accuracy and medium crit rate.", "Electric", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), //phys-almighty skill
-        Skill("Tarunda", "Raises attack power for a single ally by 25%.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), //physical skill
-        Skill("Agi", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), //fire skill
-        Skill("Bufula", "Moderate ice damage to a single enemy.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), //force skill
-        Skill("Mediarama", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  //ice skill
-        Skill("Omni-Dimension", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), // self buff skill
+        Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), 
+        Skill("Zio","Low electric damage to a single foe. High accuracy and medium crit rate.", "Electric", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), 
+        Skill("Tarunda", "Raises attack power for a single ally by 25%.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), 
+        Skill("Agi", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8),
+        Skill("Bufula", "Moderate ice damage to a single enemy.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), 
+        Skill("Mediarama", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  
+        Skill("Omni-Dimension", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), 
         Skill(), //empty
         Skill() //empty 
     }}), //magic-y guy, SKILLS: attack, low elec, damage debuff to all, low phys, medium ice, mediarama, omni dimension (20% instant kill (does not factor resistances)) 
 pmember3("Lisa", 1, 3, 3, 4, 3, 2, 0, 
     {{"Fire", 1.5}, {"Ice", 1.0}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.5}},
     std::array<Skill, 9>{{ 
-        Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), //basic attack
-        Skill("Zanma","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), //phys-almighty skill
-        Skill("Diarama", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), //physical skill
-        Skill("Rakunda", "Reduces defense of all enemies by 25%.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), //fire skill
-        Skill("Megido", "High force damage to all foes.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), //force skill
-        Skill("Sharpshoot", "40% ", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  //ice skill
-        Skill("Mediarama", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), // self buff skill
+        Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), 
+        Skill("Zanma","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), 
+        Skill("Diarama", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), 
+        Skill("Rakunda", "Reduces defense of all enemies by 25%.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), 
+        Skill("Megido", "High force damage to all foes.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), 
+        Skill("Sharpshoot", "40% ", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  
+        Skill("Mediarama", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), 
         Skill(), //empty
         Skill() //empty
     }}
@@ -104,13 +104,13 @@ pmember3("Lisa", 1, 3, 3, 4, 3, 2, 0,
 pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0, 
     {{"Fire", 1.0}, {"Ice", 1.5}, {"Physical", 0.5}, {"Force", 1.0}, {"Electric", 1.0}},
     std::array<Skill, 9>{{ 
-        Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), //basic attack
-        Skill("Bufula","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), //phys-almighty skill
-        Skill("Andalucia", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), //physical skill
-        Skill("Mabufula", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), //fire skill
-        Skill("Matarukaja", "High force damage to all foes.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), //force skill
-        Skill("Zanma", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  //ice skill
-        Skill("Stasis Blade", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), // self buff skill
+        Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), 
+        Skill("Bufula","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), 
+        Skill("Andalucia", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), 
+        Skill("Mabufula", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), 
+        Skill("Matarukaja", "High force damage to all foes.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), 
+        Skill("Zanma", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  
+        Skill("Stasis Blade", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), 
         Skill(), //empty
         Skill() //empty
     }}

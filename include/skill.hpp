@@ -10,6 +10,7 @@ class Skill{
     std::string type = "N/A";
     bool isSingleTarget = true;
     int unlockLevel = 0;
+    bool isInstantKill = false;
     int baseAtk = 0;
     float hpCost = 0.0; 
     int mpCost = 0;
@@ -23,7 +24,7 @@ class Skill{
     float hitEvadeBoost = 0.0;
     float hitEvadeReduction = 0.0;
     float healthRestorePercent = 0.0;
-    bool isInstantKill = false;
+    
 
     public:
     std::string getName() const { return name; }
