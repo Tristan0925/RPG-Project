@@ -75,14 +75,46 @@ void Game::gameLoop() //handles the gameloop
 Game::Game() : hpItem("Dragon Morsel", "Makes you feel like something, but you can't put your finger on it. Heals 100HP.", 100, 0, 0),  //when saves work, conditionally create these constructors
 manaItem("Energizing Moss", "Some moss you found in a chest. Not safe for human consumption, but somehow restores 100MP.", 0, 100, 0),
 pmember2("Maya", 1, 2, 3, 5, 3, 3, 0,
-     {{"Fire", 1.0}, {"Ice", 0.5}, {"Physical", 1.0}, {"Force", 1.5}, {"Electric", 1.0}}
-    ), //magic-y guy, SKILLS: low elec, damage debuff to all, low phys, medium ice, mediarama, omni dimension (20% instant kill (does not factor resistances)) ?
+     {{"Fire", 1.0}, {"Ice", 0.5}, {"Physical", 1.0}, {"Force", 1.5}, {"Electric", 1.0}},
+std::array<Skill, 9>{{ 
+        Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), //basic attack
+        Skill("Zio","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), //phys-almighty skill
+        Skill("Tarunda", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), //physical skill
+        Skill("lowphys", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), //fire skill
+        Skill("Bufula", "High force damage to all foes.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), //force skill
+        Skill("mediarama", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  //ice skill
+        Skill("Omni-Dimension", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), // self buff skill
+        Skill(), //empty
+        Skill() //empty 
+    }}), //magic-y guy, SKILLS: attack, low elec, damage debuff to all, low phys, medium ice, mediarama, omni dimension (20% instant kill (does not factor resistances)) 
 pmember3("Lisa", 1, 3, 3, 4, 3, 2, 0, 
-    {{"Fire", 1.5}, {"Ice", 1.0}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.5}}
-), // healer guy, SKILLS: medium force single, diarama, damage resist down, medium almighty all, Sharpshoot(40% Instant Kill (factors in phys resistance)), mediarama
+    {{"Fire", 1.5}, {"Ice", 1.0}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.5}},
+    std::array<Skill, 9>{{ 
+        Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), //basic attack
+        Skill("medium force","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), //phys-almighty skill
+        Skill("Diarama", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), //physical skill
+        Skill("Rakunda", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), //fire skill
+        Skill("magi-almi", "High force damage to all foes.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), //force skill
+        Skill("Sharpshoot", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  //ice skill
+        Skill("Mediarama", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), // self buff skill
+        Skill(), //empty
+        Skill() //empty
+    }}
+), // healer guy, SKILLS: attack, medium force single, diarama, damage resist down, medium almighty all, sharpshoot(40% Instant Kill (factors in phys resistance)), mediarama
 pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0, 
-    {{"Fire", 1.0}, {"Ice", 1.5}, {"Physical", 0.5}, {"Force", 1.0}, {"Electric", 1.0}}
-) //punchy guy, SKILLS: medium ice single, low phys all, medium ice all, attack boost all, medium force one, high phys single
+    {{"Fire", 1.0}, {"Ice", 1.5}, {"Physical", 0.5}, {"Force", 1.0}, {"Electric", 1.0}},
+    std::array<Skill, 9>{{ 
+        Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), //basic attack
+        Skill("medium ice single","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), //phys-almighty skill
+        Skill("low phys all", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), //physical skill
+        Skill("medium ice all", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), //fire skill
+        Skill("Matarukaja", "High force damage to all foes.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), //force skill
+        Skill("medium force single", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  //ice skill
+        Skill("high phys single", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), // self buff skill
+        Skill(), //heal one skill
+        Skill() //elec skill
+    }}
+) //punchy guy, SKILLS: attack,medium ice single, low phys all, medium ice all, attack boost all, medium force one, high phys single
 // init all variables which are used throughout the game states here 
    
 {

@@ -5,7 +5,7 @@
 class Skill{
     private:
     // all floats are percentage based, all ints are flat numbers
-    std::string name = "N/A";
+    std::string name = "";
     std::string description = "N/A";
     std::string type = "N/A";
     bool isSingleTarget = true;

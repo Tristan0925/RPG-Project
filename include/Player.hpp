@@ -37,7 +37,7 @@ class Player {
     public:
         int inDoor;
         Player(); // Constructor
-        Player(std::string name, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int XP, std::map<std::string, float> affinities); //parameterized for NPCs as they inherit from player
+        Player(std::string name, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int XP, std::map<std::string, float> affinities, std::array<Skill,9> skillList); //parameterized for NPCs as they inherit from player
         Player(const sf::Vector2f& spawnPos);
         void move(sf::Vector2f delta); // Handle input and updates the position
         sf::Vector2f getPosition() const; // returns current position

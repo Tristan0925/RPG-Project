@@ -56,8 +56,8 @@ Player::Player() { //default constructor
     turnSpeed = 3.0f; // radians/sec, tweak to taste
 }
 
-Player::Player(std::string name, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int XP, std::map<std::string, float> affinities) : 
-    name(name), LVL(LVL), maxMP((LVL + MAG) * 3), maxHP((LVL + VIT) * 6), HP(maxHP), MP(maxMP), STR(STR), VIT(VIT), MAG(MAG), AGI(AGI), LU(LU), XP(XP),  affinities(affinities){} //parametized constructor (mainly used for NPCs)
+Player::Player(std::string name, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int XP, std::map<std::string, float> affinities, std::array<Skill, 9> skillsList) : 
+    name(name), LVL(LVL), maxMP((LVL + MAG) * 3), maxHP((LVL + VIT) * 6), HP(maxHP), MP(maxMP), STR(STR), VIT(VIT), MAG(MAG), AGI(AGI), LU(LU), XP(XP), affinities(affinities), skillsList(skillsList){} //parametized constructor (mainly used for NPCs)
 
 Player::Player(const sf::Vector2f& spawnPos) {
     position = spawnPos * 64.0f; // Start the player in the center of the screen
