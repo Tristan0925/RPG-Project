@@ -193,13 +193,15 @@ int Player::getmaxMP() const {
  }
  //https://megamitensei.fandom.com/wiki/Damage#Physical_Attack 
  //Also tells you how magic attacks work
- int Player::physATK(float scalar, int baseAtk){ //base atk + scalar * STR 
+ int Player::physATK(float scalar, int baseAtk, bool isCrit){ //base atk + scalar * STR 
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> damageDifferential(-5,5); //damage has a +/- 5% added to it, to keep damage from being deterministic
     int damageDifference = damageDifferential(gen);
     int damage = ((LVL + STR) * baseAtk / 15);
-    return damage + (damage * (damageDifference));
+    if (isCrit) return 1.5 * (damage + (damage * (damageDifference)));
+    else return (damage + (damage * (damageDifference)));
+
  }
  int Player::magATK(float scalar, int baseAtk, int limit, int correction){ //super complicated formulas which essentially says magic gets weaker over time (past lvl 30 is where it starts to fall off)
     int peak = ((limit - correction) / baseAtk) * (255/24);
@@ -250,6 +252,8 @@ int Player::getmaxMP() const {
             MAG += skillPoints;
         }
     }
+    maxHP = (LVL + VIT) * 6;
+    maxMP = (LVL + MAG) * 3;
     HP = maxHP;
     MP = maxMP;
  }

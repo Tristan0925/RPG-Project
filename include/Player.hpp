@@ -52,7 +52,7 @@ class Player {
         void heal(int healAmount);
         void spendMP(int mpSpent);
         void regainMP(int mpGained);
-        int physATK(float scalar, int baseAtk); //essentially skills will have a super complicated formula based on the wiki
+        int physATK(float scalar, int baseAtk, bool isCrit); //essentially skills will have a super complicated formula based on the wiki
         int magATK(float scalar, int baseAtk, int limit, int correction); 
         void levelUp(std::map<std::string, int> skillPointDistribution);
         int doorX, doorY; //track last door entered
