@@ -12,6 +12,7 @@ Handles keyboard input and updates the player's position in the world.
 #include "game_state_door.hpp"
 #include <iostream>
 #include <array>
+#include <map>
 
 
 
@@ -24,17 +25,17 @@ Handles keyboard input and updates the player's position in the world.
 
 Player::Player() { //default constructor
     name = "Tatsuya";
-    HP = 100;
-    maxHP = 100;
-    MP = 100;
-    maxMP = 100;
     LVL = 1;
-    STR;
-    VIT;
-    MAG;
-    AGI;
-    LU;
-    affinities = {{"Fire", 0.0}, {"Ice", 1.5}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.0}, {"Almighty", 1.1}};
+    STR = 4;
+    VIT = 3;
+    MAG = 3;
+    AGI = 3;
+    LU = 2;
+    maxHP = (LVL + VIT) * 6;
+    maxMP = (LVL + MAG) * 3;
+    HP = maxHP;
+    MP = maxMP;
+    affinities = {{"Fire", 0.0}, {"Ice", 1.5}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.0}};
     XP = 0;
     position = sf::Vector2f(0.f, 0.f);
     angle = 0.f;
@@ -42,8 +43,8 @@ Player::Player() { //default constructor
     turnSpeed = 3.0f; // radians/sec, tweak to taste
 }
 
-Player::Player(std::string name, int HP, int maxHP, int MP, int maxMP, int STR, int VIT, int MAG, int AGI, int LU, int XP, int LVL) : 
-    name(name), HP(HP), maxHP(maxHP), MP(MP), maxMP(maxMP), STR(STR), VIT(VIT), MAG(MAG), AGI(AGI), LU(LU), XP(XP), LVL(LVL){} //parametized constructor (mainly used for NPCs)
+Player::Player(std::string name, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int XP,  std::map<std::string, float> affinities) : 
+    name(name), LVL(LVL), maxMP((LVL + MAG) * 3), maxHP((LVL + VIT) * 6), HP(maxHP), MP(maxMP), STR(STR), VIT(VIT), MAG(MAG), AGI(AGI), LU(LU), XP(XP),  affinities(affinities){} //parametized constructor (mainly used for NPCs)
 
 Player::Player(const sf::Vector2f& spawnPos) {
     position = spawnPos * 64.0f; // Start the player in the center of the screen

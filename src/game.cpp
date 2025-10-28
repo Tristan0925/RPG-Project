@@ -74,10 +74,11 @@ void Game::gameLoop() //handles the gameloop
 
 Game::Game() : hpItem("Dragon Morsel", "Makes you feel like something, but you can't put your finger on it. Heals 100HP.", 100, 0, 0),  //when saves work, conditionally create these constructors
 manaItem("Energizing Moss", "Some moss you found in a chest. Not safe for human consumption, but somehow restores 100MP.", 0, 100, 0),
-pmember2("Maya",75, 75, 120, 120, 10, 20, 20, 20, 0, 11), //magic-y guy
-pmember3("Lisa", 125, 125, 75, 75, 15, 25, 15, 15, 0, 12), // punchy guy
-pmember4("Eikichi", 100, 100, 90, 90, 10, 10, 10, 10, 0, 10 ) //healer guy
+pmember2("Maya",1, 2, 3, 5, 3, 3, 0, {{"Fire", 1.0}, {"Ice", 0.5}, {"Physical", 1.0}, {"Force", 1.5}, {"Electric", 1.0}}), //magic-y guy
+pmember3("Lisa", 1, 3, 3, 4, 3, 2, 0, {{"Fire", 1.5}, {"Ice", 1.0}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.5}}), // healer guy
+pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0, {{"Fire", 1.0}, {"Ice", 1.5}, {"Physical", 0.5}, {"Force", 1.0}, {"Electric", 1.0}}) //punchy guy
 // init all variables which are used throughout the game states here 
+   
 {
    this->loadTextures();
    this->window.create(sf::VideoMode(1920, 1080), "Untitled RPG Project"); // create a window

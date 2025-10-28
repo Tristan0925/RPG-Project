@@ -27,19 +27,19 @@ class Player {
         float targetAngle;  // snapped target
         float turnSpeed;    // turn speed
         void tryMove(sf::Vector2f delta, const Map& map); // checks for walls
-        sf::Vector2f postion;
+        
         std::array<Item, 2> inventory; // Only 2 items in game: Dragon Morsel (healing) and Energizing Moss (mana restoration) 
     protected:
         std::string name; //remember to add a change name function so when we start the game, we prompt to change the name
-        int HP, maxHP, MP, maxMP, STR, VIT, MAG, AGI, LU, XP, LVL;
+
+        int LVL, maxMP, maxHP, HP, MP, STR, VIT, MAG, AGI, LU, XP;
         std::map<std::string, float> affinities; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [NULL(0)/RESIST(0.5)/NEUTRAL(1.0)/WEAK(1.5)]) If resist, x0.5 dmg, If weak, 1.5x dmg.
         std::string skills[7];  // Attack + every affinity + almighty. I think the battle_game_state should figure out damage #'s and stuff. This probably should be its own class.
     public:
         int inDoor;
         Player(); // Constructor
-        Player(std::string name, int HP, int maxHP, int MP, int maxMP, int STR, int VIT, int MAG, int AGI, int LU, int XP, int LVL); //parameterized for NPCs as they inherit from player
+        Player(std::string name, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int XP, std::map<std::string, float> affinities); //parameterized for NPCs as they inherit from player
         Player(const sf::Vector2f& spawnPos);
-
         void move(sf::Vector2f delta); // Handle input and updates the position
         sf::Vector2f getPosition() const; // returns current position
         void setPosition(const sf::Vector2f& pos);

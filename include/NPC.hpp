@@ -5,7 +5,7 @@
 
 class NPC : public Player {
     public:
-    NPC(std::string name, int HP, int maxHP, int MP, int maxMP, int STR, int VIT, int AGI, int LU, int XP, int LVL);
+    NPC(std::string name, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int XP,  std::map<std::string, float> affinities);
     ~NPC();
 
 
