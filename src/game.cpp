@@ -78,11 +78,11 @@ pmember2("Maya", 1, 2, 3, 5, 3, 3, 0,
      {{"Fire", 1.0}, {"Ice", 0.5}, {"Physical", 1.0}, {"Force", 1.5}, {"Electric", 1.0}},
 std::array<Skill, 9>{{ 
         Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), //basic attack
-        Skill("Zio","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), //phys-almighty skill
-        Skill("Tarunda", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), //physical skill
-        Skill("lowphys", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), //fire skill
-        Skill("Bufula", "High force damage to all foes.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), //force skill
-        Skill("mediarama", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  //ice skill
+        Skill("Zio","Low electric damage to a single foe. High accuracy and medium crit rate.", "Electric", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), //phys-almighty skill
+        Skill("Tarunda", "Raises attack power for a single ally by 25%.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), //physical skill
+        Skill("Agi", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), //fire skill
+        Skill("Bufula", "Moderate ice damage to a single enemy.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), //force skill
+        Skill("Mediarama", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  //ice skill
         Skill("Omni-Dimension", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), // self buff skill
         Skill(), //empty
         Skill() //empty 
@@ -91,11 +91,11 @@ pmember3("Lisa", 1, 3, 3, 4, 3, 2, 0,
     {{"Fire", 1.5}, {"Ice", 1.0}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.5}},
     std::array<Skill, 9>{{ 
         Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), //basic attack
-        Skill("medium force","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), //phys-almighty skill
+        Skill("Zanma","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), //phys-almighty skill
         Skill("Diarama", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), //physical skill
-        Skill("Rakunda", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), //fire skill
-        Skill("magi-almi", "High force damage to all foes.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), //force skill
-        Skill("Sharpshoot", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  //ice skill
+        Skill("Rakunda", "Reduces defense of all enemies by 25%.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), //fire skill
+        Skill("Megido", "High force damage to all foes.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), //force skill
+        Skill("Sharpshoot", "40% ", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  //ice skill
         Skill("Mediarama", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), // self buff skill
         Skill(), //empty
         Skill() //empty
@@ -105,14 +105,14 @@ pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0,
     {{"Fire", 1.0}, {"Ice", 1.5}, {"Physical", 0.5}, {"Force", 1.0}, {"Electric", 1.0}},
     std::array<Skill, 9>{{ 
         Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), //basic attack
-        Skill("medium ice single","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), //phys-almighty skill
-        Skill("low phys all", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), //physical skill
-        Skill("medium ice all", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), //fire skill
+        Skill("Bufula","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), //phys-almighty skill
+        Skill("Andalucia", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), //physical skill
+        Skill("Mabufula", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), //fire skill
         Skill("Matarukaja", "High force damage to all foes.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), //force skill
-        Skill("medium force single", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  //ice skill
-        Skill("high phys single", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), // self buff skill
-        Skill(), //heal one skill
-        Skill() //elec skill
+        Skill("Zanma", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  //ice skill
+        Skill("Stasis Blade", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), // self buff skill
+        Skill(), //empty
+        Skill() //empty
     }}
 ) //punchy guy, SKILLS: attack,medium ice single, low phys all, medium ice all, attack boost all, medium force one, high phys single
 // init all variables which are used throughout the game states here 
