@@ -13,6 +13,8 @@ Handles keyboard input and updates the player's position in the world.
 #include <fstream>
 #include <iostream>
 using json = nlohmann::json;
+#include "game_state_door.hpp"
+#include <array>
 
 
 
@@ -23,7 +25,8 @@ using json = nlohmann::json;
     return a;
 }
 
-Player::Player() {
+Player::Player() { //default constructor
+    name = "Tatsuya";
     HP = 100;
     maxHP = 100;
     MP = 100;
@@ -35,6 +38,9 @@ Player::Player() {
     targetAngle = 0.f;
     turnSpeed = 3.0f; // radians/sec, tweak to taste
 }
+
+Player::Player(std::string name, int HP, int maxHP, int MP, int maxMP, int STR, int VIT, int AGI, int LU, int XP, int LVL) : 
+    name(name), HP(HP), maxHP(maxHP), MP(MP), maxMP(maxMP), STR(STR), VIT(VIT), AGI(AGI), LU(LU), XP(XP), LVL(LVL){} //parametized constructor (mainly used for NPCs)
 
 Player::Player(const sf::Vector2f& spawnPos) {
     position = spawnPos * 64.0f; // Start the player in the center of the screen
@@ -104,8 +110,6 @@ void Player::setDefault(const Map& map)
 }
 
 
-
-
 // Player collision detection
 void Player::tryMove(sf::Vector2f delta, const Map& map) {
     
@@ -119,7 +123,11 @@ void Player::tryMove(sf::Vector2f delta, const Map& map) {
     if (!map.isWall(gridX, gridY)) {
         position = newPos;
     }
-    // if hitting door, load door gamestate 
+    if (map.isDoor(gridX,gridY)){
+        inDoor = 1;
+        position = position - delta;
+        std::cout <<"door position: (" << gridX << ", " << gridY << ")" << std::endl;
+    }
 }
 
 
@@ -133,6 +141,28 @@ void Player::moveForward(float distance, const Map& map) { // Forward = add dire
 void Player::moveBackward(float distance, const Map& map) {
     sf::Vector2f dir(std::cos(angle), std::sin(angle)); // Backward = subtract direction × distance.
     tryMove(-dir * distance, map);
+}
+
+void Player::addToInventory(Item item, int quantity){
+    int firstemptyslot = -1;
+    for (size_t i = 0; i < inventory.size(); i++){ 
+        if (inventory[i].showName() == item.showName()){ 
+            inventory[i].addToQuantity(quantity);
+            return;
+        } 
+        if (inventory[i].showName() == "Empty Slot" && firstemptyslot == -1){
+          firstemptyslot = i;
+        }
+    }
+    if (firstemptyslot != -1){ 
+    inventory[firstemptyslot] = item;
+    inventory[firstemptyslot].addToQuantity(quantity);
+    }
+    else std::cout << "Error: item not found." << std::endl;
+}
+
+std::array<Item, 2> Player::getInventory() const{
+    return inventory;
 }
 
 int Player::getHP() const {
@@ -213,7 +243,16 @@ bool Player::saveToFile(const std::string& filename) const {
     j["XP"] = data.XP;
     j["LVL"] = data.LVL;
     j["MONEY"] = data.MONEY;
-    j["inventory"] = data.inventory;
+    j["inventory"] = json::array();
+    for (const auto& item : data.inventory) {
+        j["inventory"].push_back({
+            {"name", item.showName()},
+            {"description", item.showDescription()},
+            {"healAmount", item.getHealAmount()},
+            {"manaAmount", item.getManaAmount()},
+            {"quantity", item.getQuantity()}
+        });
+    }
     j["affinities"] = data.affinities;
 
     // skills array
@@ -255,10 +294,20 @@ bool Player::loadFromFile(const std::string& filename) {
     data.LVL = j.value("LVL", 1);
     data.MONEY = j.value("MONEY", 0);
         
-    if (j.contains("inventory") && j["inventory"].is_object())
-        data.inventory = j["inventory"].get<std::map<std::string,int>>();
-    else
-        data.inventory.clear();
+    if (j.contains("inventory") && j["inventory"].is_array()) {
+        for (size_t i = 0; i < std::min(j["inventory"].size(), data.inventory.size()); ++i) {
+            const auto& it = j["inventory"][i];
+            std::string name = it.value("name", "Empty Slot");
+            std::string desc = it.value("description", "");
+            int heal = it.value("healAmount", 0);
+            int mana = it.value("manaAmount", 0);
+            int qty  = it.value("quantity", 0);
+            data.inventory[i] = Item(name, desc, heal, mana, qty);
+        }
+    } else {
+        for (auto& it : data.inventory)
+            it = Item("Empty Slot", "", 0, 0, 0);
+    }
 
     if (j.contains("affinities") && j["affinities"].is_object())
         data.affinities = j["affinities"].get<std::map<std::string,int>>();

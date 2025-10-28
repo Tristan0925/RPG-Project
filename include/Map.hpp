@@ -7,13 +7,14 @@ This file declares what map can do without the how. The how is map.cpp, hpp serv
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
-
+#include <array>
+#include <string>
 class Map {
     private:
         std::vector<std::vector<int>> grid; // holds the map data - 0 = empty, 1 = wall, 2 = door
         int width; // map width
         int height; // map height
-
+        std::vector<std::string> doorCoordinates;
         float spawnX = -1.0f; // in grid coordinates
         float spawnY = -1.0f;
     
@@ -28,6 +29,9 @@ class Map {
         // Getters for map size
         int getWidth() const { return width; }
         int getHeight() const { return height; }
+
+        // Getter for doorCoordinates
+        std::vector<std::string> getDoorCoordinates() const { return doorCoordinates; }
 
         // Getters for map spawn
         float getSpawnX() const { return spawnX;}

@@ -8,6 +8,10 @@
 #include "Player.hpp"
 #include "Map.hpp"
 #include "NPC.hpp"
+#include "item.hpp"
+#include <string>
+#include <vector>
+#include <unordered_map>
 
 class GameState;
 
@@ -19,12 +23,18 @@ class Game
 
 
     public:
+    Item hpItem;
+    Item manaItem;
     Player player;
     NPC pmember2;
     NPC pmember3;
     NPC pmember4;
+  
+
 
     Map map;
+    std::vector<std::string> doorCoordinates;
+    std::unordered_map<std::string, bool> doorCoordinatesToHasLoot;
     sf::Font font;
       
 

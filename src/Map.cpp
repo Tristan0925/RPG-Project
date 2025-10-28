@@ -10,7 +10,7 @@ It’s essentially the world manager — it knows what the world looks like and 
 #include <cmath> 
 #include <fstream>
 #include <iostream>
-
+#include <string>
 Map::Map() {
     width = 0; // set to empty so we can fill the empty space with the txt file 
     height = 0;
@@ -37,8 +37,9 @@ bool Map::loadFromFile(const std::string& filename) {
                 spawnX = static_cast<float>(x);
                 spawnY = static_cast<float>(y);
             }
-            else if (c == '2'){
+            else if (c == '2'){ // door
                 row.push_back(2);
+                doorCoordinates.push_back("(" + std::to_string(x) + ", " + std::to_string(y) + ")");
             }
             else row.push_back(0);          // empty
         }
@@ -138,3 +139,4 @@ void Map::renderMiniMap(sf::RenderWindow& window, const sf::View& miniMapView, c
     window.draw(playerArrow);
 
 }
+

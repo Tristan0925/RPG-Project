@@ -165,7 +165,7 @@ GameStateStart::GameStateStart(Game* game):
     // Setup title
     title.setFont(this->game->font);
     title.setString("UNTITLED RPG GAME");
-    title.setCharacterSize(100); // in pixels
+    title.setCharacterSize(100); 
     title.setFillColor(sf::Color::Red);
     title.setStyle(sf::Text::Italic | sf::Text::Bold);
     title.setScale(0.5f, 0.5f); // fixed size

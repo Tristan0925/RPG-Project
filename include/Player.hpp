@@ -15,6 +15,8 @@ Like having modules in python to handle classes and then you import the files yo
 #include <string>
 #include <array>
 #include <map>
+#include "item.hpp"
+#include <array>
 class Map;
 
 // Struct for saving and loading player state.
@@ -33,7 +35,7 @@ struct PlayerData {
     int XP;
     int LVL;
     int MONEY;
-    std::map<std::string, int> inventory;
+    std::array<Item, 2> inventory;
     std::map<std::string, int> affinities;
     std::array<std::string, 7> skills;
 };
@@ -48,23 +50,16 @@ class Player {
         sf::Vector2f postion;
         int MONEY;
         // Attack + every affinity + almighty. I think the battle_game_state should figure out damage #'s and stuff.
-        std::map<std::string, int> inventory; //dict that maps items to item amount
+        std::array<Item, 2> inventory; // Only 2 items in game: Dragon Morsel (healing) and Energizing Moss (mana restoration) 
     protected:
-        int HP;
-        int maxHP;
-        int MP;
-        int maxMP;
-        int STR;
-        int VIT;
-        int AGI;
-        int LU;
-        int XP;
-        int LVL;
-        std::map<std::string, int> affinities; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [RESIST(-1)/NEUTRAL(0)/WEAK(1)]) If resist, x0.5 dmg, If weak, 1.5x dmg.
-        std::array<std::string, 7> skills;
-
+        std::string name; //remember to add a change name function so when we start the game, we prompt to change the name
+        int HP, maxHP, MP, maxMP, STR, VIT, AGI, LU, XP, LVL;
+        std::map<std::string, int> affinities; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [RESIST(0.5)/NEUTRAL(1.0)/WEAK(1.5)]) If resist, x0.5 dmg, If weak, 1.5x dmg.
+        std::string skills[7];
     public:
+        int inDoor;
         Player(); // Constructor
+        Player(std::string name, int HP, int maxHP, int MP, int maxMP, int STR, int VIT, int AGI, int LU, int XP, int LVL); //parameterized for NPCs as they inherit from player
         Player(const sf::Vector2f& spawnPos);
 
         void move(sf::Vector2f delta); // Handle input and updates the position
@@ -85,14 +80,6 @@ class Player {
         void turnLeft();
         void turnRight();
         void update(float dt);
-
-        int getHP() const;
-        int getmaxHP() const;
-        int getMP() const;
-        int getmaxMP() const;
-        int getMoney() const;
-        int getLVL() const;
-        // Save/load helper functions, these let us extract or apply the player's data so we can easily write it to or read it from a file.
         PlayerData getData() const;       // Create a snapshot of player state
         void setData(const PlayerData&);  // Restore player state from snapshot
         bool saveToFile(const std::string& filename) const;
@@ -100,5 +87,10 @@ class Player {
         void setDefault(const Map& map);
 
 
+        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getMoney() const, getLVL() const;
+        std::array<Item, 2> getInventory() const;
+        void addToInventory(Item item, int quantity);
+    
+        
 };
 

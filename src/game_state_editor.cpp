@@ -4,6 +4,7 @@
 #include <cmath>
 #include "game_state.hpp"
 #include "game_state_editor.hpp"
+#include "game_state_door.hpp"
 #include "iostream"
 #include "algorithm"
 #include "Button.hpp"
@@ -522,6 +523,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
     this->game->window.draw(playerIcon);
 
     this->game->window.setView(this->game->window.getDefaultView());
+    this->game->window.draw(fader);
 
     // Pause menu
     if (isPaused) {
@@ -571,13 +573,55 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
     return;
 }
 
+void GameStateEditor::enterDoor(int x, int y){
+    this->game->pushState(std::make_unique<GameStateDoor>(this->game, x, y-1));
+    return;
+}
 
 void GameStateEditor::update(const float dt) //If something needs to be updated based on dt, then go here
 {
+
     if (isPaused)
         return;
     moveSpeed = 100.f * dt;   // movement speed
     this->game->player.update(dt);
+    
+   
+    if (this->game->player.inDoor && !enteringDoor){
+        enteringDoor = true;
+        this->game->player.inDoor = 0;
+        doorState = 1;
+    }       
+        //play sound
+        if (doorState & !exitingDoor){
+         transparency += static_cast<int>(100 * dt);
+         if (transparency >= 255) transparency = 255;
+         fader.setFillColor(sf::Color(0,0,0,static_cast<sf::Uint8>(transparency)));
+        }
+        
+        
+        
+        if (transparency >= 255 && !exitingDoor){
+            int x = static_cast<int>(this->game->player.getPosition().x / 64);
+            int y = static_cast<int>(this->game->player.getPosition().y / 64);
+            enterDoor(x,y);
+            exitingDoor = true;
+            exitTimer = exitDuration;
+            transparency = 0; //add transition if you want around here
+            fader.setFillColor(sf::Color(255,0,0,static_cast<sf::Uint8>(transparency)));
+        }
+
+        if (exitingDoor){
+            exitTimer -= dt;
+            this->game->player.moveBackward(moveSpeed, this->game->map);
+            if (exitTimer <= 0.0f){
+                exitingDoor = false;
+                enteringDoor = false;
+                doorState = 0;
+               
+            }
+        }
+    
     return;
 }
 
@@ -695,12 +739,12 @@ void GameStateEditor::handleInput() // Inputs go here
     }
 
     // Forward movement
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !doorState) { 
         this->game->player.moveForward(moveSpeed, this->game->map);
     }
 
     // Backward movement
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S ) && !doorState) {
         this->game->player.moveBackward(moveSpeed, this->game->map);
     }
 
@@ -708,7 +752,7 @@ void GameStateEditor::handleInput() // Inputs go here
     static bool rightPressed = false;
 
     // Turn left
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !doorState) {
         if (!leftPressed) {
             this->game->player.turnLeft();
             leftPressed = true;
@@ -718,7 +762,7 @@ void GameStateEditor::handleInput() // Inputs go here
     }
 
     // Turn right
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && !doorState) {
         if (!rightPressed) {
             this->game->player.turnRight();
             rightPressed = true;
@@ -747,13 +791,18 @@ GameStateEditor::GameStateEditor(Game* game) //This is a constructor
     this->game = game;
     sf::Vector2f pos = sf::Vector2f(this->game->window.getSize());
     this->guiView.setSize(pos);
-    this->gameView.setSize(pos);
+    this->gameView.setSize(pos); 
     pos *= 0.5f;
     this->guiView.setCenter(pos);
     this->gameView.setCenter(pos);
 
     moveSpeed = 0.f;
 
+    transparency = 0;
+ 
+    fader.setSize(sf::Vector2f(1920,1080));
+    fader.setFillColor(sf::Color(255,0,0,static_cast<sf::Uint8>(transparency)));
+  
     // Load textures once
     doorTexture.loadFromFile("assets/door_texture.png");
     doorTexture.setSmooth(false);
