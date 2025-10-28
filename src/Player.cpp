@@ -191,40 +191,46 @@ int Player::getmaxMP() const {
     if (MP + mpGained > maxMP) MP = maxMP;
     else MP += mpGained;
  }
+
  //https://megamitensei.fandom.com/wiki/Damage#Physical_Attack 
  //Also tells you how magic attacks work
- int Player::physATK(float scalar, int baseAtk, bool isCrit){ //base atk + scalar * STR 
+
+ int Player::physATK(float scalar, int baseAtk, bool isCrit){ //No one can be weak to phys, hopefully somehow balances out the weakness of magic attacks over time
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> damageDifferential(-5,5); //damage has a +/- 5% added to it, to keep damage from being deterministic
     int damageDifference = damageDifferential(gen);
     int damage = ((LVL + STR) * baseAtk / 15);
-    if (isCrit) return 1.5 * (damage + (damage * (damageDifference)));
+    if (isCrit) return (int) (1.5 * (damage + (damage * (damageDifference))));
     else return (damage + (damage * (damageDifference)));
-
  }
- int Player::magATK(float scalar, int baseAtk, int limit, int correction){ //super complicated formulas which essentially says magic gets weaker over time (past lvl 30 is where it starts to fall off)
+
+ int Player::magATK(float scalar, int baseAtk, int limit, int correction, bool isWeak){ //super complicated formulas which essentially says magic gets weaker over time (past lvl 30 is where it starts to fall off)
     int peak = ((limit - correction) / baseAtk) * (255/24);
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> damageDifferential(-5,5); //damage has a +/- 5% added to it, to keep damage from being deterministic
     int damageDifference = damageDifferential(gen);
     int damage;
+    float weaknessMultiplier;
+    if (isWeak) weaknessMultiplier = 1.5;
+    else weaknessMultiplier = 1.0;
+
     if (LVL < peak){
         damage = 0.004 * (5 * (MAG + 36) - LVL) * ((24 * baseAtk * (LVL / 255) + correction));
-        return damage + (damage * (damageDifference));
+        return (int) (damage + (damage * (damageDifference))) * weaknessMultiplier;
     }
     else if (LVL = peak){
         damage = 0.004 * ((5 * (MAG + 36)) - ((limit - correction) / baseAtk) * (255/24)) * limit;
-        return damage + (damage * (damageDifference));
+        return (int) (damage + (damage * (damageDifference))) * weaknessMultiplier;
     }
     else if (LVL > peak && LVL <= 160){
         damage = 0.004 * (5 * (MAG + 36) - LVL) * limit;
-        return damage + (damage * (damageDifference));
+        return (int) (damage + (damage * (damageDifference))) * weaknessMultiplier;
     }
     else if (LVL > 160){
         damage = 0.004 * (5 * (MAG + 36) - 160) * limit;
-        return damage + (damage * (damageDifference));
+        return (int) (damage + (damage * (damageDifference))) * weaknessMultiplier;
     }
     else 
      std::cout << "Something went horribly wrong while attacking if you are seeing this" << std::endl;
