@@ -31,7 +31,8 @@ class Skill{
     std::string getDescription() const { return description; }
     std::string getType() const { return type; }
     int getUnlockLevel() const { return unlockLevel; }
-    bool getIsSingleTarget() const {return isSingleTarget;}
+    bool getIsSingleTarget() const { return isSingleTarget; }
+    bool getIsInstantKill() const { return isInstantKill; }
     int getBaseAtk() const { return baseAtk; }
     float getHpCost() const { return hpCost; }
     int getMpCost() const { return mpCost; }
@@ -44,6 +45,7 @@ class Skill{
     float getHitEvadeBoost() const {return hitEvadeBoost;}
     float getHitEvadeReduction() const {return hitEvadeReduction; }
     float getHealthRestorePercent() const { return healthRestorePercent; }
+
 
 
     Skill() = default;

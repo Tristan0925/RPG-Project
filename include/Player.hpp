@@ -33,7 +33,7 @@ class Player {
         std::string name; //remember to add a change name function so when we start the game, we prompt to change the name
         int LVL, maxMP, maxHP, HP, MP, STR, VIT, MAG, AGI, LU, XP;
         std::map<std::string, float> affinities; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [NULL(0)/RESIST(0.5)/NEUTRAL(1.0)/WEAK(1.5)]) If resist, x0.5 dmg, If weak, 1.5x dmg.
-        std::array<Skill, 9> skillsList;  // Attack + every affinity + phys-almighty (ignores resistances, uses physical damage formula) + some extra skills. This probably should be its own class.
+        std::array<const Skill*, 9> skillsList;  // Attack + every affinity + phys-almighty (ignores resistances, uses physical damage formula) + some extra skills. This probably should be its own class.
     public:
         int inDoor;
         Player(); // Constructor
@@ -63,6 +63,7 @@ class Player {
         int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const;
         std::array<Item, 2> getInventory() const;
         void addToInventory(Item item, int quantity);
+        void addToSkillList(const Skill& skill);
     
         
 };

@@ -15,6 +15,7 @@ Handles keyboard input and updates the player's position in the world.
 #include <array>
 #include <map>
 #include <random>
+#include <vector>
 
 
 
@@ -39,23 +40,21 @@ Player::Player() { //default constructor
     MP = maxMP;
     affinities = {{"Fire", 0.0}, {"Ice", 1.5}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.0}};
     XP = 0;
-    skillsList = std::array<Skill, 9>{{ 
-        Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), //basic attack
-        Skill("Freikugel","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), //phys-almighty skill
-        Skill("Divine Shot", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), //physical skill
-        Skill("Fire Breath", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), //fire skill
-        Skill("Tornado", "High force damage to all foes.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), //force skill
-        Skill("Flash Freeze", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  //ice skill
-        Skill("Focus", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), // self buff skill
-        Skill("Dia", "Moderately restores one ally's health.", "Healing", 2, true, 7, 15.0f), //heal one skill
-        Skill("Shock", "Low electric damage to one foe.", "Electric", 1, true, 25, 5, 100.0f, 0.0f, 70, 7) //elec skill
-    }};
+    skillsList = { nullptr };
     position = sf::Vector2f(0.f, 0.f);
     angle = 0.f;
     targetAngle = 0.f;
     turnSpeed = 3.0f; // radians/sec, tweak to taste
 }
-
+        // Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), //basic attack
+        // Skill("Freikugel","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), //phys-almighty skill
+        // Skill("Divine Shot", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), //physical skill
+        // Skill("Fire Breath", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), //fire skill
+        // Skill("Tornado", "High force damage to all foes.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), //force skill
+        // Skill("Flash Freeze", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  //ice skill
+        // Skill("Focus", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), // self buff skill
+        // Skill("Dia", "Moderately restores one ally's health.", "Healing", 2, true, 7, 15.0f), //heal one skill
+        // Skill("Shock", "Low electric damage to one foe.", "Electric", 1, true, 25, 5, 100.0f, 0.0f, 70, 7) //elec skill
 Player::Player(std::string name, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int XP, std::map<std::string, float> affinities, std::array<Skill, 9> skillsList) : 
     name(name), LVL(LVL), maxMP((LVL + MAG) * 3), maxHP((LVL + VIT) * 6), HP(maxHP), MP(maxMP), STR(STR), VIT(VIT), MAG(MAG), AGI(AGI), LU(LU), XP(XP), affinities(affinities), skillsList(skillsList){} //parametized constructor (mainly used for NPCs)
 
@@ -274,6 +273,16 @@ int Player::getmaxMP() const {
     maxMP = (LVL + MAG) * 3;
     HP = maxHP;
     MP = maxMP;
+ }
+
+ void Player::addToSkillList(const Skill& skill){
+    for (auto& skillSlot : skillsList){
+        if (s == nullptr){
+            s = &skill;
+            return;
+        }
+    }
+    std::cout << "IM FULL STOP IT" << std::endl;
  }
 
 

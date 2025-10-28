@@ -51,5 +51,6 @@
         "istream": "cpp",
         "sstream": "cpp",
         "cinttypes": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }
