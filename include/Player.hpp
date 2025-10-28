@@ -17,6 +17,7 @@ Like having modules in python to handle classes and then you import the files yo
 #include <map>
 #include "item.hpp"
 #include <array>
+#include "skill.hpp"
 
 class Map;
 
@@ -30,10 +31,9 @@ class Player {
         std::array<Item, 2> inventory; // Only 2 items in game: Dragon Morsel (healing) and Energizing Moss (mana restoration) 
     protected:
         std::string name; //remember to add a change name function so when we start the game, we prompt to change the name
-
         int LVL, maxMP, maxHP, HP, MP, STR, VIT, MAG, AGI, LU, XP;
         std::map<std::string, float> affinities; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [NULL(0)/RESIST(0.5)/NEUTRAL(1.0)/WEAK(1.5)]) If resist, x0.5 dmg, If weak, 1.5x dmg.
-        std::string skills[7];  // Attack + every affinity + almighty. I think the battle_game_state should figure out damage #'s and stuff. This probably should be its own class.
+        std::array<Skill, 7> skillsList;  // Attack + every affinity + almighty. I think the battle_game_state should figure out damage #'s and stuff. This probably should be its own class.
     public:
         int inDoor;
         Player(); // Constructor
