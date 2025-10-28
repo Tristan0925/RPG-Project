@@ -22,6 +22,7 @@ class Skill{
     float damageAmp = 0.0;
     float hitEvadeBoost = 0.0;
     float hitEvadeReduction = 0.0;
+    int healthRestore = 0.0;
 
     public:
     std::string getName() const { return name; }
@@ -39,4 +40,5 @@ class Skill{
     Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, int baseAtk, float hpCost, float baseHitRate, float missRate, float critRate); //phys skill constructor
     Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, int baseAtk, int mpCost, float baseHitRate, float missRate, int limit, int correction); //magic skill constructor
     Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, float damageResist, float damageAmp, float hitEvadeBoost, float hitEvadeReduction); //magic utility skills constructor (damage boost, damage resist, evasion/accuracy boost)
+    Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, int healthRestore); //magic healing skills constructor 
 };

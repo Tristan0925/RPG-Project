@@ -9,3 +9,6 @@ name(name), description(description), type(type), isSingleTarget(isSingleTarget)
 
 Skill::Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, float damageResist, float damageAmp, float hitEvadeBoost, float hitEvadeReduction) :
 name(name), description(description), type(type), isSingleTarget(isSingleTarget), unlockLevel(unlockLevel), damageResist(damageResist), damageAmp(damageAmp), hitEvadeBoost(hitEvadeBoost), hitEvadeReduction(hitEvadeReduction){}
+
+Skill::Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, int healthRestore) :
+name(name), description(description), type(type), isSingleTarget(isSingleTarget), unlockLevel(unlockLevel), healthRestore(healthRestore) {}
