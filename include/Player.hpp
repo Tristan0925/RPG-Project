@@ -34,7 +34,6 @@ struct PlayerData {
     int LU;
     int XP;
     int LVL;
-    int MONEY;
     std::array<Item, 2> inventory;
     std::map<std::string, int> affinities;
     std::array<std::string, 7> skills;
@@ -48,7 +47,6 @@ class Player {
         float turnSpeed;    // turn speed
         void tryMove(sf::Vector2f delta, const Map& map); // checks for walls
         sf::Vector2f postion;
-        int MONEY;
         // Attack + every affinity + almighty. I think the battle_game_state should figure out damage #'s and stuff.
         std::array<Item, 2> inventory; // Only 2 items in game: Dragon Morsel (healing) and Energizing Moss (mana restoration) 
     protected:
@@ -87,7 +85,7 @@ class Player {
         void setDefault(const Map& map);
 
 
-        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getMoney() const, getLVL() const;
+        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const;
         std::array<Item, 2> getInventory() const;
         void addToInventory(Item item, int quantity);
     

@@ -195,7 +195,6 @@ PlayerData Player::getData() const {
     data.LU = LU;
     data.XP = XP;
     data.LVL = LVL;
-    data.MONEY = MONEY;
     data.inventory = inventory;
     data.affinities = affinities;
 
@@ -218,7 +217,6 @@ void Player::setData(const PlayerData& data) {
     LU = data.LU;
     XP = data.XP;
     LVL = data.LVL;
-    MONEY = data.MONEY;
     inventory = data.inventory;
     affinities = data.affinities;
 
@@ -242,7 +240,6 @@ bool Player::saveToFile(const std::string& filename) const {
     j["LU"] = data.LU;
     j["XP"] = data.XP;
     j["LVL"] = data.LVL;
-    j["MONEY"] = data.MONEY;
     j["inventory"] = json::array();
     for (const auto& item : data.inventory) {
         j["inventory"].push_back({
@@ -292,7 +289,6 @@ bool Player::loadFromFile(const std::string& filename) {
     data.LU = j.value("LU", 10);
     data.XP = j.value("XP", 0);
     data.LVL = j.value("LVL", 1);
-    data.MONEY = j.value("MONEY", 0);
         
     if (j.contains("inventory") && j["inventory"].is_array()) {
         for (size_t i = 0; i < std::min(j["inventory"].size(), data.inventory.size()); ++i) {
