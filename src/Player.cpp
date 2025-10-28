@@ -40,15 +40,15 @@ Player::Player() { //default constructor
     affinities = {{"Fire", 0.0}, {"Ice", 1.5}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.0}};
     XP = 0;
     skillsList = std::array<Skill, 9>{{ 
-        {"Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0, 100.0, 3.0, 13.0}, //basic attack
-        {"Freikugel","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0, 100.0, 3.0, 30.0}, //phys-almighty skill
-        {"Divine Shot", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0, 100.0, 3.0, 30.0}, //physical skill
-        {"Fire Breath", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0, 0.0, 85, 8}, //fire skill
-        {"Tornado", "High force damage to all foes.", "Force", 7, true, 65, 17, 100.0, 0.0, 183, 19}, //force skill
-        {"Flash Freeze", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0, 0.0, 120, 10},  //ice skill
-        {"Focus", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0, 2.5, 0.0, 0.0}, // self buff skill
-        {"Dia", "Moderately restores one ally's health.", "Healing", 2, true, 7, 15.0}, //heal one skill
-        {"Shock", "Low electric damage to one foe.", "Electric", 1, true, 25, 5, 100.0, 0.0, 70, 7} //elec skill
+        Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), //basic attack
+        Skill("Freikugel","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), //phys-almighty skill
+        Skill("Divine Shot", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), //physical skill
+        Skill("Fire Breath", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), //fire skill
+        Skill("Tornado", "High force damage to all foes.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), //force skill
+        Skill("Flash Freeze", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  //ice skill
+        Skill("Focus", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), // self buff skill
+        Skill("Dia", "Moderately restores one ally's health.", "Healing", 2, true, 7, 15.0f), //heal one skill
+        Skill("Shock", "Low electric damage to one foe.", "Electric", 1, true, 25, 5, 100.0f, 0.0f, 70, 7) //elec skill
     }};
     position = sf::Vector2f(0.f, 0.f);
     angle = 0.f;
@@ -232,7 +232,7 @@ int Player::getmaxMP() const {
         damage = 0.004 * (5 * (MAG + 36) - LVL) * ((24 * baseAtk * (LVL / 255) + correction));
         return (int) (damage + (damage * (damageDifference))) * weaknessMultiplier;
     }
-    else if (LVL = peak){
+    else if (LVL == peak){
         damage = 0.004 * ((5 * (MAG + 36)) - ((limit - correction) / baseAtk) * (255/24)) * limit;
         return (int) (damage + (damage * (damageDifference))) * weaknessMultiplier;
     }
@@ -244,10 +244,10 @@ int Player::getmaxMP() const {
         damage = 0.004 * (5 * (MAG + 36) - 160) * limit;
         return (int) (damage + (damage * (damageDifference))) * weaknessMultiplier;
     }
-    else 
+    else {
      std::cout << "Something went horribly wrong while attacking if you are seeing this" << std::endl;
      std::exit(100);
-
+    }
  }
  
  void Player::levelUp(std::map<std::string, int> skillPointDistribution){

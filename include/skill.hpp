@@ -8,8 +8,8 @@ class Skill{
     std::string name = "N/A";
     std::string description = "N/A";
     std::string type = "N/A";
-    int unlockLevel = 0;
     bool isSingleTarget = true;
+    int unlockLevel = 0;
     int baseAtk = 0;
     float hpCost = 0.0; 
     int mpCost = 0;
