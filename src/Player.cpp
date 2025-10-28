@@ -13,6 +13,7 @@ Handles keyboard input and updates the player's position in the world.
 #include <iostream>
 #include <array>
 #include <map>
+#include <random>
 
 
 
@@ -43,7 +44,7 @@ Player::Player() { //default constructor
     turnSpeed = 3.0f; // radians/sec, tweak to taste
 }
 
-Player::Player(std::string name, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int XP,  std::map<std::string, float> affinities) : 
+Player::Player(std::string name, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int XP, std::map<std::string, float> affinities) : 
     name(name), LVL(LVL), maxMP((LVL + MAG) * 3), maxHP((LVL + VIT) * 6), HP(maxHP), MP(maxMP), STR(STR), VIT(VIT), MAG(MAG), AGI(AGI), LU(LU), XP(XP),  affinities(affinities){} //parametized constructor (mainly used for NPCs)
 
 Player::Player(const sf::Vector2f& spawnPos) {
@@ -190,13 +191,45 @@ int Player::getmaxMP() const {
     if (MP + mpGained > maxMP) MP = maxMP;
     else MP += mpGained;
  }
+ //https://megamitensei.fandom.com/wiki/Damage#Physical_Attack 
+ //Also tells you how magic attacks work
  int Player::physATK(float scalar, int baseAtk){ //base atk + scalar * STR 
-    return (int) (baseAtk + (scalar * STR));
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> damageDifferential(-5,5); //damage has a +/- 5% added to it, to keep damage from being deterministic
+    int damageDifference = damageDifferential(gen);
+    int damage = ((LVL + STR) * baseAtk / 15);
+    return damage + (damage * (damageDifference));
  }
- int Player::magATK(float scalar, int baseAtk){
-    return (int) (baseAtk + (scalar * MAG));
+ int Player::magATK(float scalar, int baseAtk, int limit, int correction){ //super complicated formulas which essentially says magic gets weaker over time (past lvl 30 is where it starts to fall off)
+    int peak = ((limit - correction) / baseAtk) * (255/24);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> damageDifferential(-5,5); //damage has a +/- 5% added to it, to keep damage from being deterministic
+    int damageDifference = damageDifferential(gen);
+    int damage;
+    if (LVL < peak){
+        damage = 0.004 * (5 * (MAG + 36) - LVL) * ((24 * baseAtk * (LVL / 255) + correction));
+        return damage + (damage * (damageDifference));
+    }
+    else if (LVL = peak){
+        damage = 0.004 * ((5 * (MAG + 36)) - ((limit - correction) / baseAtk) * (255/24)) * limit;
+        return damage + (damage * (damageDifference));
+    }
+    else if (LVL > peak && LVL <= 160){
+        damage = 0.004 * (5 * (MAG + 36) - LVL) * limit;
+        return damage + (damage * (damageDifference));
+    }
+    else if (LVL > 160){
+        damage = 0.004 * (5 * (MAG + 36) - 160) * limit;
+        return damage + (damage * (damageDifference));
+    }
+    else 
+     std::cout << "Something went horribly wrong while attacking if you are seeing this" << std::endl;
+     std::exit(100);
 
  }
+ 
  void Player::levelUp(std::map<std::string, int> skillPointDistribution){
     for (auto distribution : skillPointDistribution){
         std::string trait = distribution.first;

@@ -27,7 +27,6 @@ class Player {
         float targetAngle;  // snapped target
         float turnSpeed;    // turn speed
         void tryMove(sf::Vector2f delta, const Map& map); // checks for walls
-        
         std::array<Item, 2> inventory; // Only 2 items in game: Dragon Morsel (healing) and Energizing Moss (mana restoration) 
     protected:
         std::string name; //remember to add a change name function so when we start the game, we prompt to change the name
@@ -53,8 +52,8 @@ class Player {
         void heal(int healAmount);
         void spendMP(int mpSpent);
         void regainMP(int mpGained);
-        int physATK(float scalar, int baseAtk); //essentially skills will use either physATK/magATK then multi by a scalar, return the dmg number
-        int magATK(float scalar, int baseAtk); 
+        int physATK(float scalar, int baseAtk); //essentially skills will have a super complicated formula based on the wiki
+        int magATK(float scalar, int baseAtk, int limit, int correction); 
         void levelUp(std::map<std::string, int> skillPointDistribution);
         int doorX, doorY; //track last door entered
 
@@ -62,7 +61,7 @@ class Player {
         void turnRight();
         void update(float dt);
 
-        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getMoney() const, getLVL() const;
+        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const;
         std::array<Item, 2> getInventory() const;
         void addToInventory(Item item, int quantity);
     
