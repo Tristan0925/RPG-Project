@@ -8,7 +8,7 @@ GameStateBattle::GameStateBattle(Game* game) {
     this->player = &game->player;
 
     // Load font
-    if (!font.loadFromFile("assets/edosz.ttf")) {
+    if (!font.loadFromFile("assets/Birch.ttf")) {
         // fallback if font fails
         throw std::runtime_error("Failed to load font for battle state!");
     }
