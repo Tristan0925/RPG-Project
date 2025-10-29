@@ -59,37 +59,37 @@ class Game
     Game();
     ~Game();
     std::vector <Skill> skillMasterList = { //GO BACK AND FIX NUMBERS TO MAKE SENSE
-        Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 1.0f, 0.03f, 0.13f), 
+        Skill("Attack", "Basic attack made with your weapon.", "Physical", 1, true, 32, 0.0f, 1.0f, 0.03f, 0.13f), 
         
-        Skill("Freikugel","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), 
+        Skill("Freikugel","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 0.17f, 1.0f, 0.03f, .30f), 
 
-        Skill("Divine Shot", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), 
+        Skill("Divine Shot", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 0.13f, 1.0f, 0.03f, 0.30f), 
 
-        Skill("Fire Breath", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), 
+        Skill("Fire Breath", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 1.0f, 0.0f, 85, 8), 
         
-        Skill("Tornado", "High force damage to all foes.", "Force", 7, true, 65, 17, 100.0f, 0.0f, 183, 19),
+        Skill("Tornado", "High force damage to all foes.", "Force", 7, true, 65, 17, 1.0f, 0.0f, 183, 19),
         
-        Skill("Flash Freeze", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  
+        Skill("Flash Freeze", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 1.0f, 0.0f, 120, 10),  
         
         Skill("Focus", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 20, 0.0f, 2.50f, 0.0f, 0.0f), 
         
         Skill("Dia", "Moderately restores one ally's health.", "Healing", 2, true, 3, 1.25f), 
         
-        Skill("Shock", "Low electric damage to all foe.", "Electric", 1, false, 23, 6, 100.0f, 0.0f, 70, 7), 
+        Skill("Shock", "Low electric damage to all foe.", "Electric", 1, false, 23, 6, 1.0f, 0.0f, 70, 7), 
         
-        Skill("Zio","Low electric damage to a single foe.", "Electric", 1, true, 30, 3, 100.0f, 0.0f, 85, 9), 
+        Skill("Zio","Low electric damage to a single foe.", "Electric", 1, true, 30, 3, 1.0f, 0.0f, 85, 9), 
         
         Skill("Matarukaja", "Raises attack power for all allies by 25%.", "Damage Amp", 5, false, false, 18, 0.0f, 1.25f, 0.0f, 0.0f), //ADD TARGETSENEMIES? 
         
-        Skill("Agi", "Low fire damage to a single foe.", "Fire", 3, true, 37, 3, 100.0f, 0.0f, 104, 10),
+        Skill("Agi", "Low fire damage to a single foe.", "Fire", 3, true, 37, 3, 1.0f, 0.0f, 104, 10),
         
-        Skill("Bufula", "Moderate ice damage to a single enemy.", "Ice", 7, true, 45, 6, 100.0f, 0.0f, 126, 13), 
+        Skill("Bufula", "Moderate ice damage to a single enemy.", "Ice", 7, true, 45, 6, 1.0f, 0.0f, 126, 13), 
         
         Skill("Mediarama", "Greatly restores all allies' health.", "Healing", 8, false, 20, 1.50f),  
         
         Skill("Omni-Dimension", "Massive almighty damage to all foes.", "Almighty", 10, false, 90, 32, 1.0f, 0.0f, 253, 26), 
         
-        Skill("Zanma","Moderate force damage to a single enemy.", "Force", 1, true, 55, 6, 100.0f, 0.0f, 155, 16), 
+        Skill("Zanma","Moderate force damage to a single enemy.", "Force", 1, true, 55, 6, 1.0f, 0.0f, 155, 16), 
         
         Skill("Diarama", "Greatly restores one ally's health.", "Healing", 3, true, 7, 1.50f), 
         
