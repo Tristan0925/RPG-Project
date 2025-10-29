@@ -55,8 +55,8 @@ Player::Player() { //default constructor
         // Skill("Focus", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), // self buff skill
         // Skill("Dia", "Moderately restores one ally's health.", "Healing", 2, true, 7, 15.0f), //heal one skill
         // Skill("Shock", "Low electric damage to one foe.", "Electric", 1, true, 25, 5, 100.0f, 0.0f, 70, 7) //elec skill
-Player::Player(std::string name, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int XP, std::map<std::string, float> affinities, std::array<Skill, 9> skillsList) : 
-    name(name), LVL(LVL), maxMP((LVL + MAG) * 3), maxHP((LVL + VIT) * 6), HP(maxHP), MP(maxMP), STR(STR), VIT(VIT), MAG(MAG), AGI(AGI), LU(LU), XP(XP), affinities(affinities), skillsList(skillsList){} //parametized constructor (mainly used for NPCs)
+Player::Player(std::string name, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int XP, const std::map<std::string, float>& affinities) : 
+    name(std::move(name)), LVL(LVL), maxMP((LVL + MAG) * 3), maxHP((LVL + VIT) * 6), HP(maxHP), MP(maxMP), STR(STR), VIT(VIT), MAG(MAG), AGI(AGI), LU(LU), XP(XP), affinities(affinities){} //parametized constructor (mainly used for NPCs)
 
 Player::Player(const sf::Vector2f& spawnPos) {
     position = spawnPos * 64.0f; // Start the player in the center of the screen
@@ -277,8 +277,8 @@ int Player::getmaxMP() const {
 
  void Player::addToSkillList(const Skill& skill){
     for (auto& skillSlot : skillsList){
-        if (s == nullptr){
-            s = &skill;
+        if (skillSlot == nullptr){
+            skillSlot = &skill;
             return;
         }
     }

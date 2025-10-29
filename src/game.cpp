@@ -74,8 +74,7 @@ void Game::gameLoop() //handles the gameloop
 
 Game::Game() : hpItem("Dragon Morsel", "Makes you feel like something, but you can't put your finger on it. Heals 100HP.", 100, 0, 0),  //when saves work, conditionally create these constructors
 manaItem("Energizing Moss", "Some moss you found in a chest. Not safe for human consumption, but somehow restores 100MP.", 0, 100, 0),
-pmember2("Maya", 1, 2, 3, 5, 3, 3, 0,
-     {{"Fire", 1.0}, {"Ice", 0.5}, {"Physical", 1.0}, {"Force", 1.5}, {"Electric", 1.0}}),
+pmember2("Maya", 1, 2, 3, 5, 3, 3, 0, {{"Fire", 1.0}, {"Ice", 0.5}, {"Physical", 1.0}, {"Force", 1.5}, {"Electric", 1.0}}),
     //  {{ 
     //     Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), 
     //     Skill("Zio","Low electric damage to a single foe. High accuracy and medium crit rate.", "Electric", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), 
@@ -87,11 +86,7 @@ pmember2("Maya", 1, 2, 3, 5, 3, 3, 0,
     //     Skill(), //empty
     //     Skill() //empty 
     // }}) //magic-y guy, SKILLS: attack, low elec, damage debuff to all, low phys, medium ice, mediarama, omni dimension (20% instant kill (does not factor resistances)) 
-pmember3("Lisa", 1, 3, 3, 4, 3, 2, 0, 
-    {{"Fire", 1.5}, {"Ice", 1.0}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.5}},
-    std::array<Skill, 9>;
-), 
-
+pmember3("Lisa", 1, 3, 3, 4, 3, 2, 0, {{"Fire", 1.5}, {"Ice", 1.0}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.5}}), 
     //  Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), 
     //     Skill("Zanma","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Force", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), 
     //     Skill("Diarama", "High physical damage to one foe. Medium crit rate.", "Healing", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), 
@@ -102,8 +97,7 @@ pmember3("Lisa", 1, 3, 3, 4, 3, 2, 0,
     //     Skill(), //empty
     //     Skill() //empty
 // healer guy, SKILLS: attack, medium force single, diarama, damage resist down, medium almighty all, sharpshoot(40% Instant Kill (factors in phys resistance)), mediarama
-pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0, 
-    {{"Fire", 1.0}, {"Ice", 1.5}, {"Physical", 0.5}, {"Force", 1.0}, {"Electric", 1.0}}) //punchy guy, SKILLS: attack,medium ice single, low phys all, medium ice all, attack boost all, medium force one, high phys single
+pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0, {{"Fire", 1.0}, {"Ice", 1.5}, {"Physical", 0.5}, {"Force", 1.0}, {"Electric", 1.0}}) //punchy guy, SKILLS: attack,medium ice single, low phys all, medium ice all, attack boost all, medium force one, high phys single
 //    Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), 
 //         Skill("Bufula","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Ice", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), 
 //         Skill("Andalucia", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), 

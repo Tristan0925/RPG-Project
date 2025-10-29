@@ -8,9 +8,9 @@ class Skill{
     std::string name = "";
     std::string description = "N/A";
     std::string type = "N/A";
-    bool isSingleTarget = true;
     int unlockLevel = 0;
-    bool isInstantKill = false;
+    bool isSingleTarget = true;
+    bool targetsEnemies = true;
     int baseAtk = 0;
     float hpCost = 0.0; 
     int mpCost = 0;
@@ -32,7 +32,6 @@ class Skill{
     std::string getType() const { return type; }
     int getUnlockLevel() const { return unlockLevel; }
     bool getIsSingleTarget() const { return isSingleTarget; }
-    bool getIsInstantKill() const { return isInstantKill; }
     int getBaseAtk() const { return baseAtk; }
     float getHpCost() const { return hpCost; }
     int getMpCost() const { return mpCost; }
@@ -51,7 +50,6 @@ class Skill{
     Skill() = default;
     Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, int baseAtk, float hpCost, float baseHitRate, float missRate, float critRate); //phys skill constructor
     Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, int baseAtk, int mpCost, float baseHitRate, float missRate, int limit, int correction); //magic skill constructor
-    Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, float damageResist, float damageAmp, float hitEvadeBoost, float hitEvadeReduction); //magic utility skills constructor (damage boost, damage resist, evasion/accuracy boost)
+    Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, bool targetsEnemies, int mpCost, float damageResist, float damageAmp, float hitEvadeBoost, float hitEvadeReduction); //magic utility skills constructor (damage boost, damage resist, evasion/accuracy boost)
     Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, int mpCost, float healthRestorePercent); //magic healing skills constructor 
-    Skill(std::string name, std::string description, std::string type, int unlockLevel, bool isSingleTarget, bool isInstantKill, int mpCost, float baseHitRate); //instant kill skills constructor
 };

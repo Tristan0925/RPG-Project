@@ -58,8 +58,8 @@ class Game
 
     Game();
     ~Game();
-    std::vector <Skill> skillMasterList = {
-        Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 100.0f, 3.0f, 13.0f), 
+    std::vector <Skill> skillMasterList = { //GO BACK AND FIX NUMBERS TO MAKE SENSE
+        Skill("Attack", "Basic attack made with your fists.", "Physical", 1, true, 32, 0.0f, 1.0f, 0.03f, 0.13f), 
         
         Skill("Freikugel","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), 
 
@@ -71,47 +71,43 @@ class Game
         
         Skill("Flash Freeze", "Medium ice damage to one foe.", "Ice", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  
         
-        Skill("Focus", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), 
+        Skill("Focus", "Multiplies the damage of next physical attack by 2.5x.","Damage Amp", 10, true, 20, 0.0f, 2.50f, 0.0f, 0.0f), 
         
-        Skill("Dia", "Moderately restores one ally's health.", "Healing", 2, true, 7, 15.0f), 
+        Skill("Dia", "Moderately restores one ally's health.", "Healing", 2, true, 3, 1.25f), 
         
-        Skill("Shock", "Low electric damage to one foe.", "Electric", 1, true, 25, 5, 100.0f, 0.0f, 70, 7), 
+        Skill("Shock", "Low electric damage to all foe.", "Electric", 1, false, 23, 6, 100.0f, 0.0f, 70, 7), 
         
-        Skill("Zio","Low electric damage to a single foe. High accuracy and medium crit rate.", "Electric", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), 
+        Skill("Zio","Low electric damage to a single foe.", "Electric", 1, true, 30, 3, 100.0f, 0.0f, 85, 9), 
         
-        Skill("Tarunda", "Raises attack power for a single ally by 25%.", "Damage Amp", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), 
+        Skill("Matarukaja", "Raises attack power for all allies by 25%.", "Damage Amp", 5, false, false, 18, 0.0f, 1.25f, 0.0f, 0.0f), //ADD TARGETSENEMIES? 
         
-        Skill("Agi", "Low fire damage to all foes.", "Fire", 4, false, 30, 7, 100.0f, 0.0f, 85, 8),
+        Skill("Agi", "Low fire damage to a single foe.", "Fire", 3, true, 37, 3, 100.0f, 0.0f, 104, 10),
         
-        Skill("Bufula", "Moderate ice damage to a single enemy.", "Ice", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), 
+        Skill("Bufula", "Moderate ice damage to a single enemy.", "Ice", 7, true, 45, 6, 100.0f, 0.0f, 126, 13), 
         
-        Skill("Mediarama", "Medium ice damage to one foe.", "Healing", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  
+        Skill("Mediarama", "Greatly restores all allies' health.", "Healing", 8, false, 20, 1.50f),  
         
-        Skill("Omni-Dimension", "Multiplies the damage of next physical attack by 2.5x.","Almighty", 10, true, 0.0f, 2.5f, 0.0f, 0.0f), 
+        Skill("Omni-Dimension", "Massive almighty damage to all foes.", "Almighty", 10, false, 90, 32, 1.0f, 0.0f, 253, 26), 
         
-        Skill("Zanma","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Force", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), 
+        Skill("Zanma","Moderate force damage to a single enemy.", "Force", 1, true, 55, 6, 100.0f, 0.0f, 155, 16), 
         
-        Skill("Diarama", "High physical damage to one foe. Medium crit rate.", "Healing", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), 
+        Skill("Diarama", "Greatly restores one ally's health.", "Healing", 3, true, 7, 1.50f), 
         
-        Skill("Rakunda", "Reduces defense of all enemies by 25%.", "Damage Resist", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), 
+        Skill("Marakunda", "Reduces defense of all enemies by 25%.", "Damage Resist", 5, false, true, 20, -0.25f, 0.0f,0.0f ), //ADD TARGETSENEMIES? 
+
+        Skill("Megidola", "Heavy almighty damage to all enemies.", "Magic-Almighty", 7, true, 80, 37, 1.0f, 0.0f, 225, 23), 
         
-        Skill("Megido", "High force damage to all foes.", "Magic-Almighty", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), 
+        Skill("Scorched Earth", "Massive fire damage to all enemies.", "Fire", 10, true, 90, 30, 1.0f, 0.0f, 253, 26),  
         
-        Skill("Sinful Shell", "40% ", "Physical", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  
+        Skill("Andalucia", "Medium physical damage to all enemies. Minimal chance to crit.", "Physical", 1, false, 32, 0.06f, 1.0f, 0.0f, 0.01f), 
         
-        Skill("Mediarama", "Multiplies the damage of next physical attack by 2.5x.","Healing", 10, true, 0.0f, 2.5f, 0.0f, 0.0f),
+        Skill("Mabufula", "Moderate ice damage to all enemies.", "Ice", 3, false, 35, 15, 1.0f, 0.0f, 98, 10), 
         
-        Skill("Bufula","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Ice", 10, true, 65, 17.0f, 100.0f, 3.0f, 30.0f), 
+        Skill("Masukukaja", "Increase all allies' evasion and accuracy by 25%.", "Hit Evade Boost", 7, true, false, 20, 0.0f, 0.0f, 0.25f, 0.00f), //ADD TARGETSENEMIES? 
         
-        Skill("Andalucia", "High physical damage to one foe. Medium crit rate.", "Physical", 9, true, 50, 13.0f, 100.0f, 3.0f, 30.0f), 
+        Skill("Debilitate", "Decrase all foes' evasion and accuracy by 50%.", "Hit Evade Reduction", 9, true, true, 25, 0.0f, 0.0f, 0.0f, -0.5f),  //ADD TARGETSENEMIES? 
         
-        Skill("Mabufula", "Low fire damage to all foes.", "Ice", 4, false, 30, 7, 100.0f, 0.0f, 85, 8), 
-        
-        Skill("Matarukaja", "High force damage to all foes.", "Damage Amp", 7, true, 65, 17, 100.0f, 0.0f, 183, 19), 
-        
-        Skill("Zanma", "Medium ice damage to one foe.", "Force", 5, true, 45, 9, 100.0f, 0.0f, 120, 10),  
-        
-        Skill("Stasis Blade", "Multiplies the damage of next physical attack by 2.5x.","Physical", 10, true, 0.0f, 2.5f, 0.0f, 0.0f),  
+        Skill("Spiral Viper", "Massive physical damage to a single foe.","Physical", 10, true, 90, 0.16f, 1.0f, 0.03f, 0.3f),  
 
         Skill(), //empty
     
