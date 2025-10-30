@@ -9,21 +9,21 @@
 #include "Player.hpp"
 #include <iostream>
 #include <array>
+#include <random>
+
 void GameStateDoor::draw(const float dt)
 {
     this->game->window.setView(this->view);
- // long list of if elses which tell what to put in each room
+
 //  if (x,y){
 //     textInTextbox.setString("You sense a terrifying presence ahead. Proceed?");
 //     this->game->window.draw(Textbox);
 //    this->game->window.draw(textInTextbox);
 //  }
 //  else
- // basic treasure thing
- //IDEA: HAVE AN ARRAY OF ALL THE KNOWN DOOR SPOTS (EXCEPT THE BOSS ROOM), 
- //IDEA: have a hashmap of all the locations of doors, (location -> 1), if 1, give an item with a 50/50 of being hp or mana. If 0, say you've been there already.
- //str-ify the coords: (1,7), (1,0), (34,8), (16,5), 
- if (gridX == 1 && gridY == 0){
+
+ if (isItemRoom){
+    
    this->game->window.draw(treasureSprite);
    std::array<Item, 2> playerinv = this->game->player.getInventory();
    for (const auto& item : playerinv) {
@@ -31,17 +31,27 @@ void GameStateDoor::draw(const float dt)
     std::cout << item.getQuantity() << " ";
 }
 std::cout << std::endl;
-   textInTextbox.setString("- You entered the room and found a chest. In the chest contained x" + std::to_string(quantity) + " " + hpItemName +".");
+   textInTextbox.setString("- You entered the room and found a chest. In the chest contained x" + std::to_string(quantity) + " " + itemName +".");
    this->game->window.draw(Textbox);
    this->game->window.draw(textInTextbox);
  }
- 
- else{
-    std::cout << "door position: (" << gridX << ", " << gridY << ")" << std::endl;
+ else if (isEmptyRoom){
+      std::cout << coordinatePair << std::endl;
    this->game->window.draw(treasureSprite);
    textInTextbox.setString("- You entered the room and found a chest. In the chest contained NOTHING.");
    this->game->window.draw(Textbox);
    this->game->window.draw(textInTextbox);
+ }
+
+ else if(isBossRoom){
+
+ }
+
+ else{
+    std::cout << "Something went horribly wrong if you are seeing this" << std::endl;
+    std::cout << coordinatePair << std::endl;
+    
+    std::exit(99);
  }
 
  
@@ -62,7 +72,7 @@ std::cout << std::endl;
 
 void GameStateDoor::update(const float dt)
 {
-transparency -= static_cast<int>(100 * dt);
+transparency -= static_cast<int>(100 * 2 * dt);
 if (transparency < 0) transparency = 0;
    fader.setFillColor(sf::Color(0,0,0,static_cast<sf::Uint8>(transparency)));
 }
@@ -89,7 +99,7 @@ void GameStateDoor::handleInput()
                 break;
             }
             case sf::Event::KeyPressed:{
-                if (event.key.code == sf::Keyboard::Space){
+                if (event.key.code == sf::Keyboard::Space){ // && !isBossRoom
                     backToGame();
                     return;
                 }
@@ -127,20 +137,54 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
     textInTextbox.setPosition(120,830);
 
     hpItem = this->game->hpItem;
-    hpItemName = hpItem.showName();
     mpItem = this->game->manaItem;
-    mpItemName = mpItem.showName();
-    quantity = 1;
-    gridX = x;
-    gridY = y;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> chanceOfItem(1,2);
+    std::uniform_int_distribution<> quantityOfItem(1,3);
+    quantity = quantityOfItem(gen);
+      std::cout << x << y << std::endl;
+    coordinatePair = ("(" + std::to_string(x) + ", " + std::to_string(y+1) + ")"); //adding 1 is a band-aid to the real problem (idk what it is)
     player = this->game->player;
     std::array<Item, 2> playerinv = this->game->player.getInventory(); 
-    for (const auto& item : playerinv) {
-    std::cout << item.showName() << " ";
-}
-std::cout << std::endl;
- //take coords and stringify. compare to list. 
-if (gridX == 1 && gridY == 0) this->game->player.addToInventory(hpItem, quantity); 
+
+//     for (const auto& item : playerinv) {
+//     std::cout << item.showName() << " ";
+// }
+// std::cout << std::endl;
+
+ for (const auto& pair : this->game->doorCoordinatesToHasLoot) {
+        if (pair.first == coordinatePair && pair.second == true){
+            isItemRoom = true;
+            isEmptyRoom = false;
+            isBossRoom = false;
+            this->game->doorCoordinatesToHasLoot[pair.first] = false;
+            if (chanceOfItem(gen) == 1) {
+                itemName = hpItem.showName();
+                this->game->player.addToInventory(hpItem, quantity); 
+
+            }
+            else {
+                itemName = mpItem.showName();
+            this->game->player.addToInventory(mpItem, quantity);
+            }
+        } 
+        else if (pair.first == coordinatePair && pair.second == false){
+            isEmptyRoom = true;
+            isItemRoom = false;
+            isBossRoom = false;
+           
+        }
+        else if (pair.first == coordinatePair && coordinatePair == "hi"){ //replace with bossCoordinates
+            isBossRoom = true;
+            isEmptyRoom = false;
+            isItemRoom = false;
+
+            
+        }
+    }
+
+
 
    
   
@@ -150,6 +194,10 @@ void GameStateDoor::backToGame()
 {
     this->game->popState();
     return;
+}
+
+GameStateDoor::~GameStateDoor() {
+    std::cout << "GameStateDoor destroyed" << std::endl;
 }
 
 
