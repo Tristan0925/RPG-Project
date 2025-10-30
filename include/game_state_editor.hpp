@@ -40,8 +40,8 @@ class GameStateEditor : public GameState
     void enterDoor(int x, int y);
 
     bool requestQuitToMenu = false;
-
     bool slotMenuActive = false;
+    bool requestStartGame;
 
     enum class SlotMenuMode {
         None,
@@ -68,7 +68,7 @@ class GameStateEditor : public GameState
     virtual void update(const float dt);
     virtual void handleInput();
  
-    GameStateEditor(Game* game);
+    GameStateEditor(Game* game, bool requestStartGame);
 };
 
 

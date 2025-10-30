@@ -27,6 +27,8 @@ struct PendingState {
 #include "texture_manager.hpp"
 #include "Player.hpp"
 #include "Map.hpp"
+#include <string>
+#include <array>
 
 class Game
 {
@@ -35,7 +37,6 @@ private:
 
     // store a pending state request to be applied safely in the game loop
     PendingState pendingState;
-
     public:
     Item hpItem;
     Item manaItem;
@@ -43,7 +44,11 @@ private:
     NPC pmember2;
     NPC pmember3;
     NPC pmember4;
-  
+
+    std::array<std::string, 9> playerSkills = {"Attack", "Shock", "Dia", "Fire Breath", "Flash Freeze", "Tornado", "Divine Shot", "Freikugel", "Focus"};
+    std::array<std::string, 9> pmember2Skills = {"Attack", "Zio", "Agi", "Matarukaja", "Bufula", "Megidola", "Omni-Dimension", "EMPTY SLOT", "EMPTY SLOT"}; //if you want you could make more skills 
+    std::array<std::string, 9> pmember3Skills = {"Attack", "Zanma", "Diarama", "Marakunda", "Mediarama", "Scorched Earth", "EMPTY SLOT", "EMPTY SLOT", "EMPTY SLOT"};
+    std::array<std::string, 9> pmember4Skills = {"Attack", "Andalucia", "Mabufula", "Masukukaja", "Debilitate", "Spiral Viper", "EMPTY SLOT", "EMPTY SLOT", "EMPTY SLOT"};
 
 
     Map map;
@@ -131,7 +136,8 @@ private:
         
         Skill("Spiral Viper", "Massive physical damage to a single foe.","Physical", 10, true, 90, 0.16f, 1.0f, 0.03f, 0.3f),  
 
-        Skill(), //empty
+        Skill(), //Roary Nyte Moves: Sever (Medium Phys Single Move), Falling Stars (Medium Almighty All Move), Piercing Blade (Heavy Phys Single Move), Reckoning (Heavy Almighty Single Move) idk how we balance any of these
+        //Shaddai Moves: Godly Judgement (Light Almighty Single), El Roi (Light Almighty All), Zio, Shock
     
     
     

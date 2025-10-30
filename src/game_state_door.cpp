@@ -148,10 +148,7 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
     player = this->game->player;
     std::array<Item, 2> playerinv = this->game->player.getInventory(); 
 
-//     for (const auto& item : playerinv) {
-//     std::cout << item.showName() << " ";
-// }
-// std::cout << std::endl;
+
 
  for (const auto& pair : this->game->doorCoordinatesToHasLoot) {
         if (pair.first == coordinatePair && pair.second == true){

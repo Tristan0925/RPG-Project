@@ -1,14 +1,20 @@
 {
-    "AGI": 0,
+    "AGI": 3,
     "HP": 100,
-    "LU": 0,
+    "LU": 2,
     "LVL": 1,
     "MP": 100,
-    "STR": 0,
-    "VIT": 0,
+    "STR": 4,
+    "VIT": 3,
     "XP": 0,
-    "affinities": {},
-    "angle": 0.0,
+    "affinities": {
+        "Electric": 1.0,
+        "Fire": 0.0,
+        "Force": 1.0,
+        "Ice": 1.5,
+        "Physical": 1.0
+    },
+    "angle": 4.71238899230957,
     "inventory": [
         {
             "description": "None",
@@ -28,16 +34,18 @@
     "maxHP": 100,
     "maxMP": 100,
     "position": [
-        137.77450561523438,
-        256.0
+        82.79669952392578,
+        255.59703063964844
     ],
     "skills": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "Attack",
+        "Shock",
+        "Dia",
+        "Fire Breath",
+        "Flash Freeze",
+        "Tornado",
+        "Divine Shot",
+        "Freikugel",
+        "Focus"
     ]
 }

@@ -125,7 +125,7 @@ void GameStateBattle::handleInput() {
             this->game->window.close();
         }
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
-            this->game->requestChange(std::make_unique<GameStateEditor>(this->game));
+            this->game->requestChange(std::make_unique<GameStateEditor>(this->game,false));
             return;
         }        
     }

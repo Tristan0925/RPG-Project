@@ -10,6 +10,12 @@
 #include "algorithm"
 #include "Button.hpp"
 #include "game_state_start.hpp"
+#include "Player.hpp"
+#include "skill.hpp"
+#include "NPC.hpp"
+#include <vector>
+#include <array>
+#include <string>
 
 const std::string saveFiles[3] = { "save1.json", "save2.json", "save3.json" };
 
@@ -791,7 +797,7 @@ void GameStateEditor::handleInput() // Inputs go here
 
 
 
-GameStateEditor::GameStateEditor(Game* game) //This is a constructor
+GameStateEditor::GameStateEditor(Game* game, bool requestStartGame)
 : game(game),
   resumeButton("Resume", sf::Vector2f(0.f, 0.f), 40, game),
   settingsButton("Settings", sf::Vector2f(0.f, 0.f), 40, game),
@@ -850,4 +856,28 @@ GameStateEditor::GameStateEditor(Game* game) //This is a constructor
     slot2.changePosition(100.f, 260.f);
     slot3.changePosition(100.f, 320.f);
     backButton.changePosition(100.f, 380.f);
+
+    if (requestStartGame){ //only initialize skills if the game wasn't loaded from save
+    Player&  player= this->game->player;
+    std::array<std::string, 9>&  playerSkills = this->game->playerSkills;
+    std::array<std::string, 9>&  pmember2Skills = this->game->pmember2Skills; //if you want you could make more skills 
+    std::array<std::string, 9>&  pmember3Skills = this->game->pmember3Skills;
+    std::array<std::string, 9>&  pmember4Skills = this->game->pmember4Skills;
+    NPC&  pmember2 = this->game->pmember2;
+    NPC&  pmember3 = this->game->pmember3;
+    NPC&  pmember4 = this->game->pmember4;
+    std::vector<Skill>& masterList = this->game->skillMasterList;
+    for (int i = 0; i < 9; i++){
+        const std::string& skillName = playerSkills[i];
+        const std::string& skillName2 = pmember2Skills[i];
+        const std::string& skillName3 = pmember3Skills[i];
+        const std::string& skillName4 = pmember4Skills[i];
+        if (skillName != "EMPTY SLOT") player.addToSkillList(skillName, masterList);
+        if (skillName2 != "EMPTY SLOT") pmember2.addToSkillList(skillName2, masterList);
+        if (skillName3 != "EMPTY SLOT") pmember3.addToSkillList(skillName3, masterList);
+        if (skillName4 != "EMPTY SLOT") pmember4.addToSkillList(skillName4, masterList);
+    }
+    
+    
+}
 }
