@@ -293,7 +293,7 @@ int Player::getmaxMP() const {
 
  const Skill* Player::getSkillPtr(std::string skillName, const std::vector<Skill>& masterList){
        for (const auto& skill : masterList){
-        if (skill.getName() == name){
+        if (skill.getName() == skillName){
             return &skill;
         }
     }
@@ -333,13 +333,14 @@ PlayerData Player::getData() const {
     data.inventory = inventory;
     data.affinities = affinities;
 
-    for (int i = 0; i < 7; ++i)
-        data.skills[i] = skills[i];
-
+    for (int i = 0; i < 9; ++i){
+        if (skillsList[i] != nullptr) data.skills[i] = skillsList[i]->getName(); //if not null, get name.
+        else data.skills[i] = "EMPTY SLOT";
+    }
     return data;
 }
 
-void Player::setData(const PlayerData& data) {
+void Player::setData(const PlayerData& data, const std::vector<Skill>& masterList) {
     position = data.position;
     angle = data.angle;
     HP = data.HP;
@@ -355,8 +356,15 @@ void Player::setData(const PlayerData& data) {
     inventory = data.inventory;
     affinities = data.affinities;
 
-    for (int i = 0; i < 7; ++i)
-        skills[i] = data.skills[i];
+    for (size_t i = 0; i < 9; ++i){
+        if (data.skills[i] == "Empty Slot") {
+        skillsList[i] = nullptr;
+        }
+        else{
+            skillsList[i] = getSkillPtr(data.skills[i], masterList);
+        } 
+    }
+        
 }
 
 bool Player::saveToFile(const std::string& filename) const {
@@ -397,7 +405,7 @@ bool Player::saveToFile(const std::string& filename) const {
     return true;
 }
 
-bool Player::loadFromFile(const std::string& filename) {
+bool Player::loadFromFile(const std::string& filename, const std::vector<Skill>& masterList) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "[ERROR] Could not open " << filename << std::endl;
@@ -441,20 +449,23 @@ bool Player::loadFromFile(const std::string& filename) {
     }
 
     if (j.contains("affinities") && j["affinities"].is_object())
-        data.affinities = j["affinities"].get<std::map<std::string,int>>();
+        data.affinities = j["affinities"].get<std::map<std::string,float>>();
     else
         data.affinities.clear();
 
     // Safe skills load (assumes skills are strings)
-    if (j.contains("skills") && j["skills"].is_array() && j["skills"].size() == 7) {
-        for (size_t i = 0; i < 7; ++i)
+    if (j.contains("skills") && j["skills"].is_array() && j["skills"].size() == 9) {
+        for (size_t i = 0; i < 9; ++i)
             data.skills[i] = j["skills"][i].get<std::string>();
     } else {
-        for (size_t i = 0; i < 7; ++i)
+        for (size_t i = 0; i < 9; ++i)
             data.skills[i] = "";
     }
 
 
-    setData(data);
+    setData(data,masterList);
     return true;
 }
+   std::array<const Skill*, 9> Player::getSkillsList() const{
+    return skillsList;
+   }

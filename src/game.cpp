@@ -189,9 +189,21 @@ pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0, {{"Fire", 1.0}, {"Ice", 1.5}, {"Physica
     for (const auto& coord : doorCoordinates) {
         doorCoordinatesToHasLoot[coord] = 1;
     }
+    
+   player.addToSkillList("Attack", skillMasterList);
+
+   auto skills = player.getSkillsList(); 
+
+for (const Skill* skill : skills) {
+    if (skill)
+        std::cout << skill->getName() << " ";
+    else
+        std::cout << "Empty Slot ";
+}
+
+std::cout << std::endl;
+    
    
-    
-    
     
 }
 

@@ -37,8 +37,8 @@ struct PlayerData {
     int XP;
     int LVL;
     std::array<Item, 2> inventory;
-    std::map<std::string, int> affinities;
-    std::array<std::string, 7> skills;
+    std::map<std::string, float> affinities;
+    std::array<std::string, 9> skills; //save skills as strings instead of ptrs
 };
 
 class Player {
@@ -82,17 +82,20 @@ class Player {
         void turnRight();
         void update(float dt);
         PlayerData getData() const;       // Create a snapshot of player state
-        void setData(const PlayerData&);  // Restore player state from snapshot
+        void setData(const PlayerData&, const std::vector<Skill>& masterList);  // Restore player state from snapshot
         bool saveToFile(const std::string& filename) const;
-        bool loadFromFile(const std::string& filename);
+        bool loadFromFile(const std::string& filename, const std::vector<Skill>& masterList);
         void setDefault(const Map& map);
 
 
         int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const;
         std::array<Item, 2> getInventory() const;
+        std::array<const Skill*, 9> getSkillsList() const;
         void addToInventory(Item item, int quantity);
         const Skill* getSkillPtr(std::string skillName, const std::vector<Skill>& masterList);
         void addToSkillList(std::string skillName, const std::vector<Skill>& masterList);
+     
+        
         
 };
 

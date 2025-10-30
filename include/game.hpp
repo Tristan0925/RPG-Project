@@ -80,7 +80,7 @@ private:
 
     Game();
     ~Game();
-    std::vector <Skill> skillMasterList = { //GO BACK AND FIX NUMBERS TO MAKE SENSE
+    std::vector <Skill> skillMasterList = { 
         Skill("Attack", "Basic attack made with your weapon.", "Physical", 1, true, 32, 0.0f, 1.0f, 0.03f, 0.13f), 
         
         Skill("Freikugel","Massive phys-almighty damage to one foe. High accuracy and medium crit rate.", "Physical-Almighty", 10, true, 65, 0.17f, 1.0f, 0.03f, .30f), 
