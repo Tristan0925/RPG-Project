@@ -9,7 +9,7 @@
 class GameStateEditor : public GameState
 {
     private:
-    int doorState = 0; //controls input reading while moving through a door
+    bool controlInputReadingPaused = false; //controls input reading 
     int transparency;
     sf::RectangleShape fader;
     Game* game;
