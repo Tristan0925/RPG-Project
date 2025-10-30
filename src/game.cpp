@@ -50,6 +50,49 @@ GameState* Game::peekState() //check game state
     return this->states.top().get();
 }
 
+// requestPush/requestPop/requestChange implementations
+void Game::requestPush(std::unique_ptr<GameState> state) {
+    pendingState.action = StateAction::Push;
+    pendingState.state = std::move(state);
+}
+
+void Game::requestPop() {
+    pendingState.action = StateAction::Pop;
+}
+
+void Game::requestChange(std::unique_ptr<GameState> state) {
+    pendingState.action = StateAction::Change;
+    pendingState.state = std::move(state);
+}
+
+void Game::applyPendingState() {
+    switch (pendingState.action) {
+        case StateAction::Push:
+            if (pendingState.state) {
+                pushState(std::move(pendingState.state));
+            }
+            break;
+        case StateAction::Pop:
+            popState();
+            break;
+        case StateAction::Change:
+            if (pendingState.state) {
+                changeState(std::move(pendingState.state));
+            } else {
+                // If state is null but action is Change, just pop then do nothing
+                popState();
+            }
+            break;
+        case StateAction::None:
+        default:
+            break;
+    }
+    // reset pendingState
+    pendingState.action = StateAction::None;
+    pendingState.state.reset();
+}
+
+
 
 void Game::gameLoop() //handles the gameloop
 {
@@ -62,6 +105,7 @@ void Game::gameLoop() //handles the gameloop
 
     if(peekState() == nullptr)
     {
+        // maybe sleep a bit here or continue
         continue;
     }
     peekState() -> handleInput();
@@ -69,12 +113,15 @@ void Game::gameLoop() //handles the gameloop
     this ->window.clear(sf::Color::Black);
     peekState()->draw(dt);
     this->window.display();
+
+    // <-- apply pending state changes safely after current state finished
+    applyPendingState();
    }
 }
 
 Game::Game() : hpItem("Dragon Morsel", "Makes you feel like something, but you can't put your finger on it. Heals 100HP.", 100, 0, 0),  //when saves work, conditionally create these constructors
 manaItem("Energizing Moss", "Some moss you found in a chest. Not safe for human consumption, but somehow restores 100MP.", 0, 100, 0),
-pmember2("Maya",75, 75, 120, 120, 10, 20, 20, 20, 0, 11), //magic-y guy
+pmember2("Maya",75, 75, 120, 120, 10, 20, 20, 20, 0, 11), //magic-y gal
 pmember3("Lisa", 125, 125, 75, 75, 15, 25, 15, 15, 0, 12), // punchy guy
 pmember4("Eikichi", 100, 100, 90, 90, 10, 10, 10, 10, 0, 10 ) //healer guy
 // init all variables which are used throughout the game states here 
@@ -87,12 +134,16 @@ pmember4("Eikichi", 100, 100, 90, 90, 10, 10, 10, 10, 0, 10 ) //healer guy
    this->pmember2Sprite.setTexture(this->texmgr.getRef("pmember2Sprite"));
    this->pmember3Sprite.setTexture(this->texmgr.getRef("pmember3Sprite"));
    this->pmember4Sprite.setTexture(this->texmgr.getRef("pmember4Sprite"));
-    if (!map.loadFromFile("assets/map1.txt")) {
-        throw std::runtime_error("failed to load");
+   if (!map.loadFromFile("assets/map1.txt")) {
+    throw std::runtime_error("failed to load");
+   }
+    if (!font.loadFromFile("assets/Birch.ttf")) {
+        std::cerr << "Failed to load font!" << std::endl;
+        std::exit(1);
+    } else {
+        std::cout << "Font loaded: " << font.getInfo().family << std::endl;
     }
-    if (!font.loadFromFile("assets/Birch.ttf")){
-        throw std::runtime_error("failed to load");
-    }
+
 
     sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
     this->player.setPosition(spawn * 64.f); // scale by tile size

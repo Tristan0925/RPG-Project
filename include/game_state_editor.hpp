@@ -21,11 +21,13 @@ class GameStateEditor : public GameState
     float moveSpeed;
     Map map;
     const float PI = 3.14159f;
+    sf::Vector2i lastTile;  // track last tile player was on
     const float FOV = PI / 2.0f; 
 
     Button resumeButton;
     Button settingsButton;
     Button saveButton;
+    Button loadButton;
     Button quitButton;
 
     sf::Texture wallTexture;
@@ -38,6 +40,22 @@ class GameStateEditor : public GameState
 
     bool requestQuitToMenu = false;
 
+    bool slotMenuActive = false;
+
+    enum class SlotMenuMode {
+        None,
+        Save,
+        Load
+    } slotMenuMode = SlotMenuMode::None;
+
+    Button slot1;
+    Button slot2;
+    Button slot3;
+    Button backButton;
+
+    bool showSaveText = false;
+    sf::Text saveText;
+    sf::Clock saveClock;
     bool exitingDoor, enteringDoor = false;
     float exitTimer = 0.0f;
     const float exitDuration = 0.25f;
@@ -51,5 +69,7 @@ class GameStateEditor : public GameState
  
     GameStateEditor(Game* game);
 };
+
+
  
 #endif
