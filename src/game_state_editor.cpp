@@ -378,8 +378,6 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
 
         //Party Member 3 HUD element
 
-      
-
         sf::Text pmember3HP; 
         float pmember3HPpercentage = ((float)this->game->pmember3.getHP() / this->game->pmember3.getmaxHP());
         sf::Text pmember3MP;
@@ -783,7 +781,7 @@ void GameStateEditor::handleInput() // Inputs go here
         lastTile = currentTile;
 
         // 5% chance per new tile
-        if (rand() % 100 < 10) {
+        if (rand() % 100 < 100) {
             this->game->requestChange(
                 std::make_unique<GameStateBattle>(this->game)
             );

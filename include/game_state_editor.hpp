@@ -24,6 +24,7 @@ class GameStateEditor : public GameState
     sf::Vector2i lastTile;  // track last tile player was on
     const float FOV = PI / 2.0f; 
 
+    // Buttons for pause menu
     Button resumeButton;
     Button settingsButton;
     Button saveButton;
