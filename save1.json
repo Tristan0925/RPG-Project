@@ -1,0 +1,43 @@
+{
+    "AGI": 0,
+    "HP": 100,
+    "LU": 0,
+    "LVL": 1,
+    "MP": 100,
+    "STR": 0,
+    "VIT": 0,
+    "XP": 0,
+    "affinities": {},
+    "angle": 0.0,
+    "inventory": [
+        {
+            "description": "None",
+            "healAmount": 0,
+            "manaAmount": 0,
+            "name": "Empty Slot",
+            "quantity": 0
+        },
+        {
+            "description": "None",
+            "healAmount": 0,
+            "manaAmount": 0,
+            "name": "Empty Slot",
+            "quantity": 0
+        }
+    ],
+    "maxHP": 100,
+    "maxMP": 100,
+    "position": [
+        137.77450561523438,
+        256.0
+    ],
+    "skills": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+    ]
+}
