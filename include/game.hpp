@@ -79,7 +79,7 @@ class Game
         
         Skill("Zio","Low electric damage to a single foe.", "Electric", 1, true, 30, 3, 1.0f, 0.0f, 85, 9), 
         
-        Skill("Matarukaja", "Raises attack power for all allies by 25%.", "Damage Amp", 5, false, false, 18, 0.0f, 1.25f, 0.0f, 0.0f), //ADD TARGETSENEMIES? 
+        Skill("Matarukaja", "Raises attack power for all allies by 25%.", "Damage Amp", 5, false, false, 18, 0.0f, 1.25f, 0.0f, 0.0f), 
         
         Skill("Agi", "Low fire damage to a single foe.", "Fire", 3, true, 37, 3, 1.0f, 0.0f, 104, 10),
         
@@ -93,7 +93,7 @@ class Game
         
         Skill("Diarama", "Greatly restores one ally's health.", "Healing", 3, true, 7, 1.50f), 
         
-        Skill("Marakunda", "Reduces defense of all enemies by 25%.", "Damage Resist", 5, false, true, 20, -0.25f, 0.0f,0.0f ), //ADD TARGETSENEMIES? 
+        Skill("Marakunda", "Reduces defense of all enemies by 25%.", "Damage Resist", 5, false, true, 20, -0.25f, 0.0f,0.0f ), 
 
         Skill("Megidola", "Heavy almighty damage to all enemies.", "Magic-Almighty", 7, true, 80, 37, 1.0f, 0.0f, 225, 23), 
         
@@ -103,9 +103,9 @@ class Game
         
         Skill("Mabufula", "Moderate ice damage to all enemies.", "Ice", 3, false, 35, 15, 1.0f, 0.0f, 98, 10), 
         
-        Skill("Masukukaja", "Increase all allies' evasion and accuracy by 25%.", "Hit Evade Boost", 7, true, false, 20, 0.0f, 0.0f, 0.25f, 0.00f), //ADD TARGETSENEMIES? 
+        Skill("Masukukaja", "Increase all allies' evasion and accuracy by 25%.", "Hit Evade Boost", 7, true, false, 20, 0.0f, 0.0f, 0.25f, 0.00f), 
         
-        Skill("Debilitate", "Decrase all foes' evasion and accuracy by 50%.", "Hit Evade Reduction", 9, true, true, 25, 0.0f, 0.0f, 0.0f, -0.5f),  //ADD TARGETSENEMIES? 
+        Skill("Debilitate", "Decrase all foes' evasion and accuracy by 50%.", "Hit Evade Reduction", 9, true, true, 25, 0.0f, 0.0f, 0.0f, -0.5f),  
         
         Skill("Spiral Viper", "Massive physical damage to a single foe.","Physical", 10, true, 90, 0.16f, 1.0f, 0.03f, 0.3f),  
 

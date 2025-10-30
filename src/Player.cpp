@@ -275,14 +275,29 @@ int Player::getmaxMP() const {
     MP = maxMP;
  }
 
- void Player::addToSkillList(const Skill& skill){
-    for (auto& skillSlot : skillsList){
-        if (skillSlot == nullptr){
-            skillSlot = &skill;
+ const Skill* Player::getSkillPtr(std::string skillName, const std::vector<Skill>& masterList){
+       for (const auto& skill : masterList){
+        if (skill.getName() == name){
+            return &skill;
+        }
+    }
+    return nullptr;
+}
+
+ void Player::addToSkillList(std::string skillName, const std::vector<Skill>& masterList){
+    const Skill* skillPtr = getSkillPtr(skillName, masterList);
+    if(!skillPtr){
+        std::cout << "NOT FOUND DUMMY" << std::endl;
+        return;
+    }
+
+    for (auto& slot : skillsList){
+        if (slot == nullptr){
+            slot = skillPtr;
+            std::cout <<"Added skill: " << skillPtr->getName() << "\n";
             return;
         }
     }
-    std::cout << "IM FULL STOP IT" << std::endl;
- }
+}
 
 

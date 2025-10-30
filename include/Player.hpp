@@ -63,7 +63,7 @@ class Player {
         int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const;
         std::array<Item, 2> getInventory() const;
         void addToInventory(Item item, int quantity);
-        void addToSkillList(const Skill& skill);
-    
+        const Skill* getSkillPtr(std::string skillName, const std::vector<Skill>& masterList);
+        void addToSkillList(std::string skillName, const std::vector<Skill>& masterList);
         
 };
