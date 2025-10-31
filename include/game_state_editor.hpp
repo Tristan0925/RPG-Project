@@ -2,6 +2,7 @@
 #define GAME_STATE_EDITOR_HPP
  
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "Button.hpp"
 #include "game_state.hpp"
 #include "Map.hpp"
@@ -13,7 +14,9 @@ class GameStateEditor : public GameState
     int transparency;
     sf::RectangleShape fader;
     Game* game;
- 
+
+    int currentFloor = 1;
+    sf::Music currentTrack;
     sf::View gameView;
     sf::View guiView;
     

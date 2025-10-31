@@ -1,6 +1,7 @@
 //This is the main game file
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <cmath>
 #include "game_state.hpp"
 #include "game_state_editor.hpp"
@@ -225,7 +226,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         //locationText
         sf::Text locationText;
         locationText.setFont(this->game->font);
-        locationText.setString("Spooky Scary Dungeon 1F");
+        if (currentFloor == 1) locationText.setString("Spooky Scary Dungeon 1F");
         locationText.setCharacterSize(24);
         locationText.setPosition(60.5f, 110.0f);
         this->game->window.draw(locationBackground);
@@ -233,8 +234,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
 
         //North Indicator for minimap
          sf::ConvexShape triangleN;
-       
-       
+
          triangleN.setPointCount(3);
          triangleN.setPoint(0,sf::Vector2f(mapSizePx/2.0f - 50.0f,-3.0f));
          triangleN.setPoint(1, sf::Vector2f(mapSizePx/2.0f, - 50.0f));
@@ -879,5 +879,23 @@ GameStateEditor::GameStateEditor(Game* game, bool requestStartGame)
     }
     
     
+}
+if (currentFloor == 1){
+    if(!currentTrack.openFromFile("./assets/music/spookyfloor1.mp3")){
+        std::cout << "SPOOKYFLOOR1 NOT FOUND" << std::endl;   
+    }
+    else {
+        currentTrack.setLoop(true);
+        currentTrack.play();
+    }
+}
+else{
+    if(!currentTrack.openFromFile("./assets/music/spookyfloor2.mp3")) {
+    std::cout << "SPOOKYFLOOR2 NOT FOUND" << std::endl;
+    }
+   else {
+        currentTrack.setLoop(true);
+        currentTrack.play();
+    }
 }
 }

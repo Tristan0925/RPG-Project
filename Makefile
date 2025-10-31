@@ -7,7 +7,7 @@ CXX = g++
 CXXFLAGS = -std=c++17 -Wall -g -Iinclude -fsanitize=address
 
 # These are the SFML libraries we need to link: graphics for drawing stuff, window for handling the game window, system for timing and other utilities
-LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -fsanitize=address
+LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -fsanitize=address
 
 # Grab all .cpp files from the src folder
 SRC = $(wildcard src/*.cpp)

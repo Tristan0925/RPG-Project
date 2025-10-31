@@ -2,12 +2,14 @@
 #define GAME_STATE_START_HPP
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "Button.hpp"
 #include "game_state.hpp"
 
 class GameStateStart : public GameState
 {
     private:
+    sf::Music mainTheme;
     sf::View view;
     sf::Text title;
     Button startgame;

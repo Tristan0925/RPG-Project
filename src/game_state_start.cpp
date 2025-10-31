@@ -1,6 +1,7 @@
 //This represents the main menu screen. game_state_start.cpp
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "Button.hpp"
 #include "Player.hpp"
 #include "game_state_start.hpp"
@@ -187,6 +188,13 @@ GameStateStart::GameStateStart(Game* game):
     slot2.changePosition(width - (2200.f * scaleRatio), height - (1100.f * scaleRatio));
     slot3.changePosition(width - (2200.f * scaleRatio), height - (1000.f * scaleRatio));
     backButton.changePosition(width - (2200.f * scaleRatio), height - (900.f * scaleRatio));    
+
+    //Set up main menu music
+    if (!mainTheme.openFromFile("./assets/music/title.mp3")) std::cout << "NO TITLE MUSIC FOUND" << std::endl;
+    else {
+        mainTheme.setLoop(true);
+        mainTheme.play();
+    }
 
 }
 
