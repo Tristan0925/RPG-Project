@@ -9,6 +9,9 @@ class GameStateBattle : public GameState {
 private:
     Player* player;  
 
+    // Battle state
+    bool isBossBattle = false;
+
     // Text         
     sf::Font font;
     sf::Text battleText;

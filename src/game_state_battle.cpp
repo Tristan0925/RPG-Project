@@ -3,7 +3,7 @@
 #include <iostream>
 #include <algorithm>
 
-GameStateBattle::GameStateBattle(Game* game) {
+GameStateBattle::GameStateBattle(Game* game, bool isBossBattle) {
     this->game = game;
     this->player = &game->player;
     font = this->game->font;
