@@ -1,6 +1,7 @@
 #include "game_state_battle.hpp"
 #include "game_state_editor.hpp"   
 #include <iostream>
+#include <algorithm>
 
 GameStateBattle::GameStateBattle(Game* game) {
     this->game = game;
@@ -80,6 +81,8 @@ GameStateBattle::GameStateBattle(Game* game) {
         float yOffset = startY - 50.f;
         bgBox.setSize({210.f, 150.f}); // adjust the size of the red background
         bgBox.setPosition(xOffset - 20.f, yOffset - 20.f);
+        basePositions.push_back(bgBox.getPosition());
+
 
         // Load and position the icon
         std::string texName, path;
@@ -101,6 +104,8 @@ GameStateBattle::GameStateBattle(Game* game) {
         float scale = targetHeight / textureHeight;
         icon.setScale(scale, scale);
         icon.setPosition(xOffset - 15.f, yOffset - 10.f);
+        portraitBaseScales.push_back(scale);
+
 
         // Place bars below the icon
         hpBar.setPosition(xOffset, yOffset + 80.f);
@@ -118,6 +123,66 @@ GameStateBattle::GameStateBattle(Game* game) {
         hpTexts.push_back(hpText);
         mpTexts.push_back(mpText);
     }    
+
+    // Turn Order UI ------------
+    float panelW = 220.f;
+    float panelH = 310.f;
+    turnPanelBackground.setSize({panelW, panelH});
+    turnPanelBackground.setFillColor(sf::Color(20,20,20, 200));
+    turnPanelBackground.setOutlineColor(sf::Color::White);
+    turnPanelBackground.setOutlineThickness(2.f);
+
+    // panel position
+    float marginRight = 40.f;
+    turnPanelBackground.setPosition(static_cast<float>(this->game->window.getSize().x) - panelW - marginRight, 735.f);
+
+    // Portrait Boxes
+    float portraitSize = 64.f;
+    float portraitPadding = 12.f;
+    for (size_t i = 0; i < party.size(); ++i) {
+        sf::RectangleShape box({portraitSize, portraitSize});
+        box.setFillColor(sf::Color::Transparent);
+
+        float x = turnPanelBackground.getPosition().x + 20.f;
+        float y = turnPanelBackground.getPosition().y + 12.f + i * (portraitSize + portraitPadding);
+        box.setPosition(x,y);
+
+        sf::Sprite spr;
+
+        if (i == 0) spr.setTexture(this->game->texmgr.getRef("playerSprite"));
+        else if (i == 1) spr.setTexture(this->game->texmgr.getRef("pmember2Sprite"));
+        else if (i == 2) spr.setTexture(this->game->texmgr.getRef("pmember3Sprite"));
+        else if (i == 3) spr.setTexture(this->game->texmgr.getRef("pmember4Sprite"));
+        
+        sf::FloatRect lb = spr.getLocalBounds();
+        if (lb.height > 0.0001f) {
+            float scale = portraitSize / lb.height * 0.65f;
+            spr.setScale(scale, scale);
+            turnPortraitBaseScales.push_back(scale);
+        }
+
+        spr.setPosition(x + (portraitSize - spr.getLocalBounds().width * spr.getScale().x) / 2.f,
+        y + (portraitSize - spr.getLocalBounds().height * spr.getScale().y) / 2.f);
+
+        turnPortraitBoxes.push_back(box);
+        turnPortraitSprites.push_back(spr);
+    }
+
+    // --- Compute initial turn order by AGI
+    std::vector<std::pair<int, Player*>> tmp;
+    for (auto* p : party)
+        tmp.emplace_back(p->getAGI(), p);
+
+    std::sort(tmp.begin(), tmp.end(),
+            [](const auto& a, const auto& b) { return a.first > b.first; });
+
+    turnQueue.clear();
+    for (auto& pr : tmp)
+        turnQueue.push_back(pr.second);
+
+    // highlight first actor
+    currentTurnIndex = 0;
+
 }
 
 void GameStateBattle::draw(const float dt) {
@@ -135,6 +200,13 @@ void GameStateBattle::draw(const float dt) {
         this->game->window.draw(hpTexts[i]);
         this->game->window.draw(mpTexts[i]);
     }    
+
+    this->game->window.draw(turnPanelBackground);
+    for (size_t i = 0; i < turnPortraitBoxes.size(); ++i) {
+        this->game->window.draw(turnPortraitBoxes[i]);
+        this->game->window.draw(turnPortraitSprites[i]);
+        // Optional highlight
+    }    
 }
 
 void GameStateBattle::update(const float dt) {
@@ -149,6 +221,40 @@ void GameStateBattle::update(const float dt) {
         hpTexts[i].setString(std::to_string(p->getHP()) + "/" + std::to_string(p->getmaxHP()));
         mpTexts[i].setString(std::to_string(p->getMP()) + "/" + std::to_string(p->getmaxMP()));
     }    
+
+    // Highlight the active player's UI box
+    Player* active = nullptr;
+    if (!turnQueue.empty()) active = turnQueue.front();
+
+    for (size_t i = 0; i < party.size(); ++i) {
+        float raise = 0.f;
+        if (active == party[i]) {
+            raise = -16.f;
+            playerBackgrounds[i].setOutlineColor(sf::Color::Red);
+            playerBackgrounds[i].setOutlineThickness(3.f);
+        } else {
+            playerBackgrounds[i].setOutlineColor(sf::Color::White);
+            playerBackgrounds[i].setOutlineThickness(2.f);           
+        }
+        sf::Vector2f base = basePositions[i];
+        playerBackgrounds[i].setPosition(base.x, base.y + raise);
+        playerIcons[i].setPosition(playerIcons[i].getPosition().x, base.y - 10.f + raise);
+        hpBars[i].setPosition(hpBars[i].getPosition().x, base.y + 80.f + raise);
+        mpBars[i].setPosition(mpBars[i].getPosition().x, base.y + 100.f + raise);
+        hpTexts[i].setPosition(hpTexts[i].getPosition().x, base.y + 70.f + raise);
+        mpTexts[i].setPosition(mpTexts[i].getPosition().x, base.y + 90.f + raise);
+        // small raise
+        
+
+        for (size_t j = 0; j < turnPortraitSprites.size(); ++j) {
+            if (!turnQueue.empty() && turnQueue.front() == party[j]) {
+                float scale = 1.1f * turnPortraitBaseScales[j];
+                turnPortraitSprites[j].setScale(scale, scale);
+            } else {
+                turnPortraitSprites[j].setScale(turnPortraitBaseScales[j], turnPortraitBaseScales[j]);
+            }
+        }       
+    }
 }
 
 
@@ -161,6 +267,14 @@ void GameStateBattle::handleInput() {
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
             this->game->requestChange(std::make_unique<GameStateEditor>(this->game,false));
             return;
-        }        
+        }   
+        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space) {
+            // rotate queue: move front to back
+            if (!turnQueue.empty()) {
+                Player* front = turnQueue.front();
+                turnQueue.pop_front();
+                turnQueue.push_back(front);
+            }
+        }             
     }
 }

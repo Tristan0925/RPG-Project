@@ -17,6 +17,8 @@ private:
     sf::RectangleShape background;
     sf::RectangleShape textBox;
     sf::RectangleShape enemyBackground;
+    std::vector<sf::Vector2f> basePositions;
+
 
     // Textures
     sf::Texture enemyBackgroundTex;
@@ -43,8 +45,24 @@ private:
     std::vector<sf::RectangleShape> playerBackgrounds;
     std::vector<sf::Sprite> playerIcons;
     std::vector<sf::Texture> playerIconTextures;
+    std::vector<float> portraitBaseScales;
+    std::vector<float> turnPortraitBaseScales;
+
+
     
     std::vector<Player*> party;
+
+    // Turn UI
+    std::deque<Player*> turnQueue;
+    size_t currentTurnIndex = 0;
+    std::vector<sf::RectangleShape> turnPortraitBoxes;
+    std::vector<sf::Sprite> turnPortraitSprites;
+    sf::RectangleShape turnPanelBackground;
+
+    // UI tuning
+    float ui_startX = 550.f;
+    float ui_startY = 800.f;
+    float ui_spacing = 220.f;
 
 public:
     GameStateBattle(Game* game);

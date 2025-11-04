@@ -88,14 +88,12 @@ class Player {
         void setDefault(const Map& map);
 
 
-        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const;
+        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const, getAGI() const;
         std::array<Item, 2> getInventory() const;
         std::array<const Skill*, 9> getSkillsList() const;
         void addToInventory(Item item, int quantity);
         const Skill* getSkillPtr(std::string skillName, const std::vector<Skill>& masterList);
         void addToSkillList(std::string skillName, const std::vector<Skill>& masterList);
      
-        
-        
 };
 
