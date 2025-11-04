@@ -35,6 +35,17 @@ private:
 
     sf::Sprite playerSprite;
 
+    // Player UI
+    std::vector<sf::RectangleShape> hpBars;
+    std::vector<sf::RectangleShape> mpBars;
+    std::vector<sf::Text> hpTexts;
+    std::vector<sf::Text> mpTexts;
+    std::vector<sf::RectangleShape> playerBackgrounds;
+    std::vector<sf::Sprite> playerIcons;
+    std::vector<sf::Texture> playerIconTextures;
+    
+    std::vector<Player*> party;
+
 public:
     GameStateBattle(Game* game);
     virtual ~GameStateBattle() {}
