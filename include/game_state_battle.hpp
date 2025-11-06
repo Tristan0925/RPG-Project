@@ -5,6 +5,7 @@
 #include "Player.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include "Button.hpp"
 
 class GameStateBattle : public GameState {
 private:
@@ -54,8 +55,6 @@ private:
     std::vector<sf::Texture> playerIconTextures;
     std::vector<float> portraitBaseScales;
     std::vector<float> turnPortraitBaseScales;
-
-
     
     std::vector<Player*> party;
 
@@ -66,6 +65,28 @@ private:
     std::vector<sf::Sprite> turnPortraitSprites;
     sf::RectangleShape turnPanelBackground;
 
+    // Battle Buttons
+    bool skillMenuActive = false;
+    Button attackButton;
+    Button skillButton;
+    Button itemButton;
+    Button guardButton;
+    Button escapeButton;
+        
+    // Submenu UI
+    std::vector<Button> skillButtons;
+    std::vector<Button> itemButtons;
+    Button backButton;
+
+
+    // Battle Menu State
+    enum class BattleMenuState {
+        Main,
+        Skill,
+        Item
+    };
+
+    BattleMenuState currentMenuState = BattleMenuState::Main;
     // UI tuning
     float ui_startX = 550.f;
     float ui_startY = 800.f;

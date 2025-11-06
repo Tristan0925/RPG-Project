@@ -2,8 +2,15 @@
 #include "game_state_editor.hpp"   
 #include <iostream>
 #include <algorithm>
+#include "Button.hpp"
 
-GameStateBattle::GameStateBattle(Game* game, bool isBossBattle) {
+GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)     
+: attackButton("Attack", {150.f, 800.f}, 30, game, sf::Color(200, 50, 50)),
+skillButton("Skill",  {150.f, 840.f}, 30, game, sf::Color(50, 150, 200)),
+itemButton("Item",   {150.f, 880.f}, 30, game, sf::Color(50, 200, 100)),
+guardButton("Guard", {350.f, 800.f}, 30, game, sf::Color(200, 200, 50)),
+escapeButton("Escape",{350.f, 840.f}, 30, game, sf::Color(100, 100, 100)),
+backButton("Back", {350.f, 880.f}, 30, game, sf::Color(90, 90, 90)) {
     this->game = game;
     this->player = &game->player;
     font = this->game->font;
@@ -192,6 +199,27 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle) {
         battleMusic.play();
     }
 
+    
+    // Back button
+    backButton = Button("Back", {150.f, 900.f}, 30, this->game, sf::Color(90, 90, 90));
+
+
+    // --- Populate Skills dynamically from player's learned skills ---
+    skillButtons.clear();
+    float skillY = 300.f;
+    for (const auto& skillName : this->game->playerSkills) {
+        skillButtons.emplace_back(skillName, sf::Vector2f(150.f, skillY), 30, this->game, sf::Color(100, 100, 220));
+        skillY += 70.f;
+    }
+
+    // Populate Items dynamically from inventory 
+    itemButtons.clear();
+    float itemY = 800.f;
+    for (const auto& itemName : this->game->player.getInventory()) { 
+        itemButtons.emplace_back(itemName.showName(), sf::Vector2f(150.f, itemY), 30, this->game, sf::Color(120, 180, 120));
+        itemY += 70.f;
+    }
+
 }
 
 void GameStateBattle::draw(const float dt) {
@@ -215,6 +243,23 @@ void GameStateBattle::draw(const float dt) {
         this->game->window.draw(turnPortraitBoxes[i]);
         this->game->window.draw(turnPortraitSprites[i]);
         // Optional highlight
+    }
+
+    if (currentMenuState == BattleMenuState::Main) {
+        attackButton.draw(this->game->window);
+        skillButton.draw(this->game->window);
+        itemButton.draw(this->game->window);
+        guardButton.draw(this->game->window);
+        escapeButton.draw(this->game->window);
+    }
+    else if (currentMenuState == BattleMenuState::Skill) {
+        for (auto& b : skillButtons) b.draw(this->game->window);
+        backButton.draw(this->game->window);
+
+    }
+    else if (currentMenuState == BattleMenuState::Item) {
+        for (auto& b : itemButtons) b.draw(this->game->window);
+        backButton.draw(this->game->window);
     }    
 }
 
@@ -270,20 +315,53 @@ void GameStateBattle::update(const float dt) {
 void GameStateBattle::handleInput() {
     sf::Event event;
     while (this->game->window.pollEvent(event)) {
-        if (event.type == sf::Event::Closed) {
-            this->game->window.close();
-        }
-        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
-            this->game->requestChange(std::make_unique<GameStateEditor>(this->game,false));
-            return;
-        }   
-        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space) {
-            // rotate queue: move front to back
-            if (!turnQueue.empty()) {
-                Player* front = turnQueue.front();
-                turnQueue.pop_front();
-                turnQueue.push_back(front);
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+            if (event.type == sf::Event::Closed) {
+                this->game->window.close();
             }
-        }             
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
+                this->game->requestChange(std::make_unique<GameStateEditor>(this->game,false));
+                return;
+            }   
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space) {
+                // rotate queue: move front to back
+                if (!turnQueue.empty()) {
+                    Player* front = turnQueue.front();
+                    turnQueue.pop_front();
+                    turnQueue.push_back(front);
+                }
+            }
+            if (currentMenuState == BattleMenuState::Main) {
+                if (attackButton.wasClicked(this->game->window)) {
+                    // do attack logic
+                } 
+                else if (skillButton.wasClicked(this->game->window)) {
+                    currentMenuState = BattleMenuState::Skill;
+                } 
+                else if (itemButton.wasClicked(this->game->window)) {
+                    currentMenuState = BattleMenuState::Item;
+                }
+            }
+            else if (currentMenuState == BattleMenuState::Skill) {
+                for (auto& b : skillButtons) {
+                    if (b.wasClicked(this->game->window)) {
+                        // skill selected
+                    }
+                }
+                if (backButton.wasClicked(this->game->window)) {
+                    currentMenuState = BattleMenuState::Main;
+                }
+            }
+            else if (currentMenuState == BattleMenuState::Item) {
+                for (auto& b : itemButtons) {
+                    if (b.wasClicked(this->game->window)) {
+                        // item selected
+                    }
+                }
+                if (backButton.wasClicked(this->game->window)) {
+                    currentMenuState = BattleMenuState::Main;
+                }
+            }
+        }                     
     }
 }
