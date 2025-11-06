@@ -315,15 +315,20 @@ void GameStateBattle::update(const float dt) {
 void GameStateBattle::handleInput() {
     sf::Event event;
     while (this->game->window.pollEvent(event)) {
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-            if (event.type == sf::Event::Closed) {
-                this->game->window.close();
-            }
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
-                this->game->requestChange(std::make_unique<GameStateEditor>(this->game,false));
+
+        // --- Close window
+        if (event.type == sf::Event::Closed) {
+            this->game->window.close();
+            return;
+        }
+
+        // --- Key press events
+        if (event.type == sf::Event::KeyPressed) {
+            if (event.key.code == sf::Keyboard::Enter) {
+                this->game->requestChange(std::make_unique<GameStateEditor>(this->game, false));
                 return;
-            }   
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space) {
+            }
+            else if (event.key.code == sf::Keyboard::Space) {
                 // rotate queue: move front to back
                 if (!turnQueue.empty()) {
                     Player* front = turnQueue.front();
@@ -331,17 +336,23 @@ void GameStateBattle::handleInput() {
                     turnQueue.push_back(front);
                 }
             }
+        }
+
+        // --- Mouse click events
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+
             if (currentMenuState == BattleMenuState::Main) {
                 if (attackButton.wasClicked(this->game->window)) {
                     // do attack logic
-                } 
+                }
                 else if (skillButton.wasClicked(this->game->window)) {
                     currentMenuState = BattleMenuState::Skill;
-                } 
+                }
                 else if (itemButton.wasClicked(this->game->window)) {
                     currentMenuState = BattleMenuState::Item;
                 }
             }
+
             else if (currentMenuState == BattleMenuState::Skill) {
                 for (auto& b : skillButtons) {
                     if (b.wasClicked(this->game->window)) {
@@ -352,6 +363,7 @@ void GameStateBattle::handleInput() {
                     currentMenuState = BattleMenuState::Main;
                 }
             }
+
             else if (currentMenuState == BattleMenuState::Item) {
                 for (auto& b : itemButtons) {
                     if (b.wasClicked(this->game->window)) {
@@ -362,6 +374,6 @@ void GameStateBattle::handleInput() {
                     currentMenuState = BattleMenuState::Main;
                 }
             }
-        }                     
+        }
     }
 }
