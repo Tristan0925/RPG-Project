@@ -18,14 +18,14 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle) {
     // Text box
     textBox.setSize({1750.f, 100.f});
     textBox.setOutlineThickness(2.f);
-    textBox.setOutlineColor(sf::Color::White);
+    textBox.setOutlineColor(sf::Color::Red);
     textBox.setFillColor(sf::Color::Black);
     textBox.setPosition(85.f, 620.f);
     
     // Enemy Background
     enemyBackground.setSize({1907.f, 550.f});
     enemyBackground.setOutlineThickness(2.f);
-    enemyBackground.setOutlineColor(sf::Color::White);
+    enemyBackground.setOutlineColor(sf::Color::Red);
     enemyBackground.setPosition(5.f, 50.f);
 
     // Background 
@@ -69,7 +69,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle) {
 
         // Red bg box
         bgBox.setFillColor(sf::Color(128, 0, 0, 200));
-        bgBox.setOutlineColor(sf::Color::White);
+        bgBox.setOutlineColor(sf::Color::Red);
         bgBox.setOutlineThickness(2.f);
 
         // Bars
@@ -129,7 +129,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle) {
     float panelH = 310.f;
     turnPanelBackground.setSize({panelW, panelH});
     turnPanelBackground.setFillColor(sf::Color(20,20,20, 200));
-    turnPanelBackground.setOutlineColor(sf::Color::White);
+    turnPanelBackground.setOutlineColor(sf::Color::Red);
     turnPanelBackground.setOutlineThickness(2.f);
 
     // panel position
@@ -166,6 +166,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle) {
 
         turnPortraitBoxes.push_back(box);
         turnPortraitSprites.push_back(spr);
+
     }
 
     // --- Compute initial turn order by AGI
@@ -182,6 +183,14 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle) {
 
     // highlight first actor
     currentTurnIndex = 0;
+
+    // Music
+    if (!battleMusic.openFromFile("./assets/music/normalbattle.mp3")) {
+        std::cout << "Could not load music file" << std::endl;
+    } else {
+        battleMusic.setLoop(true);
+        battleMusic.play();
+    }
 
 }
 
@@ -230,10 +239,10 @@ void GameStateBattle::update(const float dt) {
         float raise = 0.f;
         if (active == party[i]) {
             raise = -16.f;
-            playerBackgrounds[i].setOutlineColor(sf::Color::Red);
+            playerBackgrounds[i].setOutlineColor(sf::Color::Green);
             playerBackgrounds[i].setOutlineThickness(3.f);
         } else {
-            playerBackgrounds[i].setOutlineColor(sf::Color::White);
+            playerBackgrounds[i].setOutlineColor(sf::Color::Red);
             playerBackgrounds[i].setOutlineThickness(2.f);           
         }
         sf::Vector2f base = basePositions[i];

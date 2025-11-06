@@ -4,6 +4,7 @@
 #include "game_state.hpp"
 #include "Player.hpp"
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 class GameStateBattle : public GameState {
 private:
@@ -11,6 +12,9 @@ private:
 
     // Battle state
     bool isBossBattle = false;
+
+    // Music
+    sf::Music battleMusic;
 
     // Text         
     sf::Font font;
@@ -68,7 +72,7 @@ private:
     float ui_spacing = 220.f;
 
 public:
-    GameStateBattle(Game* game);
+    GameStateBattle(Game* game, bool isBossBattle);
     virtual ~GameStateBattle() {}
 
     virtual void draw(const float dt);
