@@ -4,23 +4,42 @@
 #include <string>
 #include <map>
 #include <array>
-NPC::NPC(std::string name, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int XP, std::map<std::string, float> affinities) : //party member constructor 
-    Player(name, LVL, STR, VIT, MAG, AGI, LU, XP, affinities){} 
+
+// Party member constructor 
+NPC::NPC(std::string name, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int XP, std::map<std::string, float> affinities) : 
+Player(name, LVL, STR, VIT, MAG, AGI, LU, XP, affinities), baseXPAmount(0), spriteLocation(""), isBoss(false) {}
+
+// -----------------------
+
+// Enemy Constructor
 NPC::NPC(std::string name, std::string spriteLocation, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int baseXPAmount, std::map<std::string, float> affinities) :
-    Player(name, LVL, STR, VIT, MAG, AGI, LU, 0, affinities){} //enemy constructor
+Player(name, LVL, STR, VIT, MAG, AGI, LU, 0, affinities), spriteLocation(spriteLocation),
+baseXPAmount(baseXPAmount),
+isBoss(false) {}
+
+// --------------------------
+
+
+// Boss Constructor
 NPC::NPC(std::string name, std::string spriteLocation, std::vector<std::string>, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int baseXPAmount, std::map<std::string, float> affinities, bool isBoss) :
-    Player(name, LVL, STR, VIT, MAG, AGI, LU, 0, affinities){} //boss constructor
+Player(name, LVL, STR, VIT, MAG, AGI, LU, 0, affinities), spriteLocation(spriteLocation),
+animationsLocation(animationsLocation), baseXPAmount(baseXPAmount), isBoss(isBoss) {}
+
+
 int NPC::getBaseXPAmount() const {
     return baseXPAmount;
  }
+
 std::vector<std::string> NPC::getAnimationsLocation() const {
     return animationsLocation;
 }
+
 std::string NPC::getSpriteLocation() const {
     return spriteLocation;
 }
 bool NPC::getIsBoss() const {
     return isBoss;
 }
+
 NPC::~NPC() = default;
 
