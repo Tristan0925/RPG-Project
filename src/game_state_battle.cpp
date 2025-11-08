@@ -5,12 +5,12 @@
 #include "Button.hpp"
 
 GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)     
-: attackButton("Attack", {150.f, 800.f}, 30, game, sf::Color(200, 50, 50)),
-skillButton("Skill",  {150.f, 840.f}, 30, game, sf::Color(50, 150, 200)),
-itemButton("Item",   {150.f, 880.f}, 30, game, sf::Color(50, 200, 100)),
-guardButton("Guard", {350.f, 800.f}, 30, game, sf::Color(200, 200, 50)),
-escapeButton("Escape",{350.f, 840.f}, 30, game, sf::Color(100, 100, 100)),
-backButton("Back", {350.f, 880.f}, 30, game, sf::Color(90, 90, 90)) {
+: attackButton("Attack", {150.f, 800.f}, 30, game, sf::Color::White),
+skillButton("Skill",  {150.f, 840.f}, 30, game, sf::Color::White),
+itemButton("Item",   {150.f, 880.f}, 30, game, sf::Color::White),
+guardButton("Guard", {350.f, 800.f}, 30, game, sf::Color::White),
+escapeButton("Escape",{350.f, 840.f}, 30, game, sf::Color::White),
+backButton("Back", {350.f, 920.f}, 30, game, sf::Color::White) {
     this->game = game;
     this->player = &game->player;
     font = this->game->font;
@@ -129,6 +129,22 @@ backButton("Back", {350.f, 880.f}, 30, game, sf::Color(90, 90, 90)) {
         mpBars.push_back(mpBar);
         hpTexts.push_back(hpText);
         mpTexts.push_back(mpText);
+
+        // after initializing skillButtons
+        float baseX = 150.f;
+        float baseY = 800.f;
+        float offsetY = 40.f;
+
+        for (size_t i = 0; i < skillButtons.size(); ++i) {
+            skillButtons[i].changePosition(baseX, baseY + i * offsetY);
+        }
+
+        attackButton.enableHexBackground(true);
+        skillButton.enableHexBackground(true);
+        itemButton.enableHexBackground(true);
+        guardButton.enableHexBackground(true);
+        escapeButton.enableHexBackground(true);
+        backButton.enableHexBackground(true);
     }    
 
     // Turn Order UI ------------
@@ -274,6 +290,12 @@ void GameStateBattle::update(const float dt) {
     
         hpTexts[i].setString(std::to_string(p->getHP()) + "/" + std::to_string(p->getmaxHP()));
         mpTexts[i].setString(std::to_string(p->getMP()) + "/" + std::to_string(p->getmaxMP()));
+
+        attackButton.setHighlight(attackButton.isHovered(this->game->window));
+        skillButton.setHighlight(skillButton.isHovered(this->game->window));
+        itemButton.setHighlight(itemButton.isHovered(this->game->window));
+        guardButton.setHighlight(guardButton.isHovered(this->game->window));
+        escapeButton.setHighlight(escapeButton.isHovered(this->game->window));
     }    
 
     // Highlight the active player's UI box
@@ -309,6 +331,14 @@ void GameStateBattle::update(const float dt) {
             }
         }       
     }
+
+    // Button Highlights
+    attackButton.setHighlight(attackButton.isHovered(this->game->window));
+    skillButton.setHighlight(skillButton.isHovered(this->game->window));
+    itemButton.setHighlight(itemButton.isHovered(this->game->window));
+    guardButton.setHighlight(guardButton.isHovered(this->game->window));
+    escapeButton.setHighlight(escapeButton.isHovered(this->game->window));
+
 }
 
 
