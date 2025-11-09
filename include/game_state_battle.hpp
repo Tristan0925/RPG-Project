@@ -64,6 +64,7 @@ private:
     std::vector<sf::RectangleShape> turnPortraitBoxes;
     std::vector<sf::Sprite> turnPortraitSprites;
     sf::RectangleShape turnPanelBackground;
+    void updateTurnPanel();
 
     // Battle Buttons
     bool skillMenuActive = false;
@@ -72,6 +73,17 @@ private:
     Button itemButton;
     Button guardButton;
     Button escapeButton;
+
+    // Enemies
+
+    void spawnEnemies(bool isBossBattle);
+    void setupTurnOrder();
+    void enemy(NPC& enemy);
+    std::vector<NPC> loadRandomEnemies(int count); 
+    std::vector<NPC> enemies;
+    std::vector<sf::Texture> enemyTextures; 
+    std::vector<sf::Sprite> enemySprites; 
+    std::vector<sf::Text> turnEnemyNames; 
         
     // Submenu UI
     std::vector<Button> skillButtons;
@@ -87,6 +99,7 @@ private:
     };
 
     BattleMenuState currentMenuState = BattleMenuState::Main;
+
     // UI tuning
     float ui_startX = 550.f;
     float ui_startY = 800.f;
