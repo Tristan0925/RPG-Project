@@ -112,12 +112,25 @@ void Player::setDefault(const Map& map)
     position = sf::Vector2f(map.getSpawnX() * 64.f, map.getSpawnY() * 64.f);; // starting coordinates
     angle = 0.f; // facing forward
     // reset inventory, health, etc.
-    HP = 100;
-    maxHP = 100;
-    MP = 100;
-    maxMP = 100;
+    maxHP = (LVL + VIT) * 6;
+    HP = maxHP;
+    maxMP = (LVL + MAG) * 3;
+    MP = maxMP;
     LVL = 1;
     XP = 0;
+    name = "Tatsuya";
+    LVL = 1;
+    STR = 4;
+    VIT = 3;
+    MAG = 3;
+    AGI = 3;
+    LU = 2;
+    affinities = {{"Fire", 0.0}, {"Ice", 1.5}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.0}};
+    XP = 0;
+    skillsList = { nullptr };
+    angle = 0.f;
+    targetAngle = 0.f;
+    turnSpeed = 3.0f; // radians/sec, tweak to taste
 }
 
 
@@ -194,6 +207,10 @@ int Player::getmaxHP() const {
 int Player::getmaxMP() const {
     return maxMP;
 }
+int Player::getAGI() const {
+    return AGI;
+}
+
  void Player::takeDamage(int damage){
     if (HP - damage < 0) HP = 0;
     else HP -= damage;

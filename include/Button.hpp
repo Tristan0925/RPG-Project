@@ -11,12 +11,20 @@ class Button{
     void changePosition(float posx, float posy);
     void draw(sf::RenderWindow& window);
     bool isHovered(sf::RenderWindow& window);
-    sf::RectangleShape underline;
     const sf::RectangleShape& getUnderline() const;
 
+    void setHighlight(bool on); 
+    void setVisible(bool visible);
+    void enableHexBackground(bool enable ) {useHexBackground = enable;}
 
     private:
-   
-    sf::Text text;
+
     Game* game;
+    sf::Text text;
+    sf::ConvexShape hex;
+    sf::RectangleShape underline;
+
+    bool useHexBackground = false;
+    bool isHighlighted = false;
+    bool visible = true;
 };
