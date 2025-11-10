@@ -62,10 +62,12 @@ private:
     sf::RenderWindow window;
     TextureManager texmgr;
     sf::Sprite background;
+    //Reused UI elements
     sf::Sprite playerSprite;
     sf::Sprite pmember2Sprite;
     sf::Sprite pmember3Sprite;
     sf::Sprite pmember4Sprite;
+    
 
     // Immediate operations (internal helpers)
     void pushState(std::unique_ptr<GameState> state);
@@ -80,7 +82,6 @@ private:
 
     // apply any pending request (call from game loop)
     void applyPendingState();
-
     void gameLoop();
 
     Game();
