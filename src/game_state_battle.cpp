@@ -12,13 +12,14 @@
 using json = nlohmann::json;
 
 GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
-: attackButton("Attack", {150.f, 800.f}, 30, game, sf::Color::White),
-  skillButton("Skill",  {150.f, 840.f}, 30, game, sf::Color::White),
-  itemButton("Item",   {150.f, 880.f}, 30, game, sf::Color::White),
-  guardButton("Guard", {350.f, 800.f}, 30, game, sf::Color::White),
-  escapeButton("Escape", {350.f, 840.f}, 30, game, sf::Color::White),
-  backButton("Back", {350.f, 1000.f}, 30, game, sf::Color::White),
-  topBarTextBackground(sf::Quads,4), thingsEarnedBackground(sf::Quads,4)
+:   topBarTextBackground(sf::Quads,4), 
+    thingsEarnedBackground(sf::Quads,4),
+    attackButton("Attack", {150.f, 800.f}, 30, game, sf::Color::White),
+    skillButton("Skill",  {150.f, 840.f}, 30, game, sf::Color::White),
+    itemButton("Item",   {150.f, 880.f}, 30, game, sf::Color::White),
+    guardButton("Guard", {350.f, 800.f}, 30, game, sf::Color::White),
+    escapeButton("Escape", {350.f, 840.f}, 30, game, sf::Color::White),
+    backButton("Back", {350.f, 1000.f}, 30, game, sf::Color::White)
 {
     this->game = game;
     this->player = &game->player;

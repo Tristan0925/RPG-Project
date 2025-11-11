@@ -14,7 +14,7 @@ private:
 
     // Battle state
     bool isBossBattle = false;
-    bool battleOver = true; //change this later
+    bool battleOver = false; //change this later
     // Music
     sf::Music currentMusic;
     bool playResultsMusic; //
