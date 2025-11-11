@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "Button.hpp"
+#include <array>
 
 class GameStateBattle : public GameState {
 private:
@@ -13,20 +14,50 @@ private:
 
     // Battle state
     bool isBossBattle = false;
-
+    bool battleOver = true; //change this later
     // Music
-    sf::Music battleMusic;
-
+    sf::Music currentMusic;
+    bool playResultsMusic; //
+    
+    
     // Text         
     sf::Font font;
     sf::Text battleText;
+
+    
+    sf::Text topBarText;
+    sf::Text totalEarnedExp;
+    std::string totalEarnedExpMessage;
+    sf::Text playerName;
+    sf::Text pmember2Name;
+    sf::Text pmember3Name;
+    sf::Text pmember4Name;
+    sf::Text playerLevel;
+    sf::Text pmember2Level;
+    sf::Text pmember3Level;
+    sf::Text pmember4Level;
+    sf::Text nextLevel;
+    sf::Text levelUpText;
 
     // Shapes
     sf::RectangleShape background;
     sf::RectangleShape textBox;
     sf::RectangleShape enemyBackground;
     std::vector<sf::Vector2f> basePositions;
+    
+    sf::VertexArray topBarTextBackground;
+    sf::VertexArray thingsEarnedBackground;
+    std::array<sf::RectangleShape, 4> portraitBackgrounds;
+    std::array<sf::RectangleShape, 4>  levelBackground;
+    sf::RectangleShape expBar;
+    std::array<sf::RectangleShape, 4>  expBarBackground;
 
+
+    // Level Up Flags
+    bool playerLevelUp = false;
+    bool pmember2LevelUp = false;
+    bool pmember3LevelUp = false;
+    bool pmember4LevelUp = false;
 
     // Textures
     sf::Texture enemyBackgroundTex;
@@ -106,6 +137,8 @@ private:
     float ui_startX = 550.f;
     float ui_startY = 800.f;
     float ui_spacing = 220.f;
+
+    void displayResultsScreen(bool displayResults);
 
 public:
     GameStateBattle(Game* game, bool isBossBattle);

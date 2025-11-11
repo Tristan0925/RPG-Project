@@ -89,6 +89,7 @@ class Player {
 
 
         int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const, getAGI() const;
+        std::string getName() const;
         std::array<Item, 2> getInventory() const;
         std::array<const Skill*, 9> getSkillsList() const;
         void addToInventory(Item item, int quantity);

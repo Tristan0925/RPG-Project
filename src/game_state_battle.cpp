@@ -7,16 +7,18 @@
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <random>
+#include <array>
 
 using json = nlohmann::json;
 
 GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
 : attackButton("Attack", {150.f, 800.f}, 30, game, sf::Color::White),
-  skillButton("Skill", {150.f, 840.f}, 30, game, sf::Color::White),
-  itemButton("Item", {150.f, 880.f}, 30, game, sf::Color::White),
+  skillButton("Skill",  {150.f, 840.f}, 30, game, sf::Color::White),
+  itemButton("Item",   {150.f, 880.f}, 30, game, sf::Color::White),
   guardButton("Guard", {350.f, 800.f}, 30, game, sf::Color::White),
   escapeButton("Escape", {350.f, 840.f}, 30, game, sf::Color::White),
-  backButton("Back", {350.f, 1000.f}, 30, game, sf::Color::White)
+  backButton("Back", {350.f, 1000.f}, 30, game, sf::Color::White),
+  topBarTextBackground(sf::Quads,4), thingsEarnedBackground(sf::Quads,4)
 {
     this->game = game;
     this->player = &game->player;
@@ -192,11 +194,11 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     currentTurnIndex = 0;
 
     // Music
-    if (!battleMusic.openFromFile("./assets/music/normalbattle.mp3")) {
+    if (!currentMusic.openFromFile("./assets/music/normalbattle.mp3")) {
         std::cout << "Could not load music file" << std::endl;
     } else {
-        battleMusic.setLoop(true);
-        battleMusic.play();
+        currentMusic.setLoop(true);
+        currentMusic.play();
     }
     
     // Back button (reconfigure if you want different color)
@@ -233,9 +235,88 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     itemButton.enableHexBackground(true);
     guardButton.enableHexBackground(true);
     escapeButton.enableHexBackground(true);
+    //Set Up results screen text
+    topBarText.setFont(font);
+    topBarText.setCharacterSize(75);
+    topBarText.setString("Results \t\t\t\t\t\t\t\t\t\t\t\t Obtained the following:");
+    topBarText.setFillColor(sf::Color::Black);
+    topBarText.setPosition(15.0f, 20.0f);
+
+    topBarTextBackground[0].position = sf::Vector2f(0.f,0.f);
+    topBarTextBackground[0].color= sf::Color(130,25,13);
+    topBarTextBackground[1].position = sf::Vector2f(1920.f,0.f);
+    topBarTextBackground[1].color= sf::Color(55,11,4);
+    topBarTextBackground[2].position = sf::Vector2f(1920.f,150.f);
+    topBarTextBackground[2].color= sf::Color(55,11,4);
+    topBarTextBackground[3].position = sf::Vector2f(0,150.f);
+    topBarTextBackground[3].color= sf::Color(130,25,13);
+
+    thingsEarnedBackground[0].position = sf::Vector2f(0.f,200.f);
+    thingsEarnedBackground[0].color= sf::Color(55,11,4);
+    thingsEarnedBackground[1].position = sf::Vector2f(1920.f,200.f);
+    thingsEarnedBackground[1].color= sf::Color(130,25,13);
+    thingsEarnedBackground[2].position = sf::Vector2f(1920.f,400.f);
+    thingsEarnedBackground[2].color= sf::Color(130,25,13);
+    thingsEarnedBackground[3].position = sf::Vector2f(0,400.f);
+    thingsEarnedBackground[3].color= sf::Color(55,11,4);
+
+    totalEarnedExp.setFont(font);
+    totalEarnedExpMessage = "EXP                                                                                                                                                                0";  // + std::to_string(totalXpGained) or whatever it is
+    totalEarnedExp.setString(totalEarnedExpMessage);
+    totalEarnedExp.setCharacterSize(75);
+    totalEarnedExp.setFillColor(sf::Color::Red);
+    totalEarnedExp.setPosition(25.0f,250.0f);
+
+    //set up all the necessary variables for displaying the player + party
+    playerName.setFont(font);
+    playerName.setString(this->game->player.getName());
+    playerName.setCharacterSize(25);
+    playerName.setFillColor(sf::Color(130,25,13));
+
+    pmember2Name.setFont(font);
+    pmember2Name.setString(this->game->pmember2.getName());
+    pmember2Name.setCharacterSize(25);
+    pmember2Name.setFillColor(sf::Color(130,25,13));
+
+    pmember3Name.setFont(font);
+    pmember3Name.setString(this->game->pmember3.getName());
+    pmember3Name.setCharacterSize(25);
+    pmember3Name.setFillColor(sf::Color(130,25,13));
+
+    pmember4Name.setFont(font);
+    pmember4Name.setString(this->game->pmember4.getName());
+    pmember4Name.setCharacterSize(25);
+    pmember4Name.setFillColor(sf::Color(130,25,13));
+
 }
 
+void GameStateBattle::displayResultsScreen(bool displayResults){
+    
+    this->game->window.draw(topBarTextBackground);
+    this->game->window.draw(topBarText);
+    this->game->window.draw(thingsEarnedBackground);
+    this->game->window.draw(totalEarnedExp);
+   
+}
+
+
+
+
 void GameStateBattle::draw(const float dt) {
+    if (battleOver){
+        if (!playResultsMusic){
+            currentMusic.stop();
+            if (!currentMusic.openFromFile("./assets/music/battleresults.mp3")) std::cout << "Could not load music file" << std::endl;
+            else {
+                currentMusic.setLoop(true);
+                currentMusic.play();
+                playResultsMusic = true;
+                }
+}
+         displayResultsScreen(true);
+    } 
+
+    else{
     this->game->window.clear();
     this->game->window.draw(background);
     this->game->window.draw(enemyBackground);
@@ -313,6 +394,7 @@ void GameStateBattle::draw(const float dt) {
         for (auto& b : itemButtons) b.draw(this->game->window);
         backButton.draw(this->game->window);
     }   
+}
 }
 
 void GameStateBattle::update(const float dt) {
