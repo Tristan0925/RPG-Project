@@ -25,7 +25,7 @@ Button::Button(std::string words, sf::Vector2f location, int size, Game* game, s
     hex.setOrigin(hex.getLocalBounds().width / 2, hex.getLocalBounds().height / 2);
     hex.setFillColor(sf::Color(100, 0, 0, 150));
 
-    useHexBackground = true; 
+    useHexBackground = false; 
 }
 
 

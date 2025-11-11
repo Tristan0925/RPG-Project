@@ -94,6 +94,5 @@ class Player {
         void addToInventory(Item item, int quantity);
         const Skill* getSkillPtr(std::string skillName, const std::vector<Skill>& masterList);
         void addToSkillList(std::string skillName, const std::vector<Skill>& masterList);
-     
 };
 
