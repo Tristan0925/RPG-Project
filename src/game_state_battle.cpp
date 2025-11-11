@@ -586,7 +586,7 @@ void GameStateBattle::updateTurnPanel() {
 
     for (size_t i = 0; i < turnList.size(); ++i) {
         const auto& entry = turnList[i];
-        float x = panelX + 20.f;
+        float x = panelX + 70.f;
         float y = currentY; // Use the running Y position
 
         // --- FIX: Ensure every entry (player or enemy) has the same height ---
