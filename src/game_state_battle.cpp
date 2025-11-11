@@ -545,7 +545,7 @@ void GameStateBattle::updateTurnPanel() {
         sf::RectangleShape &box = turnPortraitBoxes[i];
         sf::Sprite &spr = turnPortraitSprites[i];
 
-        float x = turnPanelBackground.getPosition().x + 20.f;
+        float x = turnPanelBackground.getPosition().x + 55.f;
         float y = turnPanelBackground.getPosition().y + padding + i * spacingY;
 
         box.setPosition(x, y);
@@ -589,7 +589,7 @@ void GameStateBattle::updateTurnPanel() {
         // Use a safe public getter (don't access protected fields directly)
         nameText.setString(enemies[ei].getDisplayName()); // make/get this getter in NPC
 
-        float x = turnPanelBackground.getPosition().x + 20.f;
+        float x = turnPanelBackground.getPosition().x + 55.f;
         float y = turnPanelBackground.getPosition().y + padding + (party.size() + ei) * spacingY;
         nameText.setPosition(x, y);
 
