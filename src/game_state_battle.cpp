@@ -16,7 +16,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
   itemButton("Item", {150.f, 880.f}, 30, game, sf::Color::White),
   guardButton("Guard", {350.f, 800.f}, 30, game, sf::Color::White),
   escapeButton("Escape", {350.f, 840.f}, 30, game, sf::Color::White),
-  backButton("Back", {350.f, 920.f}, 30, game, sf::Color::White)
+  backButton("Back", {350.f, 1000.f}, 30, game, sf::Color::White)
 {
     this->game = game;
     this->player = &game->player;
@@ -200,7 +200,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     }
     
     // Back button (reconfigure if you want different color)
-    backButton = Button("Back", {150.f, 900.f}, 30, this->game, sf::Color(90, 90, 90));
+    backButton = Button("Back", {150.f, 1000.f}, 30, this->game, sf::Color(90, 90, 90));
 
     // --- Populate Skills dynamically from player's learned skills ---
     skillButtons.clear();
@@ -233,7 +233,6 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     itemButton.enableHexBackground(true);
     guardButton.enableHexBackground(true);
     escapeButton.enableHexBackground(true);
-    backButton.enableHexBackground(true);
 }
 
 void GameStateBattle::draw(const float dt) {
