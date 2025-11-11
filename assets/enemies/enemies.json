@@ -9,7 +9,7 @@
       "AGI": 4,
       "LU": 1,
       "baseXP": 10,
-      "skills": ["Slash", "Bite"],
+      "skills": ["Bufu", "Attack"],
       "isBoss": false
     },
     {
@@ -22,7 +22,46 @@
       "AGI": 3,
       "LU": 2,
       "baseXP": 20,
-      "skills": ["Smash", "Roar"],
+      "skills": ["Agi", "Fire Breath"], 
+      "isBoss": false
+    },
+    {
+      "name": "Seiten Taisei",
+      "sprite": "assets/enemies/seiten_taisei.png",
+      "level": 5,
+      "STR": 8,
+      "VIT": 5,
+      "MAG": 2,
+      "AGI": 3,
+      "LU": 2,
+      "baseXP": 20,
+      "skills": ["Focus", "Attack"], 
+      "isBoss": false
+    },
+    {
+      "name": "Ares",
+      "sprite": "assets/enemies/ares.png",
+      "level": 5,
+      "STR": 8,
+      "VIT": 5,
+      "MAG": 2,
+      "AGI": 3,
+      "LU": 2,
+      "baseXP": 20,
+      "skills": ["Focus", "Attack"], 
+      "isBoss": false
+    },
+    {
+      "name": "Chernobog",
+      "sprite": "assets/enemies/chernobog.png",
+      "level": 5,
+      "STR": 8,
+      "VIT": 5,
+      "MAG": 2,
+      "AGI": 3,
+      "LU": 2,
+      "baseXP": 20,
+      "skills": ["Focus", "Attack"], 
       "isBoss": false
     }
   ]

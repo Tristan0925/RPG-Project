@@ -206,7 +206,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     skillButtons.clear();
     float skillY = 300.f;
     for (const auto& skillName : this->game->playerSkills) {
-        skillButtons.emplace_back(skillName, sf::Vector2f(150.f, skillY), 30, this->game, sf::Color(100, 100, 220));
+        skillButtons.emplace_back(skillName, sf::Vector2f(150.f, skillY), 30, this->game, sf::Color::White);
         skillY += 70.f;
     }
 
@@ -224,7 +224,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     itemButtons.clear();
     float itemY = 800.f;
     for (const auto& itemName : this->game->player.getInventory()) { 
-        itemButtons.emplace_back(itemName.showName(), sf::Vector2f(150.f, itemY), 30, this->game, sf::Color(120, 180, 120));
+        itemButtons.emplace_back(itemName.showName(), sf::Vector2f(150.f, itemY), 30, this->game, sf::Color::White);
         itemY += 70.f;
     }
 
@@ -578,8 +578,8 @@ void GameStateBattle::updateTurnPanel() {
     float panelX = turnPanelBackground.getPosition().x;
     float panelY = turnPanelBackground.getPosition().y;
     float padding = 16.f;
-    float portraitSize = 30.f;       // <-- Your small size (e.g., 50.f)
-    float entrySpacingY = 8.f;       // <-- Your small spacing (e.g., 8.f)
+    float portraitSize = 25.f;       // <-- Your small size (e.g., 50.f)
+    float entrySpacingY = 4.f;       // <-- Your small spacing (e.g., 8.f)
 
     // --- FIX: Use a running Y-coordinate for dynamic spacing ---
     float currentY = panelY + padding;
