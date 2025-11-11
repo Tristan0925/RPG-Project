@@ -478,3 +478,7 @@ bool Player::loadFromFile(const std::string& filename, const std::vector<Skill>&
    std::array<const Skill*, 9> Player::getSkillsList() const{
     return skillsList;
    }
+   
+std::string Player::getName() const{
+    return name;
+}
