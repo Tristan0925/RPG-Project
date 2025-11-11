@@ -84,6 +84,8 @@ private:
     std::vector<sf::Texture> enemyTextures; 
     std::vector<sf::Sprite> enemySprites; 
     std::vector<sf::Text> turnEnemyNames; 
+    std::vector<sf::RectangleShape> enemyNameBackgrounds;
+
         
     // Submenu UI
     std::vector<Button> skillButtons;

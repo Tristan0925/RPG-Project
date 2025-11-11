@@ -10,12 +10,12 @@
 
 using json = nlohmann::json;
 
-GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)     
+GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
 : attackButton("Attack", {150.f, 800.f}, 30, game, sf::Color::White),
-  skillButton("Skill",  {150.f, 840.f}, 30, game, sf::Color::White),
-  itemButton("Item",   {150.f, 880.f}, 30, game, sf::Color::White),
+  skillButton("Skill", {150.f, 840.f}, 30, game, sf::Color::White),
+  itemButton("Item", {150.f, 880.f}, 30, game, sf::Color::White),
   guardButton("Guard", {350.f, 800.f}, 30, game, sf::Color::White),
-  escapeButton("Escape",{350.f, 840.f}, 30, game, sf::Color::White),
+  escapeButton("Escape", {350.f, 840.f}, 30, game, sf::Color::White),
   backButton("Back", {350.f, 920.f}, 30, game, sf::Color::White)
 {
     this->game = game;
@@ -134,7 +134,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
 
         // store base scales consistently
         portraitBaseScales[i] = scale;
-        turnPortraitBaseScales[i] = scale;
+        // turnPortraitBaseScales[i] = scale; // Removed assignment, scale calculated in updateTurnPanel
 
         // Store a copy for battle area icons
         playerBackgrounds.push_back(bgBox);
@@ -156,11 +156,11 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
         // Now set the portrait sprite for the turn panel (use same texture)
         if (i < turnPortraitSprites.size()) {
             turnPortraitSprites[i].setTexture(this->game->texmgr.getRef(texName), true);
-            turnPortraitSprites[i].setScale(scale, scale);
+            // turnPortraitSprites[i].setScale(scale, scale); // REMOVED: Scale will be calculated in updateTurnPanel
             // set an initial position; actual centering will happen in updateTurnPanel()
             turnPortraitSprites[i].setPosition(xOffset, yOffset);
         }
-    }    
+    }   
 
     // Turn Order UI ------------
     float panelW = 220.f;
@@ -227,6 +227,13 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
         itemButtons.emplace_back(itemName.showName(), sf::Vector2f(150.f, itemY), 30, this->game, sf::Color(120, 180, 120));
         itemY += 70.f;
     }
+
+    attackButton.enableHexBackground(true);
+    skillButton.enableHexBackground(true);
+    itemButton.enableHexBackground(true);
+    guardButton.enableHexBackground(true);
+    escapeButton.enableHexBackground(true);
+    backButton.enableHexBackground(true);
 }
 
 void GameStateBattle::draw(const float dt) {
@@ -247,7 +254,7 @@ void GameStateBattle::draw(const float dt) {
         this->game->window.draw(mpBars[i]);
         this->game->window.draw(hpTexts[i]);
         this->game->window.draw(mpTexts[i]);
-    } 
+    }   
     
     // Draw Enemies
     for (size_t i = 0; i < enemySprites.size(); ++i)
@@ -271,16 +278,26 @@ void GameStateBattle::draw(const float dt) {
     // Draw Turn Panel
     this->game->window.draw(turnPanelBackground);
 
-    // Party portraits
-    for (size_t i = 0; i < party.size(); ++i) {
-        if (i < turnPortraitBoxes.size()) this->game->window.draw(turnPortraitBoxes[i]);
-        if (i < turnPortraitSprites.size()) this->game->window.draw(turnPortraitSprites[i]);
+    // --- FIX: Draw Turn Panel elements separately ---
+
+    // 1. Draw Player Portraits (using the pre-sized vector)
+    for (size_t i = 0; i < turnPortraitBoxes.size(); ++i) {
+        // Only draw player portraits and boxes if they have a non-zero size
+        if (turnPortraitBoxes[i].getSize().x > 0.f) {
+            this->game->window.draw(turnPortraitBoxes[i]);
+            if (i < turnPortraitSprites.size() && turnPortraitSprites[i].getTexture() != nullptr) {
+                this->game->window.draw(turnPortraitSprites[i]);
+            }
+        }
     }
 
-    // Enemy names
-    for (auto& name : turnEnemyNames) {
-        this->game->window.draw(name);
-    }
+    // 2. Draw Enemy Names (using the push_backed vectors)
+    for (size_t i = 0; i < enemyNameBackgrounds.size(); ++i) {
+        this->game->window.draw(enemyNameBackgrounds[i]);
+        if (i < turnEnemyNames.size()) {
+            this->game->window.draw(turnEnemyNames[i]);
+        }
+    }   
 
     if (currentMenuState == BattleMenuState::Main) {
         attackButton.draw(this->game->window);
@@ -296,7 +313,7 @@ void GameStateBattle::draw(const float dt) {
     else if (currentMenuState == BattleMenuState::Item) {
         for (auto& b : itemButtons) b.draw(this->game->window);
         backButton.draw(this->game->window);
-    }    
+    }   
 }
 
 void GameStateBattle::update(const float dt) {
@@ -314,7 +331,7 @@ void GameStateBattle::update(const float dt) {
     
         if (i < hpTexts.size()) hpTexts[i].setString(std::to_string(p->getHP()) + "/" + std::to_string(maxHP));
         if (i < mpTexts.size()) mpTexts[i].setString(std::to_string(p->getMP()) + "/" + std::to_string(maxMP));
-    }    
+    }   
 
     // Spawn enemies if empty
     if (enemies.empty()) {
@@ -377,7 +394,7 @@ void GameStateBattle::update(const float dt) {
             if (i < playerBackgrounds.size()) {
                 playerBackgrounds[i].setOutlineColor(sf::Color::Red);
                 playerBackgrounds[i].setOutlineThickness(2.f);
-            }          
+            }           
         }
 
         if (i < basePositions.size()) {
@@ -393,10 +410,9 @@ void GameStateBattle::update(const float dt) {
         // small raise animations for portraits
         for (size_t j = 0; j < party.size() && j < turnPortraitBaseScales.size() && j < turnPortraitSprites.size(); ++j) {
             if (!turnQueue.empty() && turnQueue.front() == party[j]) {
-                float scale = 1.1f * turnPortraitBaseScales[j];
-                turnPortraitSprites[j].setScale(scale, scale);
+                // float scale = 1.1f * turnPortraitBaseScales[j]; // This logic is now in updateTurnPanel
             } else {
-                turnPortraitSprites[j].setScale(turnPortraitBaseScales[j], turnPortraitBaseScales[j]);
+                // This logic is now in updateTurnPanel
             }
         }       
     }
@@ -521,83 +537,135 @@ std::vector<NPC> GameStateBattle::loadRandomEnemies(int count) {
 }
 
 void GameStateBattle::updateTurnPanel() {
-    if (party.empty()) return; // safety
-    if (turnPanelBackground.getSize().x == 0) return; // not ready
-    if (turnPortraitBaseScales.empty()) return; // not yet initialized
+    // --- Build combined sorted list by AGI ---
+    struct TurnEntry {
+        bool isPlayer;
+        Player* playerPtr;
+        NPC* enemyPtr;
+        int agi;
+    };
 
-    size_t totalActors = party.size() + enemies.size();
-    if (totalActors == 0) return; // nothing to draw
+    std::vector<TurnEntry> turnList;
+    turnList.reserve(party.size() + enemies.size());
 
-    // Ensure turnPortraitBoxes/sprites at least have party-sized capacity (won't overwrite existing)
-    if (turnPortraitBoxes.size() < party.size()) turnPortraitBoxes.resize(party.size());
-    if (turnPortraitSprites.size() < party.size()) turnPortraitSprites.resize(party.size());
-
-    float padding = 12.f;
-    float portraitSize = 64.f;
-    float availableHeight = turnPanelBackground.getSize().y - 2.f * padding;
-    float spacingY = (totalActors > 0) ? std::min(portraitSize + padding, availableHeight / float(totalActors)) : (portraitSize + padding);
-
-    // Party portraits (only if we have data for them)
-    for (size_t i = 0; i < party.size(); ++i) {
-        // safety: ensure we have a box/sprite slot
-        if (i >= turnPortraitBoxes.size() || i >= turnPortraitSprites.size()) break;
-
-        sf::RectangleShape &box = turnPortraitBoxes[i];
-        sf::Sprite &spr = turnPortraitSprites[i];
-
-        float x = turnPanelBackground.getPosition().x + 55.f;
-        float y = turnPanelBackground.getPosition().y + padding + i * spacingY;
-
-        box.setPosition(x, y);
-        box.setSize({portraitSize, portraitSize});
-
-        // Default scale fallback if we don't have a base scale
-        float baseScale = 1.0f;
-        if (i < turnPortraitBaseScales.size() && turnPortraitBaseScales[i] > 0.f)
-            baseScale = turnPortraitBaseScales[i];
-
-        // highlight active
-        float finalScale = baseScale;
-        if (!turnQueue.empty() && turnQueue.front() == party[i]) finalScale *= 1.1f;
-
-        spr.setScale(finalScale, finalScale);
-
-        // Only position sprite if it has a texture
-        if (spr.getTexture() != nullptr) {
-            const auto lb = spr.getLocalBounds();
-            float sprW = lb.width * spr.getScale().x;
-            float sprH = lb.height * spr.getScale().y;
-            // center inside box
-            spr.setPosition(
-                x + (portraitSize - sprW) / 2.f,
-                y + (portraitSize - sprH) / 2.f
-            );
-        } else {
-            // No texture: put sprite at box origin so it doesn't produce NaNs later
-            spr.setPosition(x, y);
-        }
+    // Add players
+    for (auto* p : party) {
+        turnList.push_back(TurnEntry{ true, p, nullptr, p->getAGI() });
     }
 
-    // Enemy names
+    // Add enemies
+    for (auto& e : enemies) {
+        turnList.push_back(TurnEntry{ false, nullptr, &e, e.getAGI() });
+    }
+
+    // Sort by AGI descending
+    std::sort(turnList.begin(), turnList.end(),
+        [](const TurnEntry& a, const TurnEntry& b) {
+            return a.agi > b.agi;
+        });
+
+    // --- FIX: Clear all draw vectors ---
+    turnPortraitBoxes.clear();
+    turnPortraitSprites.clear();
+    enemyNameBackgrounds.clear();
     turnEnemyNames.clear();
-    for (size_t ei = 0; ei < enemies.size(); ++ei) {
-        sf::Text nameText;
-        nameText.setFont(font);
-        nameText.setCharacterSize(18);
-        nameText.setFillColor(sf::Color::White);
 
-        // Use a safe public getter (don't access protected fields directly)
-        nameText.setString(enemies[ei].getDisplayName()); // make/get this getter in NPC
+    // --- FIX: Resize player vectors to match the full turn list size ---
+    // We will "blank" the ones that are enemies
+    turnPortraitBoxes.resize(turnList.size());
+    turnPortraitSprites.resize(turnList.size());
 
-        float x = turnPanelBackground.getPosition().x + 55.f;
-        float y = turnPanelBackground.getPosition().y + padding + (party.size() + ei) * spacingY;
-        nameText.setPosition(x, y);
+    // --- Layout ---
+    float panelX = turnPanelBackground.getPosition().x;
+    float panelY = turnPanelBackground.getPosition().y;
+    float padding = 16.f;
+    float portraitSize = 30.f;       // <-- Your small size (e.g., 50.f)
+    float entrySpacingY = 8.f;       // <-- Your small spacing (e.g., 8.f)
 
-        // Highlight if it's their turn
-        if (!turnQueue.empty() && turnQueue.front() == &enemies[ei]) {
-            nameText.setCharacterSize(22);
-            nameText.setFillColor(sf::Color::Green);
+    // --- FIX: Use a running Y-coordinate for dynamic spacing ---
+    float currentY = panelY + padding;
+
+    for (size_t i = 0; i < turnList.size(); ++i) {
+        const auto& entry = turnList[i];
+        float x = panelX + 70.f;
+        float y = currentY; // Use the running Y position
+
+        // --- FIX: Ensure every entry (player or enemy) has the same height ---
+        float entryHeight = portraitSize; 
+
+        bool isCurrentTurn = (!turnQueue.empty() && turnQueue.front() == (entry.isPlayer ? (Player*)entry.playerPtr : (Player*)entry.enemyPtr));
+
+        if (entry.isPlayer) {
+            // Find the player's original index to get the correct texture
+            auto it = std::find(party.begin(), party.end(), entry.playerPtr);
+            if (it == party.end()) continue; // Should not happen
+            size_t static_party_index = std::distance(party.begin(), it);
+            
+            std::string texName = (static_party_index == 0) ? "player_icon" : "partymember" + std::to_string(static_party_index + 1) + "_icon";
+            
+            sf::RectangleShape& box = turnPortraitBoxes[i];
+            sf::Sprite& spr = turnPortraitSprites[i];
+
+            box.setPosition(x, y);
+            box.setSize({ portraitSize, portraitSize }); // Use the fixed height
+            box.setFillColor(sf::Color(40, 40, 40, 160));
+            box.setOutlineColor(sf::Color(150, 0, 0));
+            box.setOutlineThickness(1.5f);
+
+            spr.setTexture(this->game->texmgr.getRef(texName), true);
+
+            float textureHeight = spr.getLocalBounds().height;
+            float baseScale = (textureHeight > 0.f) ? (portraitSize / textureHeight) : 1.0f;
+            float finalScale = isCurrentTurn ? baseScale * 1.1f : baseScale;
+
+            spr.setScale(finalScale, finalScale);
+            if (spr.getTexture() != nullptr) {
+                sf::FloatRect lb = spr.getLocalBounds();
+                spr.setPosition(
+                    x + (portraitSize - lb.width * finalScale) / 2.f,
+                    y + (portraitSize - lb.height * finalScale) / 2.f
+                );
+            }
+        } else {
+            // Enemy Entry
+            sf::Text nameText;
+            nameText.setFont(font);
+            int charSize = isCurrentTurn ? 22 : 20; // Use your desired text size
+            nameText.setCharacterSize(charSize);
+            nameText.setFillColor(sf::Color::White);
+            nameText.setString(entry.enemyPtr->getDisplayName());
+
+            sf::FloatRect textBounds = nameText.getLocalBounds();
+            float textPadding = 12.f; 
+
+            // --- FIX: Vertically center the text within the standard entryHeight ---
+            float textCenterY = y + (entryHeight / 2.f) - (textBounds.height / 2.f) - 4.f; // Adjust -4.f as needed for font alignment
+            nameText.setPosition(x + 6.f, textCenterY);
+
+            sf::RectangleShape bg;
+            // --- FIX: Make the background box use the standard entryHeight ---
+            bg.setSize({ textBounds.width + textPadding, entryHeight }); 
+            bg.setPosition(x, y);
+            bg.setFillColor(sf::Color(50, 0, 0, 180));
+            bg.setOutlineColor(sf::Color(120, 0, 0));
+            bg.setOutlineThickness(1.0f);
+
+            if (isCurrentTurn) {
+                nameText.setFillColor(sf::Color::Green);
+                bg.setFillColor(sf::Color(0, 100, 0, 200));
+            }
+
+            enemyNameBackgrounds.push_back(bg);
+            turnEnemyNames.push_back(nameText);
+
+            // --- FIX: Mark this slot as "not a player" by setting size to 0 ---
+            if (i < turnPortraitBoxes.size()) turnPortraitBoxes[i].setSize({0.f, 0.f});
+            if (i < turnPortraitSprites.size()) turnPortraitSprites[i].setTextureRect(sf::IntRect(0, 0, 0, 0));
         }
-        turnEnemyNames.push_back(std::move(nameText));
+        
+        // --- FIX: Advance Y-coordinate by the standard height *after* the if/else block ---
+        currentY += entryHeight + entrySpacingY;
     }
+
+    // --- Draw everything (REMOVED: Drawing is now handled in the main GameStateBattle::draw() function) ---
 }
