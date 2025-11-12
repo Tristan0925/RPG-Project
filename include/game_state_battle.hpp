@@ -61,7 +61,7 @@ private:
     sf::RectangleShape expBarPmember2;
     sf::RectangleShape expBarPmember3;
     sf::RectangleShape expBarPmember4;
-    std::array<sf::RectangleShape, 4> expBarBackground;
+    std::array<sf::RectangleShape, 4> expBarBackgrounds;
 
 
     // Level Up Flags

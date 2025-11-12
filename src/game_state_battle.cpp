@@ -264,83 +264,84 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     //set up all the necessary variables for displaying the player + party
     playerName.setFont(font);
     playerName.setString(this->game->player.getName());
-    playerName.setCharacterSize(50);
+    playerName.setCharacterSize(40);
     playerName.setFillColor(sf::Color(126, 17, 5));
-    playerName.setPosition(200.0f, 500.f);
+    playerName.setPosition(200.0f, 490.f);
 
     playerLevel.setFont(font);
     playerLevel.setString("LV.  " + std::to_string(this->game->player.getLVL()));
-    playerLevel.setCharacterSize(50);
+    playerLevel.setCharacterSize(40);
     playerLevel.setFillColor(sf::Color(126, 17, 5));
-    playerLevel.setPosition(850.0f, 500.f);
+    playerLevel.setPosition(850.0f, 490.f);
 
     nextLevelPlayerXp = this->game->player.getXpForNextLevel();
     nextLevelPlayer.setFont(font);
     nextLevelPlayer.setString("Next Exp:                                " + std::to_string(nextLevelPlayerXp));
-    nextLevelPlayer.setCharacterSize(50);
-    nextLevelPlayer.setPosition(1100.0f, 500.0f);
+    nextLevelPlayer.setCharacterSize(40);
+    nextLevelPlayer.setPosition(1100.0f, 490.0f);
 
     pmember2Name.setFont(font);
     pmember2Name.setString(this->game->pmember2.getName());
-    pmember2Name.setCharacterSize(50);
+    pmember2Name.setCharacterSize(40);
     pmember2Name.setFillColor(sf::Color(126, 17, 5));
-    pmember2Name.setPosition(200.0f, 600.f);
+    pmember2Name.setPosition(200.0f, 590.f);
 
     pmember2Level.setFont(font);
     pmember2Level.setString("LV.  " + std::to_string(this->game->player.getLVL()));
-    pmember2Level.setCharacterSize(50);
+    pmember2Level.setCharacterSize(40);
     pmember2Level.setFillColor(sf::Color(126, 17, 5));
-    pmember2Level.setPosition(850.0f, 600.f);
+    pmember2Level.setPosition(850.0f, 590.f);
 
     nextLevelPmember2Xp = this->game->pmember2.getXpForNextLevel();
     nextLevelPmember2.setFont(font);
     nextLevelPmember2.setString("Next Exp:                                " + std::to_string(nextLevelPmember2Xp));
-    nextLevelPmember2.setCharacterSize(50);
-    nextLevelPmember2.setPosition(1100.0f, 600.0f);
+    nextLevelPmember2.setCharacterSize(40);
+    nextLevelPmember2.setPosition(1100.0f, 590.0f);
 
     pmember3Name.setFont(font);
     pmember3Name.setString(this->game->pmember3.getName());
-    pmember3Name.setCharacterSize(50);
+    pmember3Name.setCharacterSize(40);
     pmember3Name.setFillColor(sf::Color(126, 17, 5));
-    pmember3Name.setPosition(200.0f, 700.f);
+    pmember3Name.setPosition(200.0f, 690.f);
 
     pmember3Level.setFont(font);
     pmember3Level.setString("LV.  " + std::to_string(this->game->player.getLVL()));
-    pmember3Level.setCharacterSize(50);
+    pmember3Level.setCharacterSize(40);
     pmember3Level.setFillColor(sf::Color(126, 17, 5));
-    pmember3Level.setPosition(850.0f, 700.f);
+    pmember3Level.setPosition(850.0f, 690.f);
 
     nextLevelPmember3Xp = this->game->pmember3.getXpForNextLevel();
     nextLevelPmember3.setFont(font);
     nextLevelPmember3.setString("Next Exp:                                " + std::to_string(nextLevelPmember3Xp));
-    nextLevelPmember3.setCharacterSize(50);
-    nextLevelPmember3.setPosition(1100.0f, 700.0f);
+    nextLevelPmember3.setCharacterSize(40);
+    nextLevelPmember3.setPosition(1100.0f, 690.0f);
 
     pmember4Name.setFont(font);
     pmember4Name.setString(this->game->pmember4.getName());
-    pmember4Name.setCharacterSize(50);
+    pmember4Name.setCharacterSize(40);
     pmember4Name.setFillColor(sf::Color(126, 17, 5));
-    pmember4Name.setPosition(200.0f, 800.f);
+    pmember4Name.setPosition(200.0f, 790.f);
 
     pmember4Level.setFont(font);
     pmember4Level.setString("LV.  " + std::to_string(this->game->player.getLVL()));
-    pmember4Level.setCharacterSize(50);
+    pmember4Level.setCharacterSize(40);
     pmember4Level.setFillColor(sf::Color(126, 17, 5));
-    pmember4Level.setPosition(850.0f, 800.f);
+    pmember4Level.setPosition(850.0f, 790.f);
 
     nextLevelPmember4Xp = this->game->pmember4.getXpForNextLevel();
     nextLevelPmember4.setFont(font);
     nextLevelPmember4.setString("Next Exp:                                " + std::to_string(nextLevelPmember4Xp));
-    nextLevelPmember4.setCharacterSize(50);
-    nextLevelPmember4.setPosition(1100.0f, 800.0f);
+    nextLevelPmember4.setCharacterSize(40);
+    nextLevelPmember4.setPosition(1100.0f, 790.0f);
 
     float BackgroundsOffsetY = 490.0f;
-    float levelUpOffsetY = 460.0f;
+    float levelUpOffsetY = 455.0f;
+    float expOffsetY = 545.0f;
     for (size_t i = 0; i < 4; i++){
-        portraitBackgrounds[i].setSize({630.f,80.f});
+        portraitBackgrounds[i].setSize({630.f,55.f});
         portraitBackgrounds[i].setFillColor(sf::Color(184, 62, 48));
         portraitBackgrounds[i].setPosition(175.0f, BackgroundsOffsetY + 100.0f*i);
-        levelBackgrounds[i].setSize({830.f,80.f});
+        levelBackgrounds[i].setSize({830.f,55.f});
         levelBackgrounds[i].setFillColor(sf::Color(255,0,0,100));
         levelBackgrounds[i].setPosition(805.f, BackgroundsOffsetY + 100.0f*i);
         levelUpTexts[i].setFont(font);
@@ -348,6 +349,9 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
         levelUpTexts[i].setCharacterSize(30);
         levelUpTexts[i].setString("Level Up!");
         levelUpTexts[i].setPosition(200.0f, levelUpOffsetY + 100.0f*i);
+        expBarBackgrounds[i].setSize({1460,10.0f});
+        expBarBackgrounds[i].setFillColor(sf::Color(51,51,51));
+        expBarBackgrounds[i].setPosition(175.0f, expOffsetY + 100.0f*i);
     }
 
 }
@@ -357,6 +361,9 @@ void GameStateBattle::displayResultsScreen(bool displayResults){
         this->game->window.draw(background);
     }
     for (auto& background : levelBackgrounds){
+        this->game->window.draw(background);
+    }
+    for (auto& background : expBarBackgrounds){
         this->game->window.draw(background);
     }
 
