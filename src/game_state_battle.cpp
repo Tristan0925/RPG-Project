@@ -265,56 +265,101 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     playerName.setFont(font);
     playerName.setString(this->game->player.getName());
     playerName.setCharacterSize(50);
-    playerName.setFillColor(sf::Color(130,25,13));
+    playerName.setFillColor(sf::Color(126, 17, 5));
     playerName.setPosition(200.0f, 500.f);
 
     playerLevel.setFont(font);
-    playerLevel.setString("LV." + std::to_string(this->game->player.getLVL()));
+    playerLevel.setString("LV.  " + std::to_string(this->game->player.getLVL()));
     playerLevel.setCharacterSize(50);
-    playerLevel.setFillColor(sf::Color(130,25,13));
+    playerLevel.setFillColor(sf::Color(126, 17, 5));
     playerLevel.setPosition(850.0f, 500.f);
+
+    nextLevelPlayerXp = this->game->player.getXpForNextLevel();
+    nextLevelPlayer.setFont(font);
+    nextLevelPlayer.setString("Next Exp:                                " + std::to_string(nextLevelPlayerXp));
+    nextLevelPlayer.setCharacterSize(50);
+    nextLevelPlayer.setPosition(1100.0f, 500.0f);
 
     pmember2Name.setFont(font);
     pmember2Name.setString(this->game->pmember2.getName());
     pmember2Name.setCharacterSize(50);
-    pmember2Name.setFillColor(sf::Color(130,25,13));
+    pmember2Name.setFillColor(sf::Color(126, 17, 5));
     pmember2Name.setPosition(200.0f, 600.f);
 
     pmember2Level.setFont(font);
-    pmember2Level.setString("LV." + std::to_string(this->game->player.getLVL()));
+    pmember2Level.setString("LV.  " + std::to_string(this->game->player.getLVL()));
     pmember2Level.setCharacterSize(50);
-    pmember2Level.setFillColor(sf::Color(130,25,13));
+    pmember2Level.setFillColor(sf::Color(126, 17, 5));
     pmember2Level.setPosition(850.0f, 600.f);
+
+    nextLevelPmember2Xp = this->game->pmember2.getXpForNextLevel();
+    nextLevelPmember2.setFont(font);
+    nextLevelPmember2.setString("Next Exp:                                " + std::to_string(nextLevelPmember2Xp));
+    nextLevelPmember2.setCharacterSize(50);
+    nextLevelPmember2.setPosition(1100.0f, 600.0f);
 
     pmember3Name.setFont(font);
     pmember3Name.setString(this->game->pmember3.getName());
     pmember3Name.setCharacterSize(50);
-    pmember3Name.setFillColor(sf::Color(130,25,13));
+    pmember3Name.setFillColor(sf::Color(126, 17, 5));
     pmember3Name.setPosition(200.0f, 700.f);
 
     pmember3Level.setFont(font);
-    pmember3Level.setString("LV." + std::to_string(this->game->player.getLVL()));
+    pmember3Level.setString("LV.  " + std::to_string(this->game->player.getLVL()));
     pmember3Level.setCharacterSize(50);
-    pmember3Level.setFillColor(sf::Color(130,25,13));
+    pmember3Level.setFillColor(sf::Color(126, 17, 5));
     pmember3Level.setPosition(850.0f, 700.f);
+
+    nextLevelPmember3Xp = this->game->pmember3.getXpForNextLevel();
+    nextLevelPmember3.setFont(font);
+    nextLevelPmember3.setString("Next Exp:                                " + std::to_string(nextLevelPmember3Xp));
+    nextLevelPmember3.setCharacterSize(50);
+    nextLevelPmember3.setPosition(1100.0f, 700.0f);
 
     pmember4Name.setFont(font);
     pmember4Name.setString(this->game->pmember4.getName());
     pmember4Name.setCharacterSize(50);
-    pmember4Name.setFillColor(sf::Color(130,25,13));
+    pmember4Name.setFillColor(sf::Color(126, 17, 5));
     pmember4Name.setPosition(200.0f, 800.f);
 
     pmember4Level.setFont(font);
-    pmember4Level.setString("LV." + std::to_string(this->game->player.getLVL()));
+    pmember4Level.setString("LV.  " + std::to_string(this->game->player.getLVL()));
     pmember4Level.setCharacterSize(50);
-    pmember4Level.setFillColor(sf::Color(130,25,13));
+    pmember4Level.setFillColor(sf::Color(126, 17, 5));
     pmember4Level.setPosition(850.0f, 800.f);
-    
+
+    nextLevelPmember4Xp = this->game->pmember4.getXpForNextLevel();
+    nextLevelPmember4.setFont(font);
+    nextLevelPmember4.setString("Next Exp:                                " + std::to_string(nextLevelPmember4Xp));
+    nextLevelPmember4.setCharacterSize(50);
+    nextLevelPmember4.setPosition(1100.0f, 800.0f);
+
+    float BackgroundsOffsetY = 490.0f;
+    float levelUpOffsetY = 460.0f;
+    for (size_t i = 0; i < 4; i++){
+        portraitBackgrounds[i].setSize({630.f,80.f});
+        portraitBackgrounds[i].setFillColor(sf::Color(184, 62, 48));
+        portraitBackgrounds[i].setPosition(175.0f, BackgroundsOffsetY + 100.0f*i);
+        levelBackgrounds[i].setSize({830.f,80.f});
+        levelBackgrounds[i].setFillColor(sf::Color(255,0,0,100));
+        levelBackgrounds[i].setPosition(805.f, BackgroundsOffsetY + 100.0f*i);
+        levelUpTexts[i].setFont(font);
+        levelUpTexts[i].setFillColor(sf::Color::Green);
+        levelUpTexts[i].setCharacterSize(30);
+        levelUpTexts[i].setString("Level Up!");
+        levelUpTexts[i].setPosition(200.0f, levelUpOffsetY + 100.0f*i);
+    }
 
 }
 
 void GameStateBattle::displayResultsScreen(bool displayResults){
-    
+    for (auto& background : portraitBackgrounds){
+        this->game->window.draw(background);
+    }
+    for (auto& background : levelBackgrounds){
+        this->game->window.draw(background);
+    }
+
     this->game->window.draw(topBarTextBackground);
     this->game->window.draw(topBarText);
     this->game->window.draw(thingsEarnedBackground);
@@ -324,9 +369,17 @@ void GameStateBattle::displayResultsScreen(bool displayResults){
     this->game->window.draw(pmember3Name);
     this->game->window.draw(pmember4Name);
     this->game->window.draw(playerLevel);
+    this->game->window.draw(nextLevelPlayer);
     this->game->window.draw(pmember2Level);
+    this->game->window.draw(nextLevelPmember2);
     this->game->window.draw(pmember3Level);
+    this->game->window.draw(nextLevelPmember3);
     this->game->window.draw(pmember4Level);
+    this->game->window.draw(nextLevelPmember4);
+    for (auto& text : levelUpTexts){
+        this->game->window.draw(text);
+    }
+    
 }
 
 
@@ -344,6 +397,7 @@ void GameStateBattle::draw(const float dt) {
                 }
 }
          displayResultsScreen(true);
+     
     } 
 
     else{

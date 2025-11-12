@@ -37,10 +37,14 @@ private:
     sf::Text pmember3Level;
     sf::Text pmember4Level;
     sf::Text nextLevelPlayer;
-    sf::Text nextLevelPmember2;
+    int nextLevelPlayerXp; // set the xps in the constructor
+    sf::Text nextLevelPmember2; //set the fonts
+    int nextLevelPmember2Xp;
     sf::Text nextLevelPmember3;
+    int nextLevelPmember3Xp;
     sf::Text nextLevelPmember4;
-    sf::Text levelUpText;
+    int nextLevelPmember4Xp;
+    std::array<sf::Text, 4> levelUpTexts;
 
     // Shapes
     sf::RectangleShape background;
@@ -51,9 +55,13 @@ private:
     sf::VertexArray topBarTextBackground;
     sf::VertexArray thingsEarnedBackground;
     std::array<sf::RectangleShape, 4> portraitBackgrounds;
-    std::array<sf::RectangleShape, 4>  levelBackground;
-    sf::RectangleShape expBar;
-    std::array<sf::RectangleShape, 4>  expBarBackground;
+    std::array<sf::RectangleShape, 4> spriteBackgrounds;
+    std::array<sf::RectangleShape, 4> levelBackgrounds;
+    sf::RectangleShape expBarPlayer;
+    sf::RectangleShape expBarPmember2;
+    sf::RectangleShape expBarPmember3;
+    sf::RectangleShape expBarPmember4;
+    std::array<sf::RectangleShape, 4> expBarBackground;
 
 
     // Level Up Flags
