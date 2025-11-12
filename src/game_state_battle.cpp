@@ -203,7 +203,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     }
     
     // Back button (reconfigure if you want different color)
-    backButton = Button("Back", {150.f, 1000.f}, 30, this->game, sf::Color(90, 90, 90));
+    backButton = Button("Back", {450.f, 1000.f}, 30, this->game, sf::Color(90, 90, 90));
 
     // --- Populate Skills dynamically from player's learned skills ---
     skillButtons.clear();
@@ -217,9 +217,15 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     {
         float baseX = 150.f;
         float baseY = 800.f;
-        float offsetY = 40.f;
+        float offsetY = 50.f;  // vertical spacing between buttons
+        float columnSpacing = 250.f; // space between columns
+
         for (size_t k = 0; k < skillButtons.size(); ++k) {
-            skillButtons[k].changePosition(baseX, baseY + k * offsetY);
+            size_t col = k % 2; // 0 = left column, 1 = right column
+            size_t row = k / 2; // go down every two items
+            float x = baseX + col * columnSpacing;
+            float y = baseY + row * offsetY;
+            skillButtons[k].changePosition(x, y);
         }
     }
 
@@ -646,13 +652,11 @@ void GameStateBattle::updateTurnPanel() {
             return a.agi > b.agi;
         });
 
-    // --- FIX: Clear all draw vectors ---
     turnPortraitBoxes.clear();
     turnPortraitSprites.clear();
     enemyNameBackgrounds.clear();
     turnEnemyNames.clear();
 
-    // --- FIX: Resize player vectors to match the full turn list size ---
     // We will "blank" the ones that are enemies
     turnPortraitBoxes.resize(turnList.size());
     turnPortraitSprites.resize(turnList.size());
@@ -661,10 +665,10 @@ void GameStateBattle::updateTurnPanel() {
     float panelX = turnPanelBackground.getPosition().x;
     float panelY = turnPanelBackground.getPosition().y;
     float padding = 16.f;
-    float portraitSize = 25.f;       // <-- Your small size (e.g., 50.f)
-    float entrySpacingY = 4.f;       // <-- Your small spacing (e.g., 8.f)
+    float portraitSize = 25.f;       // size
+    float entrySpacingY = 4.f;       // spacing between
 
-    // --- FIX: Use a running Y-coordinate for dynamic spacing ---
+
     float currentY = panelY + padding;
 
     for (size_t i = 0; i < turnList.size(); ++i) {
@@ -672,7 +676,7 @@ void GameStateBattle::updateTurnPanel() {
         float x = panelX + 70.f;
         float y = currentY; // Use the running Y position
 
-        // --- FIX: Ensure every entry (player or enemy) has the same height ---
+
         float entryHeight = portraitSize; 
 
         bool isCurrentTurn = (!turnQueue.empty() && turnQueue.front() == (entry.isPlayer ? (Player*)entry.playerPtr : (Player*)entry.enemyPtr));
@@ -720,12 +724,12 @@ void GameStateBattle::updateTurnPanel() {
             sf::FloatRect textBounds = nameText.getLocalBounds();
             float textPadding = 12.f; 
 
-            // --- FIX: Vertically center the text within the standard entryHeight ---
+
             float textCenterY = y + (entryHeight / 2.f) - (textBounds.height / 2.f) - 4.f; // Adjust -4.f as needed for font alignment
             nameText.setPosition(x + 6.f, textCenterY);
 
             sf::RectangleShape bg;
-            // --- FIX: Make the background box use the standard entryHeight ---
+
             bg.setSize({ textBounds.width + textPadding, entryHeight }); 
             bg.setPosition(x, y);
             bg.setFillColor(sf::Color(50, 0, 0, 180));
@@ -739,15 +743,12 @@ void GameStateBattle::updateTurnPanel() {
 
             enemyNameBackgrounds.push_back(bg);
             turnEnemyNames.push_back(nameText);
-
-            // --- FIX: Mark this slot as "not a player" by setting size to 0 ---
             if (i < turnPortraitBoxes.size()) turnPortraitBoxes[i].setSize({0.f, 0.f});
             if (i < turnPortraitSprites.size()) turnPortraitSprites[i].setTextureRect(sf::IntRect(0, 0, 0, 0));
         }
         
-        // --- FIX: Advance Y-coordinate by the standard height *after* the if/else block ---
         currentY += entryHeight + entrySpacingY;
     }
 
-    // --- Draw everything (REMOVED: Drawing is now handled in the main GameStateBattle::draw() function) ---
+
 }
