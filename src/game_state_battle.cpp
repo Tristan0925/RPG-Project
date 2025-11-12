@@ -203,15 +203,38 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     }
     
     // Back button (reconfigure if you want different color)
-    backButton = Button("Back", {450.f, 1000.f}, 30, this->game, sf::Color(90, 90, 90));
+    backButton = Button("Back", {400.f, 1000.f}, 30, this->game, sf::Color(90, 90, 90));
 
-    // --- Populate Skills dynamically from player's learned skills ---
+    // --- Populate Skill Buttons (filtered by unlock level, 2-column layout) ---
     skillButtons.clear();
-    float skillY = 300.f;
-    for (const auto& skillName : this->game->playerSkills) {
-        skillButtons.emplace_back(skillName, sf::Vector2f(150.f, skillY), 30, this->game, sf::Color::White);
-        skillY += 70.f;
-    }
+
+    // Layout parameters
+    float baseX = 150.f;
+    float baseY = 780.f;
+    float offsetY = 55.f;        // vertical distance between buttons
+    float columnSpacing = 260.f; // distance between columns
+
+    int playerLevel = this->game->player.getLVL();
+
+    size_t visibleIndex = 0;
+    
+    // Loop through skill names (strings)
+    for (const auto& skillName : game->playerSkills) {
+        const Skill* s = game->player.getSkillPtr(skillName, game->skillMasterList);
+        if (!s) continue;
+    
+        if (playerLevel < s->getUnlockLevel())
+            continue;
+    
+        // 2-column layout
+        size_t col = visibleIndex % 2;
+        size_t row = visibleIndex / 2;
+        float x = baseX + col * columnSpacing;
+        float y = baseY + row * offsetY;
+    
+        skillButtons.emplace_back(s->getName(), sf::Vector2f(x, y), 28, game, sf::Color::White);
+        visibleIndex++;
+    }    
 
     // now set positions for skill buttons if needed
     {
@@ -365,9 +388,8 @@ void GameStateBattle::draw(const float dt) {
     // Draw Turn Panel
     this->game->window.draw(turnPanelBackground);
 
-    // --- FIX: Draw Turn Panel elements separately ---
 
-    // 1. Draw Player Portraits (using the pre-sized vector)
+    // Draw Player Portraits
     for (size_t i = 0; i < turnPortraitBoxes.size(); ++i) {
         // Only draw player portraits and boxes if they have a non-zero size
         if (turnPortraitBoxes[i].getSize().x > 0.f) {
@@ -378,7 +400,7 @@ void GameStateBattle::draw(const float dt) {
         }
     }
 
-    // 2. Draw Enemy Names (using the push_backed vectors)
+    // Draw Enemy Names
     for (size_t i = 0; i < enemyNameBackgrounds.size(); ++i) {
         this->game->window.draw(enemyNameBackgrounds[i]);
         if (i < turnEnemyNames.size()) {
@@ -461,7 +483,7 @@ void GameStateBattle::update(const float dt) {
         for (auto& e : enemies) turnQueue.push_back(&e);
 
         std::sort(turnQueue.begin(), turnQueue.end(),
-                  [](Player* a, Player* b) { return a->getAGI() > b->getAGI(); });
+        [](Player* a, Player* b) { return a->getAGI() > b->getAGI(); });
     }
 
     // Highlight the active player's UI box

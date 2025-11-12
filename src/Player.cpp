@@ -211,6 +211,10 @@ int Player::getAGI() const {
     return AGI;
 }
 
+int Player::getLVL() const {
+    return LVL;
+}
+
  void Player::takeDamage(int damage){
     if (HP - damage < 0) HP = 0;
     else HP -= damage;
