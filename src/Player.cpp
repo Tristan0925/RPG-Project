@@ -119,7 +119,6 @@ void Player::setDefault(const Map& map)
     LVL = 1;
     XP = 0;
     name = "Tatsuya";
-    LVL = 1;
     STR = 4;
     VIT = 3;
     MAG = 3;
