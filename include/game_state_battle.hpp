@@ -96,6 +96,7 @@ private:
     std::vector<sf::Sprite> turnPortraitSprites;
     sf::RectangleShape turnPanelBackground;
     void updateTurnPanel();
+    void buildSkillButtonsFor(Player* character);
 
     // Battle Buttons
     bool skillMenuActive = false;

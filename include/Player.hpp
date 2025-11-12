@@ -95,5 +95,14 @@ class Player {
         void addToInventory(Item item, int quantity);
         const Skill* getSkillPtr(std::string skillName, const std::vector<Skill>& masterList);
         void addToSkillList(std::string skillName, const std::vector<Skill>& masterList);
+        std::vector<std::string> getSkillNames() const {
+            std::vector<std::string> names;
+            for (const Skill* skillPtr : skillsList) {
+                if (skillPtr != nullptr)
+                    names.push_back(skillPtr->getName());
+            }
+            return names;
+        }        
+
 };
 

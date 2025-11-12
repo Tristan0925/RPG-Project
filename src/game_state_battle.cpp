@@ -320,6 +320,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
 
 }
 
+// Results Screen
 void GameStateBattle::displayResultsScreen(bool displayResults){
     
     this->game->window.draw(topBarTextBackground);
@@ -329,9 +330,7 @@ void GameStateBattle::displayResultsScreen(bool displayResults){
    
 }
 
-
-
-
+// Draw 
 void GameStateBattle::draw(const float dt) {
     if (battleOver){
         if (!playResultsMusic){
@@ -426,6 +425,8 @@ void GameStateBattle::draw(const float dt) {
 }
 }
 
+
+// Update
 void GameStateBattle::update(const float dt) {
     for (size_t i = 0; i < party.size(); ++i) {
         auto* p = party[i];
@@ -535,6 +536,7 @@ void GameStateBattle::update(const float dt) {
     escapeButton.setHighlight(escapeButton.isHovered(this->game->window));
 }
 
+// Input Handling
 void GameStateBattle::handleInput() {
     sf::Event event;
     while (this->game->window.pollEvent(event)) {
@@ -569,6 +571,10 @@ void GameStateBattle::handleInput() {
                     // do attack logic
                 }
                 else if (skillButton.wasClicked(this->game->window)) {
+                    if (!turnQueue.empty()) {
+                        Player* active = turnQueue.front();
+                        buildSkillButtonsFor(active);
+                    }
                     currentMenuState = BattleMenuState::Skill;
                 }
                 else if (itemButton.wasClicked(this->game->window)) {
@@ -601,6 +607,7 @@ void GameStateBattle::handleInput() {
     }
 }
 
+// Loading random enemies
 std::vector<NPC> GameStateBattle::loadRandomEnemies(int count) {
     std::ifstream file("assets/enemies/enemies.json");
     if (!file.is_open()) {
@@ -646,6 +653,8 @@ std::vector<NPC> GameStateBattle::loadRandomEnemies(int count) {
     return selectedEnemies;
 }
 
+
+// Dynamically update the turn panel
 void GameStateBattle::updateTurnPanel() {
     // --- Build combined sorted list by AGI ---
     struct TurnEntry {
@@ -771,6 +780,31 @@ void GameStateBattle::updateTurnPanel() {
         
         currentY += entryHeight + entrySpacingY;
     }
+}
 
+// Dynamically update the skills 
 
+void GameStateBattle::buildSkillButtonsFor(Player* character) {
+    skillButtons.clear();
+
+    float baseX = 150.f;
+    float baseY = 780.f;
+    float offsetY = 55.f;
+    float columnSpacing = 260.f;
+
+    size_t visibleIndex = 0;
+    int charLevel = character->getLVL();
+
+    for (const auto& skillName : character->getSkillNames()) { 
+        const Skill* s = character->getSkillPtr(skillName, game->skillMasterList);
+        if (!s || charLevel < s->getUnlockLevel()) continue;
+
+        size_t col = visibleIndex % 2;
+        size_t row = visibleIndex / 2;
+        float x = baseX + col * columnSpacing;
+        float y = baseY + row * offsetY;
+
+        skillButtons.emplace_back(s->getName(), sf::Vector2f(x, y), 28, game, sf::Color::White);
+        visibleIndex++;
+    }
 }
