@@ -25,7 +25,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
 
     // Setup battle text
     battleText.setFont(font);
-    battleText.setString("BATTLE MODE!\nPress Enter to return.");
+    battleText.setString("* You feel like pressing enter to leave the battle state.");
     battleText.setCharacterSize(36);
     battleText.setFillColor(sf::Color::White);
     battleText.setPosition(850.f, 620.f);
@@ -232,7 +232,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     //Set Up results screen text
     topBarText.setFont(font);
     topBarText.setCharacterSize(75);
-    topBarText.setString("Results \t\t\t\t\t\t\t\t\t\t\t\t Obtained the following:");
+    topBarText.setString("Results \t\t\t\t\t\t\t\t\t\t\t\t\t\t Obtained the following:"); //the \t don't do anything these are just there now
     topBarText.setFillColor(sf::Color::Black);
     topBarText.setPosition(15.0f, 20.0f);
 
@@ -264,23 +264,51 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     //set up all the necessary variables for displaying the player + party
     playerName.setFont(font);
     playerName.setString(this->game->player.getName());
-    playerName.setCharacterSize(25);
+    playerName.setCharacterSize(50);
     playerName.setFillColor(sf::Color(130,25,13));
+    playerName.setPosition(200.0f, 500.f);
+
+    playerLevel.setFont(font);
+    playerLevel.setString("LV." + std::to_string(this->game->player.getLVL()));
+    playerLevel.setCharacterSize(50);
+    playerLevel.setFillColor(sf::Color(130,25,13));
+    playerLevel.setPosition(850.0f, 500.f);
 
     pmember2Name.setFont(font);
     pmember2Name.setString(this->game->pmember2.getName());
-    pmember2Name.setCharacterSize(25);
+    pmember2Name.setCharacterSize(50);
     pmember2Name.setFillColor(sf::Color(130,25,13));
+    pmember2Name.setPosition(200.0f, 600.f);
+
+    pmember2Level.setFont(font);
+    pmember2Level.setString("LV." + std::to_string(this->game->player.getLVL()));
+    pmember2Level.setCharacterSize(50);
+    pmember2Level.setFillColor(sf::Color(130,25,13));
+    pmember2Level.setPosition(850.0f, 600.f);
 
     pmember3Name.setFont(font);
     pmember3Name.setString(this->game->pmember3.getName());
-    pmember3Name.setCharacterSize(25);
+    pmember3Name.setCharacterSize(50);
     pmember3Name.setFillColor(sf::Color(130,25,13));
+    pmember3Name.setPosition(200.0f, 700.f);
+
+    pmember3Level.setFont(font);
+    pmember3Level.setString("LV." + std::to_string(this->game->player.getLVL()));
+    pmember3Level.setCharacterSize(50);
+    pmember3Level.setFillColor(sf::Color(130,25,13));
+    pmember3Level.setPosition(850.0f, 700.f);
 
     pmember4Name.setFont(font);
     pmember4Name.setString(this->game->pmember4.getName());
-    pmember4Name.setCharacterSize(25);
+    pmember4Name.setCharacterSize(50);
     pmember4Name.setFillColor(sf::Color(130,25,13));
+    pmember4Name.setPosition(200.0f, 800.f);
+
+    pmember4Level.setFont(font);
+    pmember4Level.setString("LV." + std::to_string(this->game->player.getLVL()));
+    pmember4Level.setCharacterSize(50);
+    pmember4Level.setFillColor(sf::Color(130,25,13));
+    pmember4Level.setPosition(850.0f, 800.f);
 
 }
 
@@ -290,7 +318,14 @@ void GameStateBattle::displayResultsScreen(bool displayResults){
     this->game->window.draw(topBarText);
     this->game->window.draw(thingsEarnedBackground);
     this->game->window.draw(totalEarnedExp);
-   
+    this->game->window.draw(playerName);
+    this->game->window.draw(pmember2Name);
+    this->game->window.draw(pmember3Name);
+    this->game->window.draw(pmember4Name);
+    this->game->window.draw(playerLevel);
+    this->game->window.draw(pmember2Level);
+    this->game->window.draw(pmember3Level);
+    this->game->window.draw(pmember4Level);
 }
 
 

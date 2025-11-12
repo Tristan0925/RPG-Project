@@ -482,3 +482,7 @@ bool Player::loadFromFile(const std::string& filename, const std::vector<Skill>&
 std::string Player::getName() const{
     return name;
 }
+
+int Player::getLVL() const{
+    return LVL;
+}
