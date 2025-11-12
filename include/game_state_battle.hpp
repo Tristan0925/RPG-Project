@@ -36,7 +36,10 @@ private:
     sf::Text pmember2Level;
     sf::Text pmember3Level;
     sf::Text pmember4Level;
-    sf::Text nextLevel;
+    sf::Text nextLevelPlayer;
+    sf::Text nextLevelPmember2;
+    sf::Text nextLevelPmember3;
+    sf::Text nextLevelPmember4;
     sf::Text levelUpText;
 
     // Shapes
@@ -58,6 +61,8 @@ private:
     bool pmember2LevelUp = false;
     bool pmember3LevelUp = false;
     bool pmember4LevelUp = false;
+
+
 
     // Textures
     sf::Texture enemyBackgroundTex;

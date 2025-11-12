@@ -486,3 +486,13 @@ std::string Player::getName() const{
 int Player::getLVL() const{
     return LVL;
 }
+
+int Player::getXp() const{
+    return LVL;
+}
+
+int Player::getXpForNextLevel(){
+    if (level <= 10) return 100 + (level - 1) * 50;
+    else if (level <= 25) return 550 + pow(level - 10, 2) * 15;
+    else return 3000 + pow(level - 25, 2.3) * 25;
+}

@@ -309,6 +309,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     pmember4Level.setCharacterSize(50);
     pmember4Level.setFillColor(sf::Color(130,25,13));
     pmember4Level.setPosition(850.0f, 800.f);
+    
 
 }
 
