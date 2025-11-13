@@ -491,10 +491,11 @@ void GameStateBattle::update(const float dt) {
             playerXP += addedXP;
             if (playerXP >= nextLevelPlayerXp){
                 if (!playerLevelUp){
-                    
                     levelUpTexts[0].setFillColor(sf::Color(0,255,0,255));
                     playerLevelUp = true;
                 }
+                this->game->player.levelUp();
+                playerLevel.setString("LV.  " + std::to_string(this->game->player.getLVL()));
                 playerXP = 0;
                 //method to increase player level specifically?
                 //method to check nextLevelPlayerXP?

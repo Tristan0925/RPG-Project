@@ -273,7 +273,7 @@ int Player::getAGI() const {
     }
  }
  
- void Player::levelUp(std::map<std::string, int> skillPointDistribution, int levelsGained){
+ void Player::distributeSkillPoints(std::map<std::string, int> skillPointDistribution, int levelsGained){
     LVL += levelsGained;
     for (auto distribution : skillPointDistribution){
         std::string trait = distribution.first;
@@ -495,4 +495,8 @@ int Player::getXpForNextLevel(){
     if (LVL <= 10) return 100 + (LVL - 1) * 50;
     else if (LVL <= 25) return 550 + pow(LVL - 10, 2) * 15;
     else return 3000 + pow(LVL - 25, 2.3) * 25;
+}
+
+void Player::levelUp(){
+    LVL +=1;
 }

@@ -75,8 +75,9 @@ class Player {
         void regainMP(int mpGained);
         int physATK(float scalar, int baseAtk, bool isCrit); //essentially skills will have a super complicated formula based on the wiki
         int magATK(float scalar, int baseAtk, int limit, int correction, bool isWeak); 
-        void levelUp(std::map<std::string, int> skillPointDistribution, int levelsGained);
+        void distributeSkillPoints(std::map<std::string, int> skillPointDistribution, int levelsGained);
         int doorX, doorY; //track last door entered
+        void levelUp();
 
         void turnLeft();
         void turnRight();
