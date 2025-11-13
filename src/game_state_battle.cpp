@@ -219,8 +219,10 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     size_t visibleIndex = 0;
     
     // Loop through skill names (strings)
-    for (const auto& skillName : game->playerSkills) {
-        const Skill* s = game->player.getSkillPtr(skillName, game->skillMasterList);
+    
+    for (size_t i = 1; i < this->game->playerSkills.size(); ++i) {
+        const Skill* s = this->game->player.getSkillPtr(this->game->playerSkills[i], this->game->skillMasterList);
+
         if (!s) continue;
     
         if (playerLevel < s->getUnlockLevel())
@@ -243,7 +245,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
         float offsetY = 50.f;  // vertical spacing between buttons
         float columnSpacing = 250.f; // space between columns
 
-        for (size_t k = 0; k < skillButtons.size(); ++k) {
+        for (size_t k = 1; k < skillButtons.size(); ++k) {
             size_t col = k % 2; // 0 = left column, 1 = right column
             size_t row = k / 2; // go down every two items
             float x = baseX + col * columnSpacing;
@@ -569,6 +571,7 @@ void GameStateBattle::handleInput() {
             if (currentMenuState == BattleMenuState::Main) {
                 if (attackButton.wasClicked(this->game->window)) {
                     // do attack logic
+                    // if atta
                 }
                 else if (skillButton.wasClicked(this->game->window)) {
                     if (!turnQueue.empty()) {
@@ -795,16 +798,19 @@ void GameStateBattle::buildSkillButtonsFor(Player* character) {
     size_t visibleIndex = 0;
     int charLevel = character->getLVL();
 
-    for (const auto& skillName : character->getSkillNames()) { 
+    size_t i = 0;
+    for (const auto& skillName : character->getSkillNames()) {
+        if (i++ == 0) continue; // skip first entry
+    
         const Skill* s = character->getSkillPtr(skillName, game->skillMasterList);
         if (!s || charLevel < s->getUnlockLevel()) continue;
-
+    
         size_t col = visibleIndex % 2;
         size_t row = visibleIndex / 2;
         float x = baseX + col * columnSpacing;
         float y = baseY + row * offsetY;
-
+    
         skillButtons.emplace_back(s->getName(), sf::Vector2f(x, y), 28, game, sf::Color::White);
         visibleIndex++;
-    }
+    }    
 }
