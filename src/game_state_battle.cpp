@@ -255,7 +255,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     thingsEarnedBackground[3].color= sf::Color(55,11,4);
 
     totalEarnedExp.setFont(font);
-    totalEarnedExpMessage = "EXP                                                                                                                                                                0";  // + std::to_string(totalXpGained) or whatever it is
+    totalEarnedExpMessage = "EXP                                                                                                                                                                " + std::to_string(totalXpGained);  // + std::to_string(totalXpGained) or whatever it is
     totalEarnedExp.setString(totalEarnedExpMessage);
     totalEarnedExp.setCharacterSize(75);
     totalEarnedExp.setFillColor(sf::Color::Red);
@@ -304,6 +304,11 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     nextLevelPmember2.setCharacterSize(40);
     nextLevelPmember2.setPosition(1100.0f, 590.0f);
 
+    pmember2XP = (float)this->game->pmember2.getXp();
+    expBarPmember2.setSize({1460.0f * ((float)pmember2XP/(float)nextLevelPmember2Xp),10.0f});
+    expBarPmember2.setFillColor(sf::Color(255,165,0));
+    expBarPmember2.setPosition(175.0f, 645.0f);
+
     pmember3Name.setFont(font);
     pmember3Name.setString(this->game->pmember3.getName());
     pmember3Name.setCharacterSize(40);
@@ -322,6 +327,11 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     nextLevelPmember3.setCharacterSize(40);
     nextLevelPmember3.setPosition(1100.0f, 690.0f);
 
+    pmember3XP = (float)this->game->pmember3.getXp();
+    expBarPmember3.setSize({1460.0f * ((float)pmember3XP/(float)nextLevelPmember3Xp),10.0f});
+    expBarPmember3.setFillColor(sf::Color(255,165,0));
+    expBarPmember3.setPosition(175.0f, 745.0f);
+
     pmember4Name.setFont(font);
     pmember4Name.setString(this->game->pmember4.getName());
     pmember4Name.setCharacterSize(40);
@@ -339,6 +349,11 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     nextLevelPmember4.setString("Next Exp:                                " + std::to_string(nextLevelPmember4Xp));
     nextLevelPmember4.setCharacterSize(40);
     nextLevelPmember4.setPosition(1100.0f, 790.0f);
+
+    pmember4XP = (float)this->game->pmember4.getXp();
+    expBarPmember4.setSize({1460.0f * ((float)pmember4XP/(float)nextLevelPmember4Xp),10.0f});
+    expBarPmember4.setFillColor(sf::Color(255,165,0));
+    expBarPmember4.setPosition(175.0f, 845.0f);
 
     float BackgroundsOffsetY = 490.0f;
     float levelUpOffsetY = 455.0f;
@@ -393,6 +408,9 @@ void GameStateBattle::displayResultsScreen(bool displayResults){
     this->game->window.draw(pmember4Level);
     this->game->window.draw(nextLevelPmember4);
     this->game->window.draw(expBarPlayer);
+    this->game->window.draw(expBarPmember2);
+    this->game->window.draw(expBarPmember3);
+    this->game->window.draw(expBarPmember4);
 }
 
 
@@ -487,24 +505,64 @@ void GameStateBattle::draw(const float dt) {
 void GameStateBattle::update(const float dt) {
     if (battleOver){
         if (totalXpGained > 0){
+            XPdecrementer++;
             float addedXP = 1;
             playerXP += addedXP;
-            if (playerXP >= nextLevelPlayerXp){
+            if (playerXP >= nextLevelPlayerXp){ //since everyone gets the same amount of xp, we are just using the player's xp to see if everyone levels up or not (we can change this later if we want)
                 if (!playerLevelUp){
                     levelUpTexts[0].setFillColor(sf::Color(0,255,0,255));
-                    playerLevelUp = true;
+                      playerLevelUp = true;
+
+                    levelUpTexts[1].setFillColor(sf::Color(0,255,0,255));
+                    pmember2LevelUp = true;
+
+                    levelUpTexts[2].setFillColor(sf::Color(0,255,0,255));
+                     pmember3LevelUp = true;
+
+                    levelUpTexts[3].setFillColor(sf::Color(0,255,0,255));
+                      pmember4LevelUp = true;
+                  
                 }
                 this->game->player.levelUp();
                 playerLevel.setString("LV.  " + std::to_string(this->game->player.getLVL()));
                 playerXP = 0;
-                //method to increase player level specifically?
-                //method to check nextLevelPlayerXP?
-                std::cout << "+1" << std::endl;
+                nextLevelPlayerXp = this->game->player.getXpForNextLevel();
+                nextLevelPlayer.setString("Next Exp:                                " + std::to_string(nextLevelPlayerXp));
+            
+                this->game->pmember2.levelUp();
+                pmember2XP = 0;
+                pmember2Level.setString("LV.  " + std::to_string(this->game->pmember2.getLVL()));
+                nextLevelPmember2Xp =  this->game->pmember2.getXpForNextLevel();
+                nextLevelPmember2.setString("Next Exp:                                " + std::to_string(nextLevelPmember2Xp));
 
+                this->game->pmember3.levelUp();
+                pmember3Level.setString("LV.  " + std::to_string(this->game->pmember3.getLVL()));
+                pmember3XP = 0;
+                nextLevelPmember3Xp =  this->game->pmember3.getXpForNextLevel();
+                nextLevelPmember3.setString("Next Exp:                                " + std::to_string(nextLevelPmember3Xp));
+
+                this->game->pmember4.levelUp();
+                pmember4Level.setString("LV.  " + std::to_string(this->game->pmember4.getLVL()));
+                pmember4XP = 0;
+                nextLevelPmember4Xp = this->game->pmember4.getXpForNextLevel();
+                nextLevelPmember4.setString("Next Exp:                                " + std::to_string(nextLevelPmember4Xp));
+                XPdecrementer = 0; //very bandaid fix but we reset the decrementer whenever we level up so it will correctly decrement the exp.
             }
             float xpPercent = (float)playerXP/(float)nextLevelPlayerXp;
             expBarPlayer.setSize({1460.0f * xpPercent,10.0f});
-            totalXpGained -= addedXP;
+            nextLevelPlayer.setString("Next Exp:                                " + std::to_string(nextLevelPlayerXp - XPdecrementer));
+
+            expBarPmember2.setSize({1460.0f * xpPercent,10.0f});
+            nextLevelPmember2.setString("Next Exp:                                " + std::to_string(nextLevelPmember2Xp - XPdecrementer));
+
+            expBarPmember3.setSize({1460.0f * xpPercent,10.0f});
+            nextLevelPmember3.setString("Next Exp:                                " + std::to_string(nextLevelPmember3Xp - XPdecrementer));
+
+            expBarPmember4.setSize({1460.0f * xpPercent,10.0f});
+            nextLevelPmember4.setString("Next Exp:                                " + std::to_string(nextLevelPmember4Xp - XPdecrementer));
+
+            totalXpGained -= addedXP; //for simplicity, everyone gets the same amount of xp every battle
+            
             
         } 
     }

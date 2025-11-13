@@ -156,6 +156,7 @@ private:
     void displayResultsScreen(bool displayResults);
 
     int totalXpGained = 500;
+    int XPdecrementer = 0; //counts how many times the loop has iterated so we can have a cool next exp counter.
     
 
 public:
