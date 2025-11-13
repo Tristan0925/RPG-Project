@@ -155,7 +155,13 @@ private:
     float ui_startY = 800.f;
     float ui_spacing = 220.f;
 
+    //methods to progress the game_state after a battle
     void displayResultsScreen(bool displayResults);
+    void displayLevelUpScreen(bool displayLevelUp);
+    
+    //you must watch the level up screen before you can continue (sorry)
+    bool pressSpaceToContinue = false;
+    bool distributionFinished = false;
 
     int totalXpGained = 500;
     int XPdecrementer = 0; //counts how many times the loop has iterated so we can have a cool next exp counter.

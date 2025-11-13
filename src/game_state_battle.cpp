@@ -434,11 +434,14 @@ void GameStateBattle::displayResultsScreen(bool displayResults){
     this->game->window.draw(expBarPmember4);
 }
 
+void GameStateBattle::displayLevelUpScreen(bool displayLevelUp){
+    this->game->window.clear(sf::Color(255,0,0));
+}
 
 
 
 void GameStateBattle::draw(const float dt) {
-    if (battleOver){
+    if (battleOver && !pressSpaceToContinue){
         if (!playResultsMusic){
             currentMusic.stop();
             if (!currentMusic.openFromFile("./assets/music/battleresults.mp3")) std::cout << "Could not load music file" << std::endl;
@@ -447,9 +450,12 @@ void GameStateBattle::draw(const float dt) {
                 currentMusic.play();
                 playResultsMusic = true;
                 }
-}
+            }
          displayResultsScreen(true);
      
+    }
+    else if (battleOver && pressSpaceToContinue){
+        displayLevelUpScreen(true);
     } 
 
     else{
@@ -524,7 +530,7 @@ void GameStateBattle::draw(const float dt) {
 }
 
 void GameStateBattle::update(const float dt) {
-    if (battleOver){
+    if (battleOver && !pressSpaceToContinue){
         if (totalXpGained > 0){
             XPdecrementer++;
             float addedXP = 1;
@@ -583,9 +589,8 @@ void GameStateBattle::update(const float dt) {
             nextLevelPmember4.setString("Next Exp:                                " + std::to_string(nextLevelPmember4Xp - XPdecrementer));
 
             totalXpGained -= addedXP; //for simplicity, everyone gets the same amount of xp every battle
-            
-            
-        } 
+        }
+        else distributionFinished = true;
     }
     else{
     for (size_t i = 0; i < party.size(); ++i) {
@@ -714,6 +719,10 @@ void GameStateBattle::handleInput() {
                 this->game->requestChange(std::make_unique<GameStateEditor>(this->game, false));
                 return;
             }
+            else if (event.key.code == sf::Keyboard::Space && battleOver && distributionFinished){
+                std::cout << "press" << std::endl;
+                pressSpaceToContinue = true;
+            }
             else if (event.key.code == sf::Keyboard::Space) {
                 // rotate queue: move front to back
                 if (!turnQueue.empty()) {
@@ -722,6 +731,7 @@ void GameStateBattle::handleInput() {
                     turnQueue.push_back(front);
                 }
             }
+        
         }
 
         // --- Mouse click events
