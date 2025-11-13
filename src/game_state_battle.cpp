@@ -492,7 +492,7 @@ void GameStateBattle::update(const float dt) {
             if (playerXP >= nextLevelPlayerXp){
                 if (!playerLevelUp){
                     
-                    levelUpTexts[0].setFillColor(sf::Color(0,128,0,255));
+                    levelUpTexts[0].setFillColor(sf::Color(0,255,0,255));
                     playerLevelUp = true;
                 }
                 playerXP = 0;
