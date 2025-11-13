@@ -117,7 +117,7 @@ void Player::setDefault(const Map& map)
     maxMP = (LVL + MAG) * 3;
     MP = maxMP;
     LVL = 1;
-    XP = 0;
+    XP = 50;
     name = "Tatsuya";
     LVL = 1;
     STR = 4;
@@ -126,7 +126,6 @@ void Player::setDefault(const Map& map)
     AGI = 3;
     LU = 2;
     affinities = {{"Fire", 0.0}, {"Ice", 1.5}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.0}};
-    XP = 0;
     skillsList = { nullptr };
     angle = 0.f;
     targetAngle = 0.f;
@@ -274,7 +273,8 @@ int Player::getAGI() const {
     }
  }
  
- void Player::levelUp(std::map<std::string, int> skillPointDistribution){
+ void Player::levelUp(std::map<std::string, int> skillPointDistribution, int levelsGained){
+    LVL += levelsGained;
     for (auto distribution : skillPointDistribution){
         std::string trait = distribution.first;
         int skillPoints = distribution.second;
@@ -488,7 +488,7 @@ int Player::getLVL() const{
 }
 
 int Player::getXp() const{
-    return LVL;
+    return XP;
 }
 
 int Player::getXpForNextLevel(){

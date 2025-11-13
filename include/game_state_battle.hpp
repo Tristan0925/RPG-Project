@@ -58,9 +58,13 @@ private:
     std::array<sf::RectangleShape, 4> spriteBackgrounds;
     std::array<sf::RectangleShape, 4> levelBackgrounds;
     sf::RectangleShape expBarPlayer;
+    float playerXP;
     sf::RectangleShape expBarPmember2;
+    float pmember2XP;
     sf::RectangleShape expBarPmember3;
+    float pmember3XP;
     sf::RectangleShape expBarPmember4;
+    float pmember4XP;
     std::array<sf::RectangleShape, 4> expBarBackgrounds;
 
 
@@ -150,6 +154,9 @@ private:
     float ui_spacing = 220.f;
 
     void displayResultsScreen(bool displayResults);
+
+    int totalXpGained = 500;
+    
 
 public:
     GameStateBattle(Game* game, bool isBossBattle);

@@ -280,6 +280,12 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     nextLevelPlayer.setCharacterSize(40);
     nextLevelPlayer.setPosition(1100.0f, 490.0f);
 
+     
+    playerXP = (float)this->game->player.getXp();
+    expBarPlayer.setSize({1460.0f * ((float)playerXP/(float)nextLevelPlayerXp),10.0f});
+    expBarPlayer.setFillColor(sf::Color(255,165,0));
+    expBarPlayer.setPosition(175.0f, 545.0f);
+
     pmember2Name.setFont(font);
     pmember2Name.setString(this->game->pmember2.getName());
     pmember2Name.setCharacterSize(40);
@@ -345,7 +351,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
         levelBackgrounds[i].setFillColor(sf::Color(255,0,0,100));
         levelBackgrounds[i].setPosition(805.f, BackgroundsOffsetY + 100.0f*i);
         levelUpTexts[i].setFont(font);
-        levelUpTexts[i].setFillColor(sf::Color::Green);
+        levelUpTexts[i].setFillColor(sf::Color(0,0,0,0));
         levelUpTexts[i].setCharacterSize(30);
         levelUpTexts[i].setString("Level Up!");
         levelUpTexts[i].setPosition(200.0f, levelUpOffsetY + 100.0f*i);
@@ -366,7 +372,10 @@ void GameStateBattle::displayResultsScreen(bool displayResults){
     for (auto& background : expBarBackgrounds){
         this->game->window.draw(background);
     }
-
+    for (auto& text : levelUpTexts){
+        this->game->window.draw(text);
+    }
+  
     this->game->window.draw(topBarTextBackground);
     this->game->window.draw(topBarText);
     this->game->window.draw(thingsEarnedBackground);
@@ -383,10 +392,7 @@ void GameStateBattle::displayResultsScreen(bool displayResults){
     this->game->window.draw(nextLevelPmember3);
     this->game->window.draw(pmember4Level);
     this->game->window.draw(nextLevelPmember4);
-    for (auto& text : levelUpTexts){
-        this->game->window.draw(text);
-    }
-    
+    this->game->window.draw(expBarPlayer);
 }
 
 
@@ -479,6 +485,29 @@ void GameStateBattle::draw(const float dt) {
 }
 
 void GameStateBattle::update(const float dt) {
+    if (battleOver){
+        if (totalXpGained > 0){
+            float addedXP = 1;
+            playerXP += addedXP;
+            if (playerXP >= nextLevelPlayerXp){
+                if (!playerLevelUp){
+                    
+                    levelUpTexts[0].setFillColor(sf::Color(0,128,0,255));
+                    playerLevelUp = true;
+                }
+                playerXP = 0;
+                //method to increase player level specifically?
+                //method to check nextLevelPlayerXP?
+                std::cout << "+1" << std::endl;
+
+            }
+            float xpPercent = (float)playerXP/(float)nextLevelPlayerXp;
+            expBarPlayer.setSize({1460.0f * xpPercent,10.0f});
+            totalXpGained -= addedXP;
+            
+        } 
+    }
+    else{
     for (size_t i = 0; i < party.size(); ++i) {
         auto* p = party[i];
         if (!p) continue;
@@ -586,6 +615,7 @@ void GameStateBattle::update(const float dt) {
     itemButton.setHighlight(itemButton.isHovered(this->game->window));
     guardButton.setHighlight(guardButton.isHovered(this->game->window));
     escapeButton.setHighlight(escapeButton.isHovered(this->game->window));
+}
 }
 
 void GameStateBattle::handleInput() {
