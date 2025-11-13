@@ -55,7 +55,6 @@ private:
     sf::VertexArray topBarTextBackground;
     sf::VertexArray thingsEarnedBackground;
     std::array<sf::RectangleShape, 4> portraitBackgrounds;
-    std::array<sf::RectangleShape, 4> spriteBackgrounds;
     std::array<sf::RectangleShape, 4> levelBackgrounds;
     sf::RectangleShape expBarPlayer;
     float playerXP;
@@ -66,6 +65,9 @@ private:
     sf::RectangleShape expBarPmember4;
     float pmember4XP;
     std::array<sf::RectangleShape, 4> expBarBackgrounds;
+
+    //Flag that lets me resuse the array for sprites + portraitbackgrounds already used in the main battle 
+    bool reuseArrays = false;
 
 
     // Level Up Flags

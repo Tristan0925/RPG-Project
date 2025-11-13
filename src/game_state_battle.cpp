@@ -378,6 +378,21 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
 }
 
 void GameStateBattle::displayResultsScreen(bool displayResults){
+    if (!reuseArrays){ //doing it like this so we reset positions one time.
+        float iconOffsetY = 494.0f;
+        float backgroundOffsetY = 493.0f;
+        playerIcons[0].setScale(1.22,1.22);
+        playerIcons[1].setScale(0.65,0.65);
+        playerIcons[2].setScale(1.6,1.6);
+        playerIcons[3].setScale(1.72,1.72);
+        for (size_t i = 0; i < 4; i++){ //probably want to make this based off party size
+        playerBackgrounds[i].setSize({231.0f,52.0f});
+        playerBackgrounds[i].setFillColor(sf::Color(58, 7, 1));
+        playerBackgrounds[i].setOutlineThickness(0.0f);
+        playerBackgrounds[i].setPosition(570.0f,backgroundOffsetY + 100.0f * i);
+        playerIcons[i].setPosition(620.0f, iconOffsetY + 100.0f * i);
+        }
+    }
     for (auto& background : portraitBackgrounds){
         this->game->window.draw(background);
     }
@@ -390,7 +405,13 @@ void GameStateBattle::displayResultsScreen(bool displayResults){
     for (auto& text : levelUpTexts){
         this->game->window.draw(text);
     }
-  
+    for (auto&  background : playerBackgrounds){
+        this->game->window.draw(background);
+    }
+    for (auto& icon : playerIcons){
+        this->game->window.draw(icon);
+    }
+ 
     this->game->window.draw(topBarTextBackground);
     this->game->window.draw(topBarText);
     this->game->window.draw(thingsEarnedBackground);
