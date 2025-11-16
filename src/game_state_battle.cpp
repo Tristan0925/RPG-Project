@@ -379,7 +379,7 @@ void GameStateBattle::displayResultsScreen(bool displayResults){
 // Draw 
 void GameStateBattle::draw(const float dt) {
     // Always clear the window first
-    this->game->window.clear();
+    this->game->window.clear(sf::Color::Black);
 
     // Battle finished / results screen
     if (battleOver) {
@@ -461,6 +461,7 @@ void GameStateBattle::draw(const float dt) {
 
     // Game Over buttons
     if (gameOver) {
+        this->game->window.clear(sf::Color::Black);
         if (!loadMenuActive) {
             quitButton.draw(this->game->window);
             loadButton.draw(this->game->window);
