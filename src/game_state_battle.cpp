@@ -482,6 +482,8 @@ void GameStateBattle::draw(const float dt) {
             if (slot3.isHovered(this->game->window)) this->game->window.draw(slot3.getUnderline());
             if (backButton.isHovered(this->game->window)) this->game->window.draw(backButton.getUnderline());
         }
+        this->game->window.display(); // update the window
+        return; // skip the rest of battle drawing
     }
 
     // Turn panel and portraits
