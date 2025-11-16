@@ -48,7 +48,6 @@ class Player {
         float targetAngle;  // snapped target
         float turnSpeed;    // turn speed
         void tryMove(sf::Vector2f delta, const Map& map); // checks for walls
-        sf::Vector2f postion;
         // Attack + every affinity + almighty. I think the battle_game_state should figure out damage #'s and stuff.
         std::array<Item, 2> inventory; // Only 2 items in game: Dragon Morsel (healing) and Energizing Moss (mana restoration) 
     protected:
@@ -88,7 +87,7 @@ class Player {
         void setDefault(const Map& map);
 
 
-        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const, getAGI() const;
+        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const, getAGI() const, getSTR() const, getVIT() const;
         std::string getName() const;
         std::array<Item, 2> getInventory() const;
         std::array<const Skill*, 9> getSkillsList() const;

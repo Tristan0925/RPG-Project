@@ -214,6 +214,9 @@ int Player::getLVL() const {
     return LVL;
 }
 
+int Player::getSTR() const { return STR; }
+int Player::getVIT() const { return VIT; }
+
  void Player::takeDamage(int damage){
     if (HP - damage < 0) HP = 0;
     else HP -= damage;

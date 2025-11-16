@@ -536,6 +536,26 @@ void GameStateBattle::update(const float dt) {
     itemButton.setHighlight(itemButton.isHovered(this->game->window));
     guardButton.setHighlight(guardButton.isHovered(this->game->window));
     escapeButton.setHighlight(escapeButton.isHovered(this->game->window));
+
+    // dynamically update skill descriptions
+    // Show skill info on hover
+    if (currentMenuState == BattleMenuState::Skill) {
+        for (size_t i = 0; i < skillButtons.size(); ++i) {
+            if (skillButtons[i].isHovered(this->game->window)) {
+                const Skill* s = this->game->player.getSkillPtr(
+                    skillButtons[i].getText(),
+                    this->game->skillMasterList
+                );
+                if (s) {
+                    battleText.setString(
+                        s->getName() + "\n" +
+                        s->getDescription() + "\nMP Cost: " +
+                        std::to_string(s->getMpCost())
+                    );
+                }
+            }
+        }
+    }
 }
 
 // Input Handling
@@ -570,9 +590,40 @@ void GameStateBattle::handleInput() {
 
             if (currentMenuState == BattleMenuState::Main) {
                 if (attackButton.wasClicked(this->game->window)) {
-                    // do attack logic
-                    // if atta
-                }
+
+                    if (!turnQueue.empty()) {
+                        Player* attacker = turnQueue.front();
+                
+                        // find first alive enemy
+                        NPC* target = nullptr;
+                        for (auto& e : enemies) {
+                            if (e.getHP() > 0) {
+                                target = &e;
+                                break;
+                            }
+                        }
+                
+                        if (target) {
+                            // damage formula
+                            int damage = std::max(1, attacker->getSTR() - target->getVIT()/2);
+                        
+                            // prefer takeDamage()
+                            target->takeDamage(damage);
+                        
+                            // update battle text
+                            battleText.setString(
+                                attacker->getName() + " attacked " +
+                                target->getName() + " dealing " +
+                                std::to_string(damage) + " damage!"
+                            );
+                        
+                            // end turn immediately
+                            Player* front = turnQueue.front();
+                            turnQueue.pop_front();
+                            turnQueue.push_back(front);
+                        }                        
+                    }
+                }                
                 else if (skillButton.wasClicked(this->game->window)) {
                     if (!turnQueue.empty()) {
                         Player* active = turnQueue.front();
