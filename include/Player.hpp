@@ -85,7 +85,7 @@ class Player {
         bool saveToFile(const std::string& filename) const;
         bool loadFromFile(const std::string& filename, const std::vector<Skill>& masterList);
         void setDefault(const Map& map);
-
+        bool isDead() const { return HP <= 0; }
 
         int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const, getAGI() const, getSTR() const, getVIT() const;
         std::string getName() const;

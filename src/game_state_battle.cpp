@@ -11,6 +11,35 @@
 
 using json = nlohmann::json;
 
+namespace {
+    // File-local helper state and types (keeps header unchanged)
+    struct DamagePopup {
+        sf::Text text;
+        sf::Vector2f velocity;
+        float life = 1.0f; // seconds
+    };
+
+    // Persistent file-scope containers used by the cpp only
+    std::vector<DamagePopup> damagePopups;
+    std::vector<float> enemyBaseScales; // keep base scales for each enemy sprite
+    std::mt19937& globalRng() {
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        return gen;
+    }
+
+    // small helper to find skill by name in the game's skill master list
+    const Skill* findSkillByName(const Game* g, const std::string& name) {
+        if (!g) return nullptr;
+        for (const auto& s : g->skillMasterList) {
+            if (s.getName() == name) return &s;
+        }
+        return nullptr;
+    }
+}
+
+// Constructor and setup 
+
 GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
 :   topBarTextBackground(sf::Quads,4), 
     thingsEarnedBackground(sf::Quads,4),
@@ -194,6 +223,9 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     // highlight first actor
     currentTurnIndex = 0;
 
+    // enemy index
+    currentEnemyIndex = getFirstLivingEnemy();
+
     // Music
     if (!currentMusic.openFromFile("./assets/music/normalbattle.mp3")) {
         std::cout << "Could not load music file" << std::endl;
@@ -370,6 +402,16 @@ void GameStateBattle::draw(const float dt) {
     // Draw Enemies
     for (size_t i = 0; i < enemySprites.size(); ++i)
     {
+        // Apply scaling visual for the selected enemy
+        if (i < enemyBaseScales.size()) {
+            float base = enemyBaseScales[i];
+            if (static_cast<int>(i) == currentEnemyIndex) {
+                enemySprites[i].setScale(base * 1.15f, base * 1.15f);
+            } else {
+                enemySprites[i].setScale(base, base);
+            }
+        }
+
         this->game->window.draw(enemySprites[i]);
         
         // Highlight if it's their turn
@@ -409,6 +451,11 @@ void GameStateBattle::draw(const float dt) {
         }
     }   
 
+    // Draw floating damage popups
+    for (auto& dp : damagePopups) {
+        this->game->window.draw(dp.text);
+    }
+
     if (currentMenuState == BattleMenuState::Main) {
         attackButton.draw(this->game->window);
         skillButton.draw(this->game->window);
@@ -430,6 +477,14 @@ void GameStateBattle::draw(const float dt) {
 
 // Update
 void GameStateBattle::update(const float dt) {
+    // update damage popups (position + life)
+    for (auto it = damagePopups.begin(); it != damagePopups.end();) {
+        it->life -= dt;
+        it->text.move(it->velocity * dt);
+        if (it->life <= 0.f) it = damagePopups.erase(it);
+        else ++it;
+    }
+
     for (size_t i = 0; i < party.size(); ++i) {
         auto* p = party[i];
         if (!p) continue;
@@ -451,6 +506,7 @@ void GameStateBattle::update(const float dt) {
         // use mt19937 for everything consistent
         std::random_device rd;
         std::mt19937 gen(rd());
+        enemyBaseScales.clear();
         int count = std::uniform_int_distribution<>(1, 4)(gen); // 1–4 enemies
         enemies = loadRandomEnemies(count);
 
@@ -458,6 +514,7 @@ void GameStateBattle::update(const float dt) {
         enemySprites.clear();
         enemyTextures.clear();
         enemySprites.reserve(enemies.size());
+        enemyBaseScales.reserve(enemies.size());
 
         // Load textures via texmgr and position sprites
         for (size_t idx = 0; idx < enemies.size(); ++idx) {
@@ -474,6 +531,13 @@ void GameStateBattle::update(const float dt) {
             int ypos = std::uniform_int_distribution<>(200, 300)(gen);
             spr.setPosition(static_cast<float>(xpos), static_cast<float>(ypos));
 
+            // compute and store base scale to keep sprite sizes stable
+            float textureHeight = spr.getLocalBounds().height;
+            float targetHeight = 150.f; // chosen target height for enemy images
+            float baseScale = (textureHeight > 0.f) ? (targetHeight / textureHeight) : 1.0f;
+            spr.setScale(baseScale, baseScale);
+            enemyBaseScales.push_back(baseScale);
+
             enemySprites.push_back(spr);
         }
 
@@ -487,6 +551,9 @@ void GameStateBattle::update(const float dt) {
 
         std::sort(turnQueue.begin(), turnQueue.end(),
         [](Player* a, Player* b) { return a->getAGI() > b->getAGI(); });
+
+        // ensure currentEnemyIndex is valid
+        currentEnemyIndex = getFirstLivingEnemy();
     }
 
     // Highlight the active player's UI box
@@ -556,6 +623,93 @@ void GameStateBattle::update(const float dt) {
             }
         }
     }
+
+    // ---- Enemy AI turns
+    // We only want to process an enemy's turn once when they become the active actor.
+    // We'll use a static pointer to remember who acted last update.
+    static Player* lastActor = nullptr;
+    if (!turnQueue.empty()) {
+        Player* currentActor = turnQueue.front();
+        if (currentActor != lastActor) {
+            // new actor this frame
+            lastActor = currentActor;
+
+            // If currentActor is an NPC from enemies (i.e., an enemy), perform AI action immediately
+            bool actorIsEnemy = (std::find(party.begin(), party.end(), currentActor) == party.end());
+            if (actorIsEnemy) {
+                // Find which enemy in our enemies vector this corresponds to
+                NPC* actingEnemy = nullptr;
+                for (auto& e : enemies) {
+                    if (&e == currentActor) { actingEnemy = &e; break; }
+                }
+
+                if (actingEnemy && !actingEnemy->isDead()) {
+                    // Choose random living party member target
+                    std::vector<Player*> livingTargets;
+                    for (auto* p : party) if (p && p->getHP() > 0) livingTargets.push_back(p);
+
+                    if (!livingTargets.empty()) {
+                        std::uniform_int_distribution<> dis(0, static_cast<int>(livingTargets.size()) - 1);
+                        Player* target = livingTargets[dis(globalRng())];
+
+                        // Use the "Attack" skill if present; fallback baseAtk/crit defaults
+                        const Skill* atkSkill = findSkillByName(this->game, "Attack");
+                        int baseAtk = atkSkill ? atkSkill->getBaseAtk() : 15;
+                        float critChance = atkSkill ? atkSkill->getCritRate() : 0.05f;
+
+                        // compute damage using attacking enemy's physATK (enemy inherits Player)
+                        int damage = actingEnemy->physATK(1.0f, baseAtk, false);
+
+                        // crit roll (simple)
+                        std::uniform_real_distribution<float> cr(0.f, 1.f);
+                        bool isCrit = (cr(globalRng()) < critChance);
+                        if (isCrit) {
+                            damage = static_cast<int>(damage * 1.5f);
+                        }
+
+                        target->takeDamage(damage);
+
+                        // spawn damage popup above target's approximate screen position
+                        DamagePopup dp;
+                        dp.text.setFont(font);
+                        dp.text.setCharacterSize(28);
+                        dp.text.setString((isCrit ? std::string("CRIT ") : std::string("")) + std::to_string(damage));
+                        dp.text.setFillColor(sf::Color::Red);
+                        // approximate target screen position: we only have player icons; place near corresponding icon
+                        // We'll try to place popup above the first matching playerIcon (best effort)
+                        sf::Vector2f popupPos(200.f, 700.f); // fallback
+                        for (size_t i = 0; i < playerIcons.size(); ++i) {
+                            if (i < party.size() && party[i] == target) {
+                                popupPos = playerIcons[i].getPosition() - sf::Vector2f(0.f, 40.f);
+                                break;
+                            }
+                        }
+                        dp.text.setPosition(popupPos);
+                        dp.velocity = sf::Vector2f(0.f, -30.f);
+                        dp.life = 1.0f;
+                        damagePopups.push_back(dp);
+
+                        // message
+                        battleText.setString(actingEnemy->getName() + " attacked " + target->getName() + " for " + std::to_string(damage) + "!");
+                    }
+
+                    // rotate queue (end enemy's turn)
+                    if (!turnQueue.empty()) {
+                        Player* front = turnQueue.front();
+                        turnQueue.pop_front();
+                        turnQueue.push_back(front);
+                    }
+                } else {
+                    // If acting enemy is dead or invalid, just pop them out
+                    for (auto it = turnQueue.begin(); it != turnQueue.end();) {
+                        if (*it == actingEnemy) it = turnQueue.erase(it);
+                        else ++it;
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 // Input Handling
@@ -583,6 +737,20 @@ void GameStateBattle::handleInput() {
                     turnQueue.push_back(front);
                 }
             }
+            else if (event.key.code == sf::Keyboard::Right) {
+                // one-press next living enemy
+                if (!enemies.empty()) {
+                    int next = getNextLivingEnemy(currentEnemyIndex);
+                    if (next >= 0) currentEnemyIndex = next;
+                }
+            }
+            else if (event.key.code == sf::Keyboard::Left) {
+                // one-press prev living enemy
+                if (!enemies.empty()) {
+                    int prev = getPrevLivingEnemy(currentEnemyIndex);
+                    if (prev >= 0) currentEnemyIndex = prev;
+                }
+            }
         }
 
         // --- Mouse click events
@@ -591,39 +759,116 @@ void GameStateBattle::handleInput() {
             if (currentMenuState == BattleMenuState::Main) {
                 if (attackButton.wasClicked(this->game->window)) {
 
-                    if (!turnQueue.empty()) {
-                        Player* attacker = turnQueue.front();
-                
-                        // find first alive enemy
-                        NPC* target = nullptr;
-                        for (auto& e : enemies) {
-                            if (e.getHP() > 0) {
-                                target = &e;
-                                break;
-                            }
-                        }
-                
-                        if (target) {
-                            // damage formula
-                            int damage = std::max(1, attacker->getSTR() - target->getVIT()/2);
-                        
-                            // prefer takeDamage()
-                            target->takeDamage(damage);
-                        
-                            // update battle text
-                            battleText.setString(
-                                attacker->getName() + " attacked " +
-                                target->getName() + " dealing " +
-                                std::to_string(damage) + " damage!"
-                            );
-                        
-                            // end turn immediately
-                            Player* front = turnQueue.front();
-                            turnQueue.pop_front();
-                            turnQueue.push_back(front);
-                        }                        
+                    if (turnQueue.empty()) {
+                        battleText.setString("No one can act right now.");
+                        return;
                     }
-                }                
+
+                    Player* attacker = turnQueue.front();     // the actor whose turn it is
+                    
+                    // ensure the actor is one of the party members (players)
+                    bool isPartyActor = (std::find(party.begin(), party.end(), attacker) != party.end());
+                    if (!isPartyActor) {
+                        battleText.setString("It's not your turn!");
+                        return;
+                    }
+
+                    // find valid target (selected enemy)
+                    if (enemies.empty()) {
+                        battleText.setString("No enemies to target.");
+                        return;
+                    }
+
+                    int targetIdx = currentEnemyIndex;
+                    if (targetIdx < 0 || targetIdx >= static_cast<int>(enemies.size())) {
+                        targetIdx = getFirstLivingEnemy();
+                        if (targetIdx < 0) {
+                            battleText.setString("No enemies left.");
+                            return;
+                        }
+                    }
+
+                    NPC* target = &enemies[targetIdx];
+                    if (target->isDead()) {
+                        int newIdx = getFirstLivingEnemy();
+                        if (newIdx < 0) {
+                            battleText.setString("All enemies defeated.");
+                            return;
+                        }
+                        currentEnemyIndex = newIdx;
+                        target = &enemies[currentEnemyIndex];
+                    }
+
+                    // Use the "Attack" skill if present; fallback baseAtk/crit defaults
+                    const Skill* atkSkill = findSkillByName(this->game, "Attack");
+                    int baseAtk = atkSkill ? atkSkill->getBaseAtk() : 15;
+                    float critChance = atkSkill ? atkSkill->getCritRate() : 0.05f;
+
+                    // compute damage using attacking player's physATK (player inherits Player)
+                    int damage = attacker->physATK(1.0f, baseAtk, false);
+
+                    // crit roll
+                    std::uniform_real_distribution<float> cr(0.f, 1.f);
+                    bool isCrit = (cr(globalRng()) < critChance);
+                    if (isCrit) damage = static_cast<int>(damage * 1.5f);
+
+                    target->takeDamage(damage);
+
+                    // spawn damage popup above enemy
+                    DamagePopup dp;
+                    dp.text.setFont(font);
+                    dp.text.setCharacterSize(32);
+                    dp.text.setString((isCrit ? std::string("CRIT ") : std::string("")) + std::to_string(damage));
+                    dp.text.setFillColor(isCrit ? sf::Color::Yellow : sf::Color::White);
+
+                    // place popup near enemy sprite center
+                    sf::FloatRect eb = enemySprites[targetIdx].getGlobalBounds();
+                    dp.text.setPosition(eb.left + eb.width / 2.f - dp.text.getGlobalBounds().width / 2.f,
+                                        eb.top - 10.f);
+                    dp.velocity = sf::Vector2f(0.f, -30.f);
+                    dp.life = 1.0f;
+                    damagePopups.push_back(dp);
+
+                    // update battle text
+                    battleText.setString(
+                        attacker->getName() + " attacked " +
+                        target->getName() + " dealing " +
+                        std::to_string(damage) + " damage!"
+                    );
+
+                    // if enemy died, announce and remove them from turnQueue so they won't act
+                    if (target->isDead()) {
+                        battleText.setString(battleText.getString() + "\n" + target->getName() + " was defeated!");
+                        // Remove any references to this dead enemy from turnQueue
+                        for (auto it = turnQueue.begin(); it != turnQueue.end(); ) {
+                            if (*it == target) it = turnQueue.erase(it);
+                            else ++it;
+                        }
+
+                        // check if all enemies dead
+                        bool anyAlive = false;
+                        for (auto& e : enemies) {
+                            if (!e.isDead()) { anyAlive = true; break; }
+                        }
+                        if (!anyAlive) {
+                            battleOver = true;
+                            return;
+                        } else {
+                            // ensure currentEnemyIndex points to a living enemy
+                            int first = getFirstLivingEnemy();
+                            if (first >= 0) currentEnemyIndex = first;
+                        }
+                    }
+
+                    // end turn (rotate queue) - only if front still exists in queue
+                    if (!turnQueue.empty()) {
+                        Player* front = turnQueue.front();
+                        turnQueue.pop_front();
+                        turnQueue.push_back(front);
+                    }
+
+                    return; // end click event
+                }                           
                 else if (skillButton.wasClicked(this->game->window)) {
                     if (!turnQueue.empty()) {
                         Player* active = turnQueue.front();
@@ -864,4 +1109,33 @@ void GameStateBattle::buildSkillButtonsFor(Player* character) {
         skillButtons.emplace_back(s->getName(), sf::Vector2f(x, y), 28, game, sf::Color::White);
         visibleIndex++;
     }    
+}
+
+int GameStateBattle::getFirstLivingEnemy() {
+    if (enemies.empty()) return -1;
+    for (int i = 0; i < static_cast<int>(enemies.size()); ++i)
+        if (!enemies[i].isDead()) return i;
+    return -1; // fallback: none alive
+}
+
+int GameStateBattle::getNextLivingEnemy(int i) {
+    if (enemies.empty()) return -1;
+    int start = i;
+    if (start < 0 || start >= static_cast<int>(enemies.size())) start = 0;
+    int idx = start;
+    do {
+        idx = (idx + 1) % static_cast<int>(enemies.size());
+    } while (enemies[idx].isDead() && idx != start);
+    return idx;
+}
+
+int GameStateBattle::getPrevLivingEnemy(int i) {
+    if (enemies.empty()) return -1;
+    int start = i;
+    if (start < 0 || start >= static_cast<int>(enemies.size())) start = 0;
+    int idx = start;
+    do {
+        idx = (idx - 1 + static_cast<int>(enemies.size())) % static_cast<int>(enemies.size());
+    } while (enemies[idx].isDead() && idx != start);
+    return idx;
 }
