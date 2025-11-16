@@ -118,11 +118,15 @@ private:
     std::vector<sf::Text> turnEnemyNames; 
     std::vector<sf::RectangleShape> enemyNameBackgrounds;
     int currentEnemyIndex = 0;
-    
+
     // Enemy helpers
     int getFirstLivingEnemy();
     int getNextLivingEnemy(int index);
     int getPrevLivingEnemy(int index);
+    std::vector<sf::RectangleShape> enemyHealthBarsBack;
+    std::vector<sf::RectangleShape> enemyHealthBarsFront;
+    void cleanupDeadEnemies();
+
 
 
         

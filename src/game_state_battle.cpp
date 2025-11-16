@@ -400,9 +400,9 @@ void GameStateBattle::draw(const float dt) {
     }   
     
     // Draw Enemies
-    for (size_t i = 0; i < enemySprites.size(); ++i)
+    for (size_t i = 0; i < enemies.size(); ++i)
     {
-        // Apply scaling visual for the selected enemy
+        // Apply scaling for selection
         if (i < enemyBaseScales.size()) {
             float base = enemyBaseScales[i];
             if (static_cast<int>(i) == currentEnemyIndex) {
@@ -412,21 +412,46 @@ void GameStateBattle::draw(const float dt) {
             }
         }
 
+        // Draw enemy sprite
         this->game->window.draw(enemySprites[i]);
-        
+
         // Highlight if it's their turn
         if (!turnQueue.empty() && turnQueue.front() == &enemies[i]) {
             sf::RectangleShape highlightBox;
             sf::FloatRect bounds = enemySprites[i].getGlobalBounds();
             highlightBox.setSize(sf::Vector2f(bounds.width + 10.f, bounds.height + 10.f));
             highlightBox.setPosition(bounds.left - 5.f, bounds.top - 5.f);
-            highlightBox.setFillColor(sf::Color(255, 255, 255, 50)); // translucent white
+            highlightBox.setFillColor(sf::Color(255, 255, 255, 50));
             highlightBox.setOutlineColor(sf::Color::Red);
             highlightBox.setOutlineThickness(2.f);
-
             this->game->window.draw(highlightBox);
         }
+
+        // -----------------------
+        // Draw Enemy HP Bar Here
+        // -----------------------
+        if (!enemies[i].isDead()) {
+            float hpPerc = (float)enemies[i].getHP() / (float)enemies[i].getmaxHP();
+            sf::FloatRect eBounds = enemySprites[i].getGlobalBounds();
+
+            float barWidth  = eBounds.width;
+            float barHeight = 6.f;
+
+            // Background
+            sf::RectangleShape bg(sf::Vector2f(barWidth, barHeight));
+            bg.setFillColor(sf::Color(0, 0, 0, 180));
+            bg.setPosition(eBounds.left, eBounds.top - 12.f);
+
+            // HP fill
+            sf::RectangleShape fg(sf::Vector2f(barWidth * hpPerc, barHeight));
+            fg.setFillColor(sf::Color(200, 40, 40));
+            fg.setPosition(eBounds.left, eBounds.top - 12.f);
+
+            this->game->window.draw(bg);
+            this->game->window.draw(fg);
+        }
     }
+
 
     // Draw Turn Panel
     this->game->window.draw(turnPanelBackground);
@@ -691,6 +716,7 @@ void GameStateBattle::update(const float dt) {
 
                         // message
                         battleText.setString(actingEnemy->getName() + " attacked " + target->getName() + " for " + std::to_string(damage) + "!");
+                        cleanupDeadEnemies();
                     }
 
                     // rotate queue (end enemy's turn)
@@ -790,6 +816,8 @@ void GameStateBattle::handleInput() {
 
                     NPC* target = &enemies[targetIdx];
                     if (target->isDead()) {
+                        battleText.setString(battleText.getString() + "\n" + target->getName() + " was defeated!");
+                        cleanupDeadEnemies();
                         int newIdx = getFirstLivingEnemy();
                         if (newIdx < 0) {
                             battleText.setString("All enemies defeated.");
@@ -1138,4 +1166,28 @@ int GameStateBattle::getPrevLivingEnemy(int i) {
         idx = (idx - 1 + static_cast<int>(enemies.size())) % static_cast<int>(enemies.size());
     } while (enemies[idx].isDead() && idx != start);
     return idx;
+}
+
+void GameStateBattle::cleanupDeadEnemies() {
+    // Remove enemy sprites, names, data, turnQueue refs.
+    for (int i = (int)enemies.size() - 1; i >= 0; --i) {
+        if (enemies[i].isDead()) {
+
+            // Remove sprite in same index
+            if (i < (int)enemySprites.size())
+                enemySprites.erase(enemySprites.begin() + i);
+
+            // Remove from turnQueue
+            for (auto it = turnQueue.begin(); it != turnQueue.end();) {
+                if (*it == &enemies[i]) it = turnQueue.erase(it);
+                else ++it;
+            }
+
+            // Actually remove enemy object
+            enemies.erase(enemies.begin() + i);
+        }
+    }
+
+    // Fix targeting index
+    currentEnemyIndex = getFirstLivingEnemy();
 }
