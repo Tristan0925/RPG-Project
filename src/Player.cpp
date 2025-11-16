@@ -240,11 +240,16 @@ int Player::getVIT() const { return VIT; }
  int Player::physATK(float scalar, int baseAtk, bool isCrit){ //No one can be weak to phys, hopefully somehow balances out the weakness of magic attacks over time
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> damageDifferential(-5,5); //damage has a +/- 5% added to it, to keep damage from being deterministic
+    std::uniform_real_distribution<float> damageDifferential(-0.05f, 0.05f); //damage has a +/- 5% added to it, to keep damage from being deterministic
     int damageDifference = damageDifferential(gen);
-    int damage = ((LVL + STR) * baseAtk / 15);
-    if (isCrit) return (int) (1.5 * (damage + (damage * (damageDifference))));
-    else return (damage + (damage * (damageDifference)));
+    int raw = ((static_cast<float>(LVL) + static_cast<float>(STR)) * static_cast<float>(baseAtk) / 15.0f) * scalar;
+    float varied = raw + raw * damageDifference;
+    if (isCrit) varied *= 1.5f;
+
+    int damage = static_cast<int>(std::round(varied));
+
+    if (damage < 0) damage = 0;
+    return damage;
  }
 
  int Player::magATK(float scalar, int baseAtk, int limit, int correction, bool isWeak){ //super complicated formulas which essentially says magic gets weaker over time (past lvl 30 is where it starts to fall off)
