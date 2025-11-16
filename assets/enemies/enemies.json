@@ -15,8 +15,8 @@
     {
       "name": "Pyro Jack",
       "sprite": "assets/enemies/jack_o_lantern.png",
-      "level": 5,
-      "STR": 8,
+      "level": 3,
+      "STR": 3,
       "VIT": 5,
       "MAG": 2,
       "AGI": 3,

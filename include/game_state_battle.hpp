@@ -145,6 +145,22 @@ private:
 
     BattleMenuState currentMenuState = BattleMenuState::Main;
 
+    // Game over Menu State
+    enum class GameOverMenuState {
+        Main
+    };
+
+    bool gameOver = false;
+    GameOverMenuState gameOverMenuState;
+    sf::Text gameOverText;
+    Button quitButton;
+    Button loadButton;
+    bool loadMenuActive = false;
+    Button slot1;
+    Button slot2;
+    Button slot3;
+
+
     // UI tuning
     float ui_startX = 550.f;
     float ui_startY = 800.f;

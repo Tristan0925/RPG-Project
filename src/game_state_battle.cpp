@@ -48,7 +48,12 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     itemButton("Item",   {150.f, 880.f}, 30, game, sf::Color::White),
     guardButton("Guard", {350.f, 800.f}, 30, game, sf::Color::White),
     escapeButton("Escape", {350.f, 840.f}, 30, game, sf::Color::White),
-    backButton("Back", {350.f, 1000.f}, 30, game, sf::Color::White)
+    backButton("Back", {350.f, 1000.f}, 30, game, sf::Color::White),
+    quitButton("Quit", {400.f, 400.f}, 32, game, sf::Color::White),
+    loadButton("Load Save", {400.f, 500.f}, 32, game, sf::Color::White),
+    slot1("Slot 1", {450.f, 400.f}, 34, game, sf::Color::White),
+    slot2("Slot 2", {450.f, 450.f}, 34, game, sf::Color::White),
+    slot3("Slot 3", {450.f, 500.f}, 34, game, sf::Color::White)
 {
     this->game = game;
     this->player = &game->player;
@@ -234,8 +239,6 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
         currentMusic.play();
     }
     
-    // Back button (reconfigure if you want different color)
-    backButton = Button("Back", {400.f, 1000.f}, 30, this->game, sf::Color(90, 90, 90));
 
     // --- Populate Skill Buttons (filtered by unlock level, 2-column layout) ---
     skillButtons.clear();
@@ -352,6 +355,15 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     pmember4Name.setCharacterSize(25);
     pmember4Name.setFillColor(sf::Color(130,25,13));
 
+    // Game over initialization
+    gameOverText.setFont(font);
+    gameOverText.setString("GAME OVER");
+    gameOverText.setCharacterSize(48);
+    gameOverText.setFillColor(sf::Color::Red);
+    gameOverText.setPosition(400.f, 200.f); // adjust for center
+    gameOver = false;
+    gameOverMenuState = GameOverMenuState::Main;
+
 }
 
 // Results Screen
@@ -366,21 +378,28 @@ void GameStateBattle::displayResultsScreen(bool displayResults){
 
 // Draw 
 void GameStateBattle::draw(const float dt) {
-    if (battleOver){
-        if (!playResultsMusic){
+    // Always clear the window first
+    this->game->window.clear();
+
+    // Battle finished / results screen
+    if (battleOver) {
+        if (!playResultsMusic) {
             currentMusic.stop();
-            if (!currentMusic.openFromFile("./assets/music/battleresults.mp3")) std::cout << "Could not load music file" << std::endl;
+            if (!currentMusic.openFromFile("./assets/music/battleresults.mp3"))
+                std::cout << "Could not load music file" << std::endl;
             else {
                 currentMusic.setLoop(true);
                 currentMusic.play();
                 playResultsMusic = true;
-                }
-}
-         displayResultsScreen(true);
-    } 
+            }
+        }
 
-    else{
-    this->game->window.clear();
+        displayResultsScreen(true);
+        this->game->window.display(); // commit the frame
+        return;
+    }
+
+    // --- Draw normal battle scene
     this->game->window.draw(background);
     this->game->window.draw(enemyBackground);
     this->game->window.draw(textBox);
@@ -388,34 +407,29 @@ void GameStateBattle::draw(const float dt) {
 
     // Draw party
     for (size_t i = 0; i < party.size(); ++i) {
-        // safety checks
-        if (i >= playerBackgrounds.size() || i >= playerIcons.size() || i >= hpBars.size() || i >= mpBars.size())
+        if (i >= playerBackgrounds.size() || i >= playerIcons.size() || 
+            i >= hpBars.size() || i >= mpBars.size())
             continue;
+
         this->game->window.draw(playerBackgrounds[i]);
         this->game->window.draw(playerIcons[i]);
         this->game->window.draw(hpBars[i]);
         this->game->window.draw(mpBars[i]);
         this->game->window.draw(hpTexts[i]);
         this->game->window.draw(mpTexts[i]);
-    }   
-    
-    // Draw Enemies
-    for (size_t i = 0; i < enemies.size(); ++i)
-    {
-        // Apply scaling for selection
+    }
+
+    // Draw enemies
+    for (size_t i = 0; i < enemies.size(); ++i) {
         if (i < enemyBaseScales.size()) {
             float base = enemyBaseScales[i];
-            if (static_cast<int>(i) == currentEnemyIndex) {
-                enemySprites[i].setScale(base * 1.15f, base * 1.15f);
-            } else {
-                enemySprites[i].setScale(base, base);
-            }
+            enemySprites[i].setScale((static_cast<int>(i) == currentEnemyIndex) ? base * 1.15f : base,
+                                     (static_cast<int>(i) == currentEnemyIndex) ? base * 1.15f : base);
         }
 
-        // Draw enemy sprite
         this->game->window.draw(enemySprites[i]);
 
-        // Highlight if it's their turn
+        // Highlight active enemy
         if (!turnQueue.empty() && turnQueue.front() == &enemies[i]) {
             sf::RectangleShape highlightBox;
             sf::FloatRect bounds = enemySprites[i].getGlobalBounds();
@@ -427,23 +441,16 @@ void GameStateBattle::draw(const float dt) {
             this->game->window.draw(highlightBox);
         }
 
-        // -----------------------
-        // Draw Enemy HP Bar Here
-        // -----------------------
+        // Enemy HP bar
         if (!enemies[i].isDead()) {
             float hpPerc = (float)enemies[i].getHP() / (float)enemies[i].getmaxHP();
             sf::FloatRect eBounds = enemySprites[i].getGlobalBounds();
 
-            float barWidth  = eBounds.width;
-            float barHeight = 6.f;
-
-            // Background
-            sf::RectangleShape bg(sf::Vector2f(barWidth, barHeight));
+            sf::RectangleShape bg(sf::Vector2f(eBounds.width, 6.f));
             bg.setFillColor(sf::Color(0, 0, 0, 180));
             bg.setPosition(eBounds.left, eBounds.top - 12.f);
 
-            // HP fill
-            sf::RectangleShape fg(sf::Vector2f(barWidth * hpPerc, barHeight));
+            sf::RectangleShape fg(sf::Vector2f(eBounds.width * hpPerc, 6.f));
             fg.setFillColor(sf::Color(200, 40, 40));
             fg.setPosition(eBounds.left, eBounds.top - 12.f);
 
@@ -452,51 +459,70 @@ void GameStateBattle::draw(const float dt) {
         }
     }
 
+    // Game Over buttons
+    if (gameOver) {
+        if (!loadMenuActive) {
+            quitButton.draw(this->game->window);
+            loadButton.draw(this->game->window);
 
-    // Draw Turn Panel
-    this->game->window.draw(turnPanelBackground);
+            if (quitButton.isHovered(this->game->window))
+                this->game->window.draw(quitButton.getUnderline());
+            if (loadButton.isHovered(this->game->window))
+                this->game->window.draw(loadButton.getUnderline());
+        } else {
+            // Load slots
+            slot1.draw(this->game->window);
+            slot2.draw(this->game->window);
+            slot3.draw(this->game->window);
+            backButton.draw(this->game->window);
 
-
-    // Draw Player Portraits
-    for (size_t i = 0; i < turnPortraitBoxes.size(); ++i) {
-        // Only draw player portraits and boxes if they have a non-zero size
-        if (turnPortraitBoxes[i].getSize().x > 0.f) {
-            this->game->window.draw(turnPortraitBoxes[i]);
-            if (i < turnPortraitSprites.size() && turnPortraitSprites[i].getTexture() != nullptr) {
-                this->game->window.draw(turnPortraitSprites[i]);
-            }
+            if (slot1.isHovered(this->game->window)) this->game->window.draw(slot1.getUnderline());
+            if (slot2.isHovered(this->game->window)) this->game->window.draw(slot2.getUnderline());
+            if (slot3.isHovered(this->game->window)) this->game->window.draw(slot3.getUnderline());
+            if (backButton.isHovered(this->game->window)) this->game->window.draw(backButton.getUnderline());
         }
     }
 
-    // Draw Enemy Names
+    // Turn panel and portraits
+    this->game->window.draw(turnPanelBackground);
+
+    for (size_t i = 0; i < turnPortraitBoxes.size(); ++i) {
+        if (turnPortraitBoxes[i].getSize().x > 0.f) {
+            this->game->window.draw(turnPortraitBoxes[i]);
+            if (i < turnPortraitSprites.size() && turnPortraitSprites[i].getTexture() != nullptr)
+                this->game->window.draw(turnPortraitSprites[i]);
+        }
+    }
+
+    // --- Enemy names
     for (size_t i = 0; i < enemyNameBackgrounds.size(); ++i) {
         this->game->window.draw(enemyNameBackgrounds[i]);
-        if (i < turnEnemyNames.size()) {
+        if (i < turnEnemyNames.size())
             this->game->window.draw(turnEnemyNames[i]);
-        }
-    }   
+    }
 
-    // Draw floating damage popups
+    // Floating damage popups
     for (auto& dp : damagePopups) {
         this->game->window.draw(dp.text);
     }
 
+    // Battle menu buttons
     if (currentMenuState == BattleMenuState::Main) {
         attackButton.draw(this->game->window);
         skillButton.draw(this->game->window);
         itemButton.draw(this->game->window);
         guardButton.draw(this->game->window);
         escapeButton.draw(this->game->window);
-    }
-    else if (currentMenuState == BattleMenuState::Skill) {
+    } else if (currentMenuState == BattleMenuState::Skill) {
         for (auto& b : skillButtons) b.draw(this->game->window);
         backButton.draw(this->game->window);
-    }
-    else if (currentMenuState == BattleMenuState::Item) {
+    } else if (currentMenuState == BattleMenuState::Item) {
         for (auto& b : itemButtons) b.draw(this->game->window);
         backButton.draw(this->game->window);
-    }   
-}
+    }
+
+    // Commit the frame
+    this->game->window.display();
 }
 
 
@@ -735,7 +761,12 @@ void GameStateBattle::update(const float dt) {
             }
         }
     }
+    if (player->getHP() <= 0 && !gameOver) {
+        gameOver = true;
 
+        // Stop battle music
+        currentMusic.stop();
+    }
 }
 
 // Input Handling
@@ -749,6 +780,49 @@ void GameStateBattle::handleInput() {
             return;
         }
 
+        // --- Game Over input
+        if (gameOver) {
+
+            // --- Mouse click events for Game Over
+            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+
+                if (!loadMenuActive) { 
+                    // Main Game Over buttons
+                    if (quitButton.wasClicked(this->game->window)) {
+                        this->game->window.close();
+                        return;
+                    }
+                    else if (loadButton.wasClicked(this->game->window)) {
+                        loadMenuActive = true; // show slot menu
+                    }
+                } 
+                else { 
+                    // Slot menu active
+                    if (slot1.wasClicked(this->game->window)) {
+                        this->game->player.loadFromFile("save1.json", this->game->skillMasterList);
+                        loadMenuActive = false;
+                        gameOver = false; // optionally reset game over state
+                    }
+                    else if (slot2.wasClicked(this->game->window)) {
+                        this->game->player.loadFromFile("save2.json", this->game->skillMasterList);
+                        loadMenuActive = false;
+                        gameOver = false;
+                    }
+                    else if (slot3.wasClicked(this->game->window)) {
+                        this->game->player.loadFromFile("save3.json", this->game->skillMasterList);
+                        loadMenuActive = false;
+                        gameOver = false;
+                    }
+                    else if (backButton.wasClicked(this->game->window)) {
+                        loadMenuActive = false; // return to main Game Over buttons
+                    }
+                }
+
+            }
+
+            continue; // skip normal battle input while gameOver
+        }
+
         // --- Key press events
         if (event.type == sf::Event::KeyPressed) {
             if (event.key.code == sf::Keyboard::Enter) {
@@ -756,7 +830,6 @@ void GameStateBattle::handleInput() {
                 return;
             }
             else if (event.key.code == sf::Keyboard::Space) {
-                // rotate queue: move front to back
                 if (!turnQueue.empty()) {
                     Player* front = turnQueue.front();
                     turnQueue.pop_front();
@@ -764,14 +837,12 @@ void GameStateBattle::handleInput() {
                 }
             }
             else if (event.key.code == sf::Keyboard::Right) {
-                // one-press next living enemy
                 if (!enemies.empty()) {
                     int next = getNextLivingEnemy(currentEnemyIndex);
                     if (next >= 0) currentEnemyIndex = next;
                 }
             }
             else if (event.key.code == sf::Keyboard::Left) {
-                // one-press prev living enemy
                 if (!enemies.empty()) {
                     int prev = getPrevLivingEnemy(currentEnemyIndex);
                     if (prev >= 0) currentEnemyIndex = prev;
@@ -779,7 +850,7 @@ void GameStateBattle::handleInput() {
             }
         }
 
-        // --- Mouse click events
+        // --- Mouse click events for battle input
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
 
             if (currentMenuState == BattleMenuState::Main) {
@@ -864,10 +935,9 @@ void GameStateBattle::handleInput() {
                         std::to_string(damage) + " damage!"
                     );
 
-                    // if enemy died, announce and remove them from turnQueue so they won't act
+                    // if enemy died, remove them from turnQueue
                     if (target->isDead()) {
                         battleText.setString(battleText.getString() + "\n" + target->getName() + " was defeated!");
-                        // Remove any references to this dead enemy from turnQueue
                         for (auto it = turnQueue.begin(); it != turnQueue.end(); ) {
                             if (*it == target) it = turnQueue.erase(it);
                             else ++it;
@@ -882,13 +952,12 @@ void GameStateBattle::handleInput() {
                             battleOver = true;
                             return;
                         } else {
-                            // ensure currentEnemyIndex points to a living enemy
                             int first = getFirstLivingEnemy();
                             if (first >= 0) currentEnemyIndex = first;
                         }
                     }
 
-                    // end turn (rotate queue) - only if front still exists in queue
+                    // end turn (rotate queue)
                     if (!turnQueue.empty()) {
                         Player* front = turnQueue.front();
                         turnQueue.pop_front();
@@ -933,6 +1002,8 @@ void GameStateBattle::handleInput() {
         }
     }
 }
+
+  
 
 // Loading random enemies
 std::vector<NPC> GameStateBattle::loadRandomEnemies(int count) {
