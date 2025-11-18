@@ -47,14 +47,36 @@ private:
     std::array<sf::Text, 4> levelUpTexts;
 
     //Text for Level Up!
-    sf::Text playerNameforLevelUp;
+    sf::Text nameOfCharacterForLevelUp;
     sf::Text levelUpHeaderText;
+
     sf::Text strength;
+    int strengthVal = 99;
+    float strengthValPercent = (float)strengthVal / 99;
+
     sf::Text vitality;
+    int vitalityVal = 23;
+    float vitalityValPercent = (float)vitalityVal / 99;
+
     sf::Text agility;
+    int agilityVal = 65;
+    float agilityValPercent = (float)agilityVal / 99;
+
     sf::Text luck;
+    int luckVal = 42;
+    float luckValPercent = (float)luckVal / 99;
+
     sf::Text maxHp;
+    int maxHpVal = 0;
+    int recalculatedMaxHp = maxHpVal;
+
     sf::Text maxMp;
+    int maxMpVal = 0;
+    int recalculatedMaxMp = recalculatedMaxMp;
+
+    sf::Text distributionText;
+
+
 
 
     // Shapes
@@ -79,7 +101,6 @@ private:
     std::array<sf::RectangleShape, 4> expBarBackgrounds;
 
     //Shapes for LEVEL UP! screen
-    sf::RectangleShape headerBackground;
     sf::RectangleShape nameplateBackground;
     sf::RectangleShape nameplate;
     std::array<sf::RectangleShape, 4> statBoxes;
@@ -91,9 +112,11 @@ private:
     sf::RectangleShape agBar;
     sf::RectangleShape luBar;
     sf::RectangleShape pointsToDistributeTextbox;
+    float maxBarSize = 99.0;
 
-    //Flag that lets me resuse the array for sprites + portraitbackgrounds already used in the main battle 
+    //Flags that lets me reuse certain parts of the UI 
     bool reuseArrays = false;
+    bool reuseTextforLevelUp = false;
 
 
     // Level Up Flags
@@ -189,9 +212,9 @@ private:
     bool pressSpaceToContinue = false;
     bool distributionFinished = false;
 
-    int totalXpGained = 500;
+    int totalXpGained = 0;
     int XPdecrementer = 0; //counts how many times the loop has iterated so we can have a cool next exp counter.
-    
+    int skillPoints = 0; 
 
 public:
     GameStateBattle(Game* game, bool isBossBattle);

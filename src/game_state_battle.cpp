@@ -375,6 +375,91 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
         expBarBackgrounds[i].setPosition(175.0f, expOffsetY + 100.0f*i);
     }
     // set up variables for the LEVEL UP! screen
+    nameplateBackground.setSize({900.0f, 60.0f});
+    nameplateBackground.setFillColor(sf::Color(184, 62, 48));
+    nameplateBackground.setPosition(100.0f, 300.0f);
+
+    nameplate.setSize({300.0f,58.0f});
+    nameplate.setFillColor(sf::Color::Black);
+    nameplate.setPosition(400.0f, 301.0f);
+
+    nameOfCharacterForLevelUp.setFont(font);
+    nameOfCharacterForLevelUp.setString("Placeholder Placeholder"); //adjust for who is leveling up in update
+    nameOfCharacterForLevelUp.setCharacterSize(40);
+    nameOfCharacterForLevelUp.setPosition(500.0f, 302.0f);
+    
+    for (size_t x = 0; x < 4; x++){
+        statBoxes[x].setSize({100.0f, 40.0f});
+        statBoxes[x].setFillColor(sf::Color(184,62,48));
+        statBoxes[x].setPosition(100.0f, 365.0f + 43.0f*x );
+        statBackgrounds[x].setSize({500.0f,40.0f});
+        statBackgrounds[x].setFillColor(sf::Color::Transparent);
+        statBackgrounds[x].setOutlineColor(sf::Color(255,0,0,50));
+        statBackgrounds[x].setOutlineThickness(1.0f);
+        statBackgrounds[x].setPosition(200.0f, 365.0f + 43.0f*x);
+    }
+
+    for (size_t x = 0; x < 2; x++){
+        maxStatBoxes[x].setSize({100.0f, 40.0f});
+        maxStatBoxes[x].setFillColor(sf::Color(184,62,48));
+        maxStatBoxes[x].setPosition(710.0f, 365.0f + 43.0f*x);
+        maxStatBackgrounds[x].setSize({190.0f,40.0f});
+        maxStatBackgrounds[x].setFillColor(sf::Color::Transparent);
+        maxStatBackgrounds[x].setOutlineColor(sf::Color(255,0,0,50));
+        maxStatBackgrounds[x].setOutlineThickness(1.0f);
+        maxStatBackgrounds[x].setPosition(810.0f, 365.0f + 43.0f*x);
+    }
+    
+    strength.setFont(font);
+    strength.setString("ST             " + std::to_string(strengthVal));
+    strength.setPosition(100.0f, 365.0f);
+
+    stBar.setSize({500.0f * strengthValPercent, 10.0f});
+    stBar.setFillColor(sf::Color(255,165,0));
+    stBar.setPosition(200.0f, 380.0f);
+
+    vitality.setFont(font);
+    vitality.setString("VI              " + std::to_string(vitalityVal));
+    vitality.setPosition(100.0f, 408.0f);
+
+    viBar.setSize({500.0f * vitalityValPercent, 10.0f});
+    viBar.setFillColor(sf::Color(255,165,0));
+    viBar.setPosition(200.0f, 423.0f);
+
+    agility.setFont(font);
+    agility.setString("AG             " + std::to_string(agilityVal));
+    agility.setPosition(100.0f, 451.0f);
+
+    agBar.setSize({500.0f * agilityValPercent, 10.0f});
+    agBar.setFillColor(sf::Color(255,165,0));
+    agBar.setPosition(200.0f, 466.0f);
+
+    luck.setFont(font);
+    luck.setString("LU             " + std::to_string(luckVal));
+    luck.setPosition(100.0f, 494.0f);
+
+    luBar.setSize({500.0f * luckValPercent, 10.0f});
+    luBar.setFillColor(sf::Color(255,165,0));
+    luBar.setPosition(200.0f, 509.0f);
+
+    maxHp.setFont(font);
+    maxHp.setString("Max HP                 " + std::to_string(maxHpVal) + "  ==>  " + std::to_string(recalculatedMaxHp));
+    maxHp.setPosition(730.0f, 365.0f);
+
+    maxMp.setFont(font);
+    maxMp.setString("Max HP                 " + std::to_string(maxMpVal) + "  ==>  " + std::to_string(recalculatedMaxMp));
+    maxMp.setPosition(730.0f,408.0f);
+
+
+    pointsToDistributeTextbox.setSize({290.0f,80.0f});
+    pointsToDistributeTextbox.setFillColor(sf::Color::Transparent);
+    pointsToDistributeTextbox.setOutlineColor(sf::Color(255,0,0,50));
+    pointsToDistributeTextbox.setOutlineThickness(1.0f);
+    pointsToDistributeTextbox.setPosition(710.0f, 455.0f);
+
+    distributionText.setFont(font);
+    distributionText.setPosition(710.0f, 455.0f);
+    distributionText.setString("Distribute points.\n" + std::to_string(skillPoints) + " points remaining.");
 }
 
 void GameStateBattle::displayResultsScreen(){
@@ -436,19 +521,42 @@ void GameStateBattle::displayResultsScreen(){
 }
 
 void GameStateBattle::displayLevelUpScreen(){
+    if (!reuseTextforLevelUp){
+        topBarText.setString("LEVEL UP!");
+        topBarText.setFillColor(sf::Color::White);
+        topBarText.setPosition(850.0f, 20.0f);
+    }
+    
     this->game->window.clear(sf::Color(0,0,0));
-    if (playerLevelUp){
-
+    this->game->window.draw(topBarTextBackground);
+    this->game->window.draw(topBarText);
+    this->game->window.draw(nameplateBackground);
+    this->game->window.draw(nameplate);
+    this->game->window.draw(nameOfCharacterForLevelUp);
+    for (auto& statbox : statBoxes){
+        this->game->window.draw(statbox);
     }
-    else if (pmember2LevelUp){
-
+    for (auto& backgrounds : statBackgrounds){
+        this->game->window.draw(backgrounds);
     }
-    else if (pmember3LevelUp){
-
+    for (auto& statbox : maxStatBoxes){
+        this->game->window.draw(statbox);
     }
-    else if (pmember4LevelUp){
-
+    for (auto& backgrounds : maxStatBackgrounds){
+        this->game->window.draw(backgrounds);
     }
+    this->game->window.draw(pointsToDistributeTextbox);
+    this->game->window.draw(distributionText);
+    this->game->window.draw(strength);
+    this->game->window.draw(vitality);
+    this->game->window.draw(agility);
+    this->game->window.draw(luck);
+    this->game->window.draw(maxHp);
+    this->game->window.draw(maxMp);
+    this->game->window.draw(stBar);
+    this->game->window.draw(viBar);
+    this->game->window.draw(agBar);
+    this->game->window.draw(luBar);
 }
 
 
@@ -604,6 +712,21 @@ void GameStateBattle::update(const float dt) {
             totalXpGained -= addedXP; //for simplicity, everyone gets the same amount of xp every battle
         }
         else distributionFinished = true;
+    } 
+    else if (battleOver && pressSpaceToContinue){
+        playerLevelUp = true;
+        if (playerLevelUp){
+            nameOfCharacterForLevelUp.setString(this->game->player.getName());
+        }
+        else if (pmember2LevelUp){
+
+        }
+        else if (pmember3LevelUp){
+
+        }
+        else if (pmember4LevelUp){
+
+        }
     }
     else{
     for (size_t i = 0; i < party.size(); ++i) {
