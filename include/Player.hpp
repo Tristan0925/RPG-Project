@@ -18,6 +18,7 @@ Like having modules in python to handle classes and then you import the files yo
 #include "item.hpp"
 #include <array>
 #include "skill.hpp"
+#include <unordered_map>
 
 class Map;
 
@@ -101,7 +102,18 @@ class Player {
                     names.push_back(skillPtr->getName());
             }
             return names;
+        }
+        float getAffinity(const std::string& element) const {
+            auto it = affinities.find(element);
+            if (it != affinities.end())
+                return it->second;
+            return 1.0f; // default = neutral
+        }
+        // Returns map<string, float> of affinities like Fire=0.5, Ice=1.5, etc.
+        const std::map<std::string, float>& getAffinityMap() const {
+            return affinities;
         }        
+                    
 
 };
 

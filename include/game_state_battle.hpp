@@ -7,6 +7,7 @@
 #include <SFML/Audio.hpp>
 #include "Button.hpp"
 #include <array>
+#include <unordered_map>
 
 class GameStateBattle : public GameState {
 private:
@@ -167,6 +168,17 @@ private:
     float ui_spacing = 220.f;
 
     void displayResultsScreen(bool displayResults);
+
+    // BuffState
+    struct BuffInstance {
+        float damageAmp = 1.0f;
+        float damageResist = 1.0f;
+        float accBoost = 0.0f;
+        float evadeBoost = 0.0f;
+        int turnsRemaining = 0;
+    };
+    std::unordered_map<Player*, BuffInstance> activeBuffs;
+    void updateBuffTimers();
 
 public:
     GameStateBattle(Game* game, bool isBossBattle);

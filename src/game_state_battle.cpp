@@ -984,11 +984,262 @@ void GameStateBattle::handleInput() {
             }
 
             else if (currentMenuState == BattleMenuState::Skill) {
+
                 for (auto& b : skillButtons) {
-                    if (b.wasClicked(this->game->window)) {
-                        // skill selected
+                    if (!b.wasClicked(this->game->window)) continue;
+            
+                    // It's assumed the front of turnQueue is the actor using the skill.
+                    if (turnQueue.empty()) {
+                        battleText.setString("No one can act right now.");
+                        break;
                     }
-                }
+                    Player* attacker = turnQueue.front();
+            
+                    // safety: ensure actor is a player
+                    bool isPartyActor = (std::find(party.begin(), party.end(), attacker) != party.end());
+                    if (!isPartyActor) {
+                        battleText.setString("It's not your turn!");
+                        break;
+                    }
+            
+                    // find the Skill* from attacker's known skills (uses player's getSkillPtr)
+                    const std::string skillName = b.getText();
+                    const Skill* s = attacker->getSkillPtr(skillName, this->game->skillMasterList);
+                    if (!s) {
+                        battleText.setString("Skill not found.");
+                        break;
+                    }
+            
+                    // Check MP (and HP if you use HP costs)
+                    int mpCost = s->getMpCost();
+                    if (mpCost > 0 && attacker->getMP() < mpCost) {
+                        battleText.setString("Not enough MP to use " + s->getName() + ".");
+                        break;
+                    }
+                    // If skill has HP cost (getHpCost() > 0) - optional behavior
+                    float hpCostPct = s->getHpCost();
+                    if (hpCostPct > 0.0f) {
+                        int hpCost = static_cast<int>(std::round(attacker->getmaxHP() * hpCostPct));
+                        if (attacker->getHP() <= hpCost) {
+                            battleText.setString("Not enough HP to use " + s->getName() + ".");
+                            break;
+                        }
+                        // apply HP cost (we use takeDamage to subtract HP)
+                        attacker->takeDamage(hpCost);
+                    }
+            
+                    // Spend MP
+                    if (mpCost > 0) attacker->spendMP(mpCost);
+            
+                    // Determine whether this is healing or damaging skill by type string
+                    const std::string type = s->getType(); // e.g. "Physical", "Fire", "Healing", "Almighty", "Damage Amp", etc.
+                    bool isHealing = (type == "Healing");
+                    bool isPhysical = (type.find("Physical") != std::string::npos);
+                    bool isAlmighty = (type.find("Almighty") != std::string::npos);
+                    bool isDamageAmpSkill = (type == "Damage Amp"); // buff-like
+                    bool isHitEvadeBoost = (type == "Hit Evade Boost" || type == "Hit Evade Reduction");
+                    bool isDamageResistSkill = (type == "Damage Resist");
+            
+                    // Basic scalar: use damage amp if present, otherwise 1.0
+                    float scalar = (s->getDamageAmp() > 0.0f) ? s->getDamageAmp() : 1.0f;
+            
+                    // Determine targets: single vs all
+                    bool singleTarget = s->getIsSingleTarget();
+            
+                    // Convenience lambdas for popups + text update
+                    auto spawnPopupAtEnemyIndex = [&](int enemyIdx, int dmg, bool crit) {
+                        DamagePopup dp;
+                        dp.text.setFont(font);
+                        dp.text.setCharacterSize(32);
+                        dp.text.setString((crit ? std::string("CRIT ") : std::string("")) + std::to_string(dmg));
+                        dp.text.setFillColor(crit ? sf::Color::Yellow : sf::Color::White);
+                        sf::FloatRect eb = (enemyIdx >= 0 && enemyIdx < static_cast<int>(enemySprites.size()))
+                                           ? enemySprites[enemyIdx].getGlobalBounds()
+                                           : sf::FloatRect(800.f, 300.f, 0.f, 0.f);
+                        dp.text.setPosition(eb.left + eb.width / 2.f - dp.text.getGlobalBounds().width / 2.f,
+                                            eb.top - 10.f);
+                        dp.velocity = sf::Vector2f(0.f, -30.f);
+                        dp.life = 1.0f;
+                        damagePopups.push_back(dp);
+                    };
+            
+                    auto spawnPopupAtPlayerIndex = [&](int pIdx, int dmg, bool crit) {
+                        DamagePopup dp;
+                        dp.text.setFont(font);
+                        dp.text.setCharacterSize(28);
+                        dp.text.setString((crit ? std::string("CRIT ") : std::string("")) + std::to_string(dmg));
+                        dp.text.setFillColor(sf::Color::Red);
+                        sf::Vector2f pos(200.f, 700.f);
+                        if (pIdx >= 0 && pIdx < static_cast<int>(playerIcons.size())) pos = playerIcons[pIdx].getPosition() - sf::Vector2f(0.f, 40.f);
+                        dp.text.setPosition(pos);
+                        dp.velocity = sf::Vector2f(0.f, -30.f);
+                        dp.life = 1.0f;
+                        damagePopups.push_back(dp);
+                    };
+            
+                    // handle healing skills
+                    if (isHealing) {
+                        // healing percent stored in skill
+                        float healPct = s->getHealthRestorePercent(); // e.g. 1.25 => 125%? you used that when constructing
+                        if (singleTarget) {
+                            // heal the active party member (front of queue) or first alive ally
+                            int idx = 0;
+                            Player* tgt = nullptr;
+                            for (size_t i = 0; i < party.size(); ++i) {
+                                if (party[i] && party[i]->getHP() > 0) { idx = static_cast<int>(i); tgt = party[i]; break; }
+                            }
+                            if (tgt) {
+                                int healAmount = static_cast<int>(std::round(tgt->getmaxHP() * healPct));
+                                tgt->heal(healAmount);
+                                battleText.setString(attacker->getName() + " used " + s->getName() + " and healed " + tgt->getName() + " for " + std::to_string(healAmount) + " HP!");
+                                // spawn a small popup near player
+                                spawnPopupAtPlayerIndex(idx, healAmount, false);
+                            }
+                        } else {
+                            // heal all allies
+                            int totalHealed = 0;
+                            for (size_t i = 0; i < party.size(); ++i) {
+                                Player* tgt = party[i];
+                                if (!tgt) continue;
+                                int healAmount = static_cast<int>(std::round(tgt->getmaxHP() * healPct));
+                                tgt->heal(healAmount);
+                                totalHealed += healAmount;
+                                spawnPopupAtPlayerIndex(static_cast<int>(i), healAmount, false);
+                            }
+                            battleText.setString(attacker->getName() + " used " + s->getName() + " and healed the party!");
+                        }
+            
+                        // end turn: rotate
+                        if (!turnQueue.empty()) {
+                            Player* front = turnQueue.front(); turnQueue.pop_front(); turnQueue.push_back(front);
+                        }
+                        break; // processed skill click
+                    }
+            
+                    // handle buff/utility skills (Damage Amp, Damage Resist, Hit/Evade)
+                    if (isDamageAmpSkill || isDamageResistSkill || isHitEvadeBoost) {
+                        // Simple implementation: apply an effect to attacker or to party.
+                        // TODO: integrate into a persistent buff system (GameStateBattle::activeBuffs) so damage calculation reads these.
+                        // For now just show a message and spend mp.
+                        if (isDamageAmpSkill) {
+                            battleText.setString(attacker->getName() + " used " + s->getName() + ". (Damage Amp applied - implement persistent buff to take effect)");
+                        } else if (isDamageResistSkill) {
+                            battleText.setString(attacker->getName() + " used " + s->getName() + ". (Damage Resist applied - implement persistent buff to take effect)");
+                        } else {
+                            battleText.setString(attacker->getName() + " used " + s->getName() + ". (Hit/Evade mod applied - implement persistent buff to take effect)");
+                        }
+            
+                        // rotate turn
+                        if (!turnQueue.empty()) {
+                            Player* front = turnQueue.front(); turnQueue.pop_front(); turnQueue.push_back(front);
+                        }
+                        break;
+                    }
+            
+                    // else: damage skill (physical, magic, almighty, elementals, etc.)
+                    // Determine targets (single or all)
+                    std::vector<Player*> allyTargets; // unused here but kept for extensibility
+                    std::vector<NPC*> enemyTargets;
+                    if (singleTarget) {
+                        // pick the currently selected enemy (currentEnemyIndex) or first living enemy
+                        int tidx = currentEnemyIndex;
+                        if (tidx < 0 || tidx >= static_cast<int>(enemies.size()) || enemies[tidx].isDead()) {
+                            tidx = getFirstLivingEnemy();
+                        }
+                        if (tidx >= 0) enemyTargets.push_back(&enemies[tidx]);
+                    } else {
+                        // all enemies
+                        for (auto& en : enemies) if (!en.isDead()) enemyTargets.push_back(&en);
+                    }
+            
+                    if (enemyTargets.empty()) {
+                        battleText.setString("No valid targets for " + s->getName() + ".");
+                        break;
+                    }
+            
+                    // compute damage for each target (respecting physical vs magic vs almighty)
+                    int totalDamage = 0;
+                    for (size_t ei = 0; ei < enemyTargets.size(); ++ei) {
+                        NPC* target = enemyTargets[ei];
+            
+                        // Determine magic vs physical: use type string
+                        int damage = 0;
+                        bool crit = false;
+                        float critChance = s->getCritRate();
+                        if (critChance <= 0.f) critChance = 0.05f; // fallback
+            
+                        // roll crit
+                        std::uniform_real_distribution<float> cr(0.f, 1.f);
+                        crit = (cr(globalRng()) < critChance);
+            
+                        if (isPhysical) {
+                            // Use physATK. Use baseAtk and damage amp scalar if provided.
+                            int baseAtk = s->getBaseAtk();
+                            float usedScalar = scalar;
+                            damage = attacker->physATK(usedScalar, baseAtk, crit);
+                        } else {
+                            // magic / almighty / element
+                            int baseAtk = s->getBaseAtk();
+                            int limit   = s->getLimit();
+                            int corr    = s->getCorrection();
+            
+                            // isWeak currently unknown (requires reading target affinities). We'll assume false unless affinity logic added.
+                            bool isWeak = false;
+            
+                            // For almighty, affinity doesn't apply — magATK still used but set isWeak=false.
+                            damage = attacker->magATK(1.0f /*scalar*/, baseAtk, limit, corr, isWeak);
+                            if (crit) damage = static_cast<int>(damage * 1.5f);
+                        }
+            
+                        // TODO: apply elemental affinity multiplier here:
+                        // e.g.
+                        // float affinityMul = 1.0f;
+                        // if (Player had a getter like target->getAffinityFor(type)) affinityMul = target->getAffinityFor(type);
+                        // damage = static_cast<int>(damage * affinityMul);
+                        // (Add getter in Player and uncomment/apply)
+            
+                        // Apply damage to target
+                        target->takeDamage(damage);
+                        totalDamage += damage;
+            
+                        // spawn popup: find enemy index in enemies vector
+                        int enemyIndexInVector = -1;
+                        for (size_t k = 0; k < enemies.size(); ++k) {
+                            if (&enemies[k] == target) { enemyIndexInVector = static_cast<int>(k); break; }
+                        }
+                        spawnPopupAtEnemyIndex(enemyIndexInVector, damage, crit);
+                    } // end for each enemy target
+            
+                    // update battle text
+                    if (enemyTargets.size() == 1) {
+                        battleText.setString(attacker->getName() + " used " + s->getName() + " on " + enemyTargets.front()->getName() + " for " + std::to_string(totalDamage) + " damage!");
+                    } else {
+                        battleText.setString(attacker->getName() + " used " + s->getName() + " and dealt " + std::to_string(totalDamage) + " total damage to the enemies!");
+                    }
+            
+                    // Remove dead enemies from turnQueue and check battle over
+                    cleanupDeadEnemies();
+                    bool anyAlive = false;
+                    for (auto& e : enemies) if (!e.isDead()) { anyAlive = true; break; }
+                    if (!anyAlive) {
+                        battleOver = true;
+                        return;
+                    } else {
+                        int first = getFirstLivingEnemy();
+                        if (first >= 0) currentEnemyIndex = first;
+                    }
+            
+                    // end turn: rotate queue
+                    if (!turnQueue.empty()) {
+                        Player* front = turnQueue.front();
+                        turnQueue.pop_front();
+                        turnQueue.push_back(front);
+                    }
+            
+                    break; // handled this skill click
+                } // end for skillButtons
+            
+                // Back button (return to main menu)
                 if (backButton.wasClicked(this->game->window)) {
                     currentMenuState = BattleMenuState::Main;
                 }
@@ -1266,4 +1517,19 @@ void GameStateBattle::cleanupDeadEnemies() {
 
     // Fix targeting index
     currentEnemyIndex = getFirstLivingEnemy();
+}
+
+float getElementMultiplier(const Player* target, const Skill* s) {
+    if (s->getType() == "Physical-Almighty" ||
+        s->getType() == "Magic-Almighty" ||
+        s->getType() == "Almighty")
+        return 1.0f; // ignores affinities
+
+    auto affinities = target->getAffinityMap(); // I'll show you how to add this getter
+    auto it = affinities.find(s->getType());
+    if (it == affinities.end()) return 1.0f;
+
+    float a = it->second;
+    if (a == 0.0f) return 0.0f;   // NULL
+    return a;                     // 0.5 resist, 1.0 neutral, 1.5 weak
 }
