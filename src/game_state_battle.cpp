@@ -364,6 +364,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     gameOver = false;
     gameOverMenuState = GameOverMenuState::Main;
 
+    
 }
 
 // Results Screen
@@ -462,6 +463,7 @@ void GameStateBattle::draw(const float dt) {
     // Game Over buttons
     if (gameOver) {
         this->game->window.clear(sf::Color::Black);
+        this->game->window.draw(gameOverText);
         if (!loadMenuActive) {
             quitButton.draw(this->game->window);
             loadButton.draw(this->game->window);
