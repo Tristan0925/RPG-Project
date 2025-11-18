@@ -261,7 +261,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     totalEarnedExp.setFillColor(sf::Color::Red);
     totalEarnedExp.setPosition(25.0f,250.0f);
 
-    //set up all the necessary variables for displaying the player + party
+    //set up all the necessary variables for displaying the player + party for results screen
     playerName.setFont(font);
     playerName.setString(this->game->player.getName());
     playerName.setCharacterSize(40);
@@ -374,7 +374,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
         expBarBackgrounds[i].setFillColor(sf::Color(51,51,51));
         expBarBackgrounds[i].setPosition(175.0f, expOffsetY + 100.0f*i);
     }
-
+    // set up variables for the LEVEL UP! screen
 }
 
 void GameStateBattle::displayResultsScreen(){
@@ -435,8 +435,20 @@ void GameStateBattle::displayResultsScreen(){
     this->game->window.draw(expBarPmember4);
 }
 
-void GameStateBattle::displayLevelUpScreen(bool displayLevelUp){
-    this->game->window.clear(sf::Color(255,0,0));
+void GameStateBattle::displayLevelUpScreen(){
+    this->game->window.clear(sf::Color(0,0,0));
+    if (playerLevelUp){
+
+    }
+    else if (pmember2LevelUp){
+
+    }
+    else if (pmember3LevelUp){
+
+    }
+    else if (pmember4LevelUp){
+
+    }
 }
 
 
@@ -456,7 +468,7 @@ void GameStateBattle::draw(const float dt) {
      
     }
     else if (battleOver && pressSpaceToContinue){
-        displayLevelUpScreen(true);
+        displayLevelUpScreen();
     } 
 
     else{

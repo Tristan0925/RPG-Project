@@ -23,8 +23,8 @@ private:
     // Text         
     sf::Font font;
     sf::Text battleText;
-
     
+    // Text for results screen
     sf::Text topBarText;
     sf::Text totalEarnedExp;
     std::string totalEarnedExpMessage;
@@ -46,12 +46,24 @@ private:
     int nextLevelPmember4Xp;
     std::array<sf::Text, 4> levelUpTexts;
 
+    //Text for Level Up!
+    sf::Text playerNameforLevelUp;
+    sf::Text levelUpHeaderText;
+    sf::Text strength;
+    sf::Text vitality;
+    sf::Text agility;
+    sf::Text luck;
+    sf::Text maxHp;
+    sf::Text maxMp;
+
+
     // Shapes
     sf::RectangleShape background;
     sf::RectangleShape textBox;
     sf::RectangleShape enemyBackground;
     std::vector<sf::Vector2f> basePositions;
     
+    //Shapes for results screen 
     sf::VertexArray topBarTextBackground;
     sf::VertexArray thingsEarnedBackground;
     std::array<sf::RectangleShape, 4> portraitBackgrounds;
@@ -65,6 +77,20 @@ private:
     sf::RectangleShape expBarPmember4;
     float pmember4XP;
     std::array<sf::RectangleShape, 4> expBarBackgrounds;
+
+    //Shapes for LEVEL UP! screen
+    sf::RectangleShape headerBackground;
+    sf::RectangleShape nameplateBackground;
+    sf::RectangleShape nameplate;
+    std::array<sf::RectangleShape, 4> statBoxes;
+    std::array<sf::RectangleShape,4> statBackgrounds;
+    std::array<sf::RectangleShape, 2> maxStatBoxes;
+    std::array<sf::RectangleShape,2> maxStatBackgrounds;
+    sf::RectangleShape stBar;
+    sf::RectangleShape viBar;
+    sf::RectangleShape agBar;
+    sf::RectangleShape luBar;
+    sf::RectangleShape pointsToDistributeTextbox;
 
     //Flag that lets me resuse the array for sprites + portraitbackgrounds already used in the main battle 
     bool reuseArrays = false;
@@ -157,7 +183,7 @@ private:
 
     //methods to progress the game_state after a battle
     void displayResultsScreen();
-    void displayLevelUpScreen(bool displayLevelUp);
+    void displayLevelUpScreen();
     
     //you must watch the level up screen before you can continue (sorry)
     bool pressSpaceToContinue = false;
