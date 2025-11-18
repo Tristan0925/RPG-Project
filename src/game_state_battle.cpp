@@ -377,7 +377,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
 
 }
 
-void GameStateBattle::displayResultsScreen(bool displayResults){
+void GameStateBattle::displayResultsScreen(){
     if (!reuseArrays){ //doing it like this so we reset positions one time.
         float iconOffsetY = 494.0f;
         float backgroundOffsetY = 493.0f;
@@ -392,6 +392,7 @@ void GameStateBattle::displayResultsScreen(bool displayResults){
         playerBackgrounds[i].setPosition(570.0f,backgroundOffsetY + 100.0f * i);
         playerIcons[i].setPosition(620.0f, iconOffsetY + 100.0f * i);
         }
+        reuseArrays = true;
     }
     for (auto& background : portraitBackgrounds){
         this->game->window.draw(background);
@@ -451,7 +452,7 @@ void GameStateBattle::draw(const float dt) {
                 playResultsMusic = true;
                 }
             }
-         displayResultsScreen(true);
+         displayResultsScreen();
      
     }
     else if (battleOver && pressSpaceToContinue){

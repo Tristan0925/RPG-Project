@@ -156,7 +156,7 @@ private:
     float ui_spacing = 220.f;
 
     //methods to progress the game_state after a battle
-    void displayResultsScreen(bool displayResults);
+    void displayResultsScreen();
     void displayLevelUpScreen(bool displayLevelUp);
     
     //you must watch the level up screen before you can continue (sorry)
