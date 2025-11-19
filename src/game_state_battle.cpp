@@ -910,8 +910,7 @@ void GameStateBattle::handleInput() {
                     turnQueue.push_back(front);
                 }
                 if (battleOver && distributionFinished && levelUpTime){
-                    if (levelUpIterator == levelUpBooleanMap.begin()){
-                        std::cout << "Popped" << std::endl;
+                    if (levelUpIterator == levelUpBooleanMap.end()){
                         this->game->requestPop();
                         return;
                     }
