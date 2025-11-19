@@ -915,7 +915,7 @@ void GameStateBattle::handleInput() {
                         return;
                     }
                     if (levelUpIterator != levelUpBooleanMap.end()){
-                        ++levelUpIterator;
+                        ++levelUpIterator; 
                     }
                 
                 }

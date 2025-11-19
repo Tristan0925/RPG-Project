@@ -218,6 +218,7 @@ private:
     int totalXpGained = 500;
     int XPdecrementer = 0; //counts how many times the loop has iterated so we can have a cool next exp counter.
     int skillPoints = 0; 
+    int usedSkillPoints = 0;
 
 public:
     GameStateBattle(Game* game, bool isBossBattle);
