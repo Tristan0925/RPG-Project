@@ -78,7 +78,6 @@ class Player {
         void distributeSkillPoints(std::map<std::string, int> skillPointDistribution, int levelsGained);
         int doorX, doorY; //track last door entered
         void levelUp();
-
         void turnLeft();
         void turnRight();
         void update(float dt);
@@ -89,7 +88,7 @@ class Player {
         void setDefault(const Map& map);
 
 
-        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const, getAGI() const, getXp() const;
+        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const, getAGI() const, getSTR() const, getLU() const, getVI() const, getXp() const;
         int getXpForNextLevel();
         std::string getName() const;
         std::array<Item, 2> getInventory() const;

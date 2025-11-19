@@ -500,3 +500,15 @@ int Player::getXpForNextLevel(){
 void Player::levelUp(){
     LVL +=1;
 }
+
+int Player::getSTR() const{
+    return STR;
+}
+
+int Player::getVI() const{
+    return VIT;
+}
+
+int Player::getLU() const{
+    return LU;
+}

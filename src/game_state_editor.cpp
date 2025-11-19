@@ -786,7 +786,7 @@ void GameStateEditor::handleInput() // Inputs go here
 
         // 5% chance per new tile
         if (rand() % 100 < 100) {
-            this->game->requestChange(std::make_unique<GameStateBattle>(this->game, false));
+            this->game->requestPush(std::make_unique<GameStateBattle>(this->game, false));
             return; // exit handleInput immediately
         }
     }

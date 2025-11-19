@@ -100,7 +100,7 @@ void GameStateDoor::handleInput()
             }
             case sf::Event::KeyPressed:{
                 if (event.key.code == sf::Keyboard::Space){ // && !isBossRoom
-                    backToGame();
+                    this->game->requestPop();
                     return;
                 }
             }
@@ -187,11 +187,7 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
   
 }
 
-void GameStateDoor::backToGame()
-{
-    this->game->popState();
-    return;
-}
+
 
 GameStateDoor::~GameStateDoor() {
     std::cout << "GameStateDoor destroyed" << std::endl;

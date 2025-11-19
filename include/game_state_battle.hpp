@@ -76,6 +76,8 @@ private:
 
     sf::Text distributionText;
 
+    std::array<sf::Text, 8> skillNamesForResults;
+    void backToGame();
 
 
 
@@ -113,17 +115,17 @@ private:
     sf::RectangleShape luBar;
     sf::RectangleShape pointsToDistributeTextbox;
     float maxBarSize = 99.0;
+    
+    //map of player + pmember which maps to whether or not they leveled up
+    std::map<Player*, bool> levelUpBooleanMap;
+    std::map<Player*, bool>::iterator levelUpIterator;
+    bool levelupflags;
 
     //Flags that lets me reuse certain parts of the UI 
     bool reuseArrays = false;
     bool reuseTextforLevelUp = false;
 
 
-    // Level Up Flags
-    bool playerLevelUp = false;
-    bool pmember2LevelUp = false;
-    bool pmember3LevelUp = false;
-    bool pmember4LevelUp = false;
 
 
 
@@ -209,10 +211,11 @@ private:
     void displayLevelUpScreen();
     
     //you must watch the level up screen before you can continue (sorry)
-    bool pressSpaceToContinue = false;
+    bool levelUpTime = false;
     bool distributionFinished = false;
+    bool printSkillNames = false;
 
-    int totalXpGained = 0;
+    int totalXpGained = 500;
     int XPdecrementer = 0; //counts how many times the loop has iterated so we can have a cool next exp counter.
     int skillPoints = 0; 
 

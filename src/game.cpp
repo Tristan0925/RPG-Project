@@ -106,6 +106,7 @@ void Game::gameLoop() //handles the gameloop
     if(peekState() == nullptr)
     {
         // maybe sleep a bit here or continue
+        std::cout << "peekState is null" << std::endl;
         continue;
     }
     peekState() -> handleInput();

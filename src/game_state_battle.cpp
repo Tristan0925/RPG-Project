@@ -450,7 +450,6 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     maxMp.setString("Max HP                 " + std::to_string(maxMpVal) + "  ==>  " + std::to_string(recalculatedMaxMp));
     maxMp.setPosition(730.0f,408.0f);
 
-
     pointsToDistributeTextbox.setSize({290.0f,80.0f});
     pointsToDistributeTextbox.setFillColor(sf::Color::Transparent);
     pointsToDistributeTextbox.setOutlineColor(sf::Color(255,0,0,50));
@@ -460,6 +459,17 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     distributionText.setFont(font);
     distributionText.setPosition(710.0f, 455.0f);
     distributionText.setString("Distribute points.\n" + std::to_string(skillPoints) + " points remaining.");
+
+    for (size_t x = 1; x < 9; x++){
+        skillNamesForResults[x].setFont(font);
+        skillNamesForResults[x].setPosition(200.0f, 509.0f + (50.0f * x-1));
+    }
+
+    levelUpBooleanMap[&this->game->player] = false;
+    levelUpBooleanMap[&this->game->pmember2] = false;
+    levelUpBooleanMap[&this->game->pmember3] = false;
+    levelUpBooleanMap[&this->game->pmember4] = false;
+    levelUpIterator = levelUpBooleanMap.begin();
 }
 
 void GameStateBattle::displayResultsScreen(){
@@ -545,6 +555,7 @@ void GameStateBattle::displayLevelUpScreen(){
     for (auto& backgrounds : maxStatBackgrounds){
         this->game->window.draw(backgrounds);
     }
+  
     this->game->window.draw(pointsToDistributeTextbox);
     this->game->window.draw(distributionText);
     this->game->window.draw(strength);
@@ -557,12 +568,17 @@ void GameStateBattle::displayLevelUpScreen(){
     this->game->window.draw(viBar);
     this->game->window.draw(agBar);
     this->game->window.draw(luBar);
+      if (printSkillNames){
+        for (auto& skillName : skillNamesForResults){
+            this->game->window.draw(skillName);
+        }
+    }
 }
 
 
 
 void GameStateBattle::draw(const float dt) {
-    if (battleOver && !pressSpaceToContinue){
+    if (battleOver && !levelUpTime){
         if (!playResultsMusic){
             currentMusic.stop();
             if (!currentMusic.openFromFile("./assets/music/battleresults.mp3")) std::cout << "Could not load music file" << std::endl;
@@ -575,7 +591,7 @@ void GameStateBattle::draw(const float dt) {
          displayResultsScreen();
      
     }
-    else if (battleOver && pressSpaceToContinue){
+    else if (battleOver && levelUpTime){
         displayLevelUpScreen();
     } 
 
@@ -651,25 +667,26 @@ void GameStateBattle::draw(const float dt) {
 }
 
 void GameStateBattle::update(const float dt) {
-    if (battleOver && !pressSpaceToContinue){
+    if (battleOver && !levelUpTime){
         if (totalXpGained > 0){
             XPdecrementer++;
             float addedXP = 1;
             playerXP += addedXP;
             if (playerXP >= nextLevelPlayerXp){ //since everyone gets the same amount of xp, we are just using the player's xp to see if everyone levels up or not (we can change this later if we want)
-                if (!playerLevelUp){
+                if (!levelupflags){
                     levelUpTexts[0].setFillColor(sf::Color(0,255,0,255));
-                      playerLevelUp = true;
+                    levelUpBooleanMap[&this->game->player] = true;
 
                     levelUpTexts[1].setFillColor(sf::Color(0,255,0,255));
-                    pmember2LevelUp = true;
+                    levelUpBooleanMap[&this->game->pmember2] = true;
 
                     levelUpTexts[2].setFillColor(sf::Color(0,255,0,255));
-                     pmember3LevelUp = true;
+                    levelUpBooleanMap[&this->game->pmember3] = true;
 
                     levelUpTexts[3].setFillColor(sf::Color(0,255,0,255));
-                      pmember4LevelUp = true;
+                    levelUpBooleanMap[&this->game->pmember4] = true;
                   
+                    levelupflags = true;
                 }
                 this->game->player.levelUp();
                 playerLevel.setString("LV.  " + std::to_string(this->game->player.getLVL()));
@@ -713,21 +730,51 @@ void GameStateBattle::update(const float dt) {
         }
         else distributionFinished = true;
     } 
-    else if (battleOver && pressSpaceToContinue){
-        playerLevelUp = true;
-        if (playerLevelUp){
-            nameOfCharacterForLevelUp.setString(this->game->player.getName());
-        }
-        else if (pmember2LevelUp){
+    else if (battleOver && levelUpTime){
+        if (levelUpIterator != levelUpBooleanMap.end()){
+            Player* character = levelUpIterator->first;
+            bool leveledUp = levelUpIterator->second;
+            if (leveledUp){
+                strengthVal = character->getSTR();
+                strengthValPercent = (float)strengthVal / 99;
 
-        }
-        else if (pmember3LevelUp){
+                vitalityVal = character->getVI();
+                vitalityValPercent = (float)vitalityVal / 99;
 
-        }
-        else if (pmember4LevelUp){
+                agilityVal = character->getAGI();
+                agilityValPercent = (float)agilityVal / 99;
 
+                luckVal = character->getLU();
+                luckValPercent = (float)luckVal / 99;
+
+                maxHpVal = character->getmaxHP();
+                recalculatedMaxHp = maxHpVal;
+
+                maxMpVal = character->getmaxMP();
+                recalculatedMaxMp = maxMpVal;
+
+                nameOfCharacterForLevelUp.setString(character->getName());
+                strength.setString("ST             " + std::to_string(strengthVal));
+                stBar.setSize({500.0f * strengthValPercent, 10.0f});    
+                vitality.setString("VI              " + std::to_string(vitalityVal));
+                viBar.setSize({500.0f * vitalityValPercent, 10.0f});
+                agility.setString("AG             " + std::to_string(agilityVal));
+                agBar.setSize({500.0f * agilityValPercent, 10.0f});
+                luck.setString("LU             " + std::to_string(luckVal));
+                luBar.setSize({500.0f * luckValPercent, 10.0f});
+                maxHp.setString("Max HP                 " + std::to_string(maxHpVal) + "  ==>  " + std::to_string(recalculatedMaxHp));
+                maxMp.setString("Max HP                 " + std::to_string(maxMpVal) + "  ==>  " + std::to_string(recalculatedMaxMp));
+
+                 for (size_t x = 1; x < 9; x++){
+                    auto* skill = character->getSkillsList()[x];
+                    if(skill && skill->getName() != "EMPTY SLOT" && skill->getUnlockLevel() <= character->getLVL()){
+                        skillNamesForResults[x-1].setString(skill->getName());
+                    }
+            }
+            printSkillNames = true;
         }
     }
+}
     else{
     for (size_t i = 0; i < party.size(); ++i) {
         auto* p = party[i];
@@ -852,12 +899,8 @@ void GameStateBattle::handleInput() {
         // --- Key press events
         if (event.type == sf::Event::KeyPressed) {
             if (event.key.code == sf::Keyboard::Enter) {
-                this->game->requestChange(std::make_unique<GameStateEditor>(this->game, false));
+                this->game->requestPop();
                 return;
-            }
-            else if (event.key.code == sf::Keyboard::Space && battleOver && distributionFinished){
-                std::cout << "press" << std::endl;
-                pressSpaceToContinue = true;
             }
             else if (event.key.code == sf::Keyboard::Space) {
                 // rotate queue: move front to back
@@ -865,6 +908,20 @@ void GameStateBattle::handleInput() {
                     Player* front = turnQueue.front();
                     turnQueue.pop_front();
                     turnQueue.push_back(front);
+                }
+                if (battleOver && distributionFinished && levelUpTime){
+                    if (levelUpIterator == levelUpBooleanMap.begin()){
+                        std::cout << "Popped" << std::endl;
+                        this->game->requestPop();
+                        return;
+                    }
+                    if (levelUpIterator != levelUpBooleanMap.end()){
+                        ++levelUpIterator;
+                    }
+                
+                }
+                if (battleOver && distributionFinished){
+                    levelUpTime = true;
                 }
             }
         
