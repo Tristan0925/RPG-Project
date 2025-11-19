@@ -88,7 +88,7 @@ class Player {
         void setDefault(const Map& map);
 
 
-        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const, getAGI() const, getSTR() const, getLU() const, getVI() const, getXp() const;
+        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const, getAGI() const, getSTR() const, getLU() const, getVI() const, getXp() const, getMAG() const;
         int getXpForNextLevel();
         std::string getName() const;
         std::array<Item, 2> getInventory() const;

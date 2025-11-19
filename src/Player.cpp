@@ -512,3 +512,7 @@ int Player::getVI() const{
 int Player::getLU() const{
     return LU;
 }
+
+int Player::getMAG() const{
+    return MAG;
+}

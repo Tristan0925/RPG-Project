@@ -388,7 +388,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     nameOfCharacterForLevelUp.setCharacterSize(40);
     nameOfCharacterForLevelUp.setPosition(500.0f, 302.0f);
     
-    for (size_t x = 0; x < 4; x++){
+    for (size_t x = 0; x < 5; x++){
         statBoxes[x].setSize({100.0f, 40.0f});
         statBoxes[x].setFillColor(sf::Color(184,62,48));
         statBoxes[x].setPosition(100.0f, 365.0f + 43.0f*x );
@@ -427,21 +427,30 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     viBar.setFillColor(sf::Color(255,165,0));
     viBar.setPosition(200.0f, 423.0f);
 
+    magic.setFont(font);
+    magic.setString("MAG             " + std::to_string(magicVal));
+    magic.setFillColor(sf::Color::Green);
+    magic.setPosition(100.0f, 451.0f);
+
+    maBar.setSize({500.0f * magicValPercent, 10.0f});
+    maBar.setFillColor(sf::Color(255,165,0));
+    maBar.setPosition(200.0f, 466.0f);
+
     agility.setFont(font);
     agility.setString("AG             " + std::to_string(agilityVal));
-    agility.setPosition(100.0f, 451.0f);
+    agility.setPosition(100.0f, 494.0f);
 
     agBar.setSize({500.0f * agilityValPercent, 10.0f});
     agBar.setFillColor(sf::Color(255,165,0));
-    agBar.setPosition(200.0f, 466.0f);
+    agBar.setPosition(200.0f, 509.0f);
 
     luck.setFont(font);
     luck.setString("LU             " + std::to_string(luckVal));
-    luck.setPosition(100.0f, 494.0f);
+    luck.setPosition(100.0f, 537.0f);
 
     luBar.setSize({500.0f * luckValPercent, 10.0f});
     luBar.setFillColor(sf::Color(255,165,0));
-    luBar.setPosition(200.0f, 509.0f);
+    luBar.setPosition(200.0f, 552.0f);
 
     maxHp.setFont(font);
     maxHp.setString("Max HP                 " + std::to_string(maxHpVal) + "  ==>  " + std::to_string(recalculatedMaxHp));
@@ -451,7 +460,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     maxMp.setString("Max HP                 " + std::to_string(maxMpVal) + "  ==>  " + std::to_string(recalculatedMaxMp));
     maxMp.setPosition(730.0f,408.0f);
 
-    pointsToDistributeTextbox.setSize({290.0f,80.0f});
+    pointsToDistributeTextbox.setSize({290.0f,122.0f});
     pointsToDistributeTextbox.setFillColor(sf::Color::Transparent);
     pointsToDistributeTextbox.setOutlineColor(sf::Color(255,0,0,50));
     pointsToDistributeTextbox.setOutlineThickness(1.0f);
@@ -463,7 +472,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
 
     for (size_t x = 1; x < 9; x++){
         skillNamesForResults[x].setFont(font);
-        skillNamesForResults[x].setPosition(200.0f, 509.0f + (50.0f * x-1));
+        skillNamesForResults[x].setPosition(200.0f, 540.0f + (50.0f * x-1));
     }
 
     levelUpBooleanMap[&this->game->player] = false;
@@ -561,14 +570,17 @@ void GameStateBattle::displayLevelUpScreen(){
     this->game->window.draw(distributionText);
     this->game->window.draw(strength);
     this->game->window.draw(vitality);
+    this->game->window.draw(magic);
     this->game->window.draw(agility);
     this->game->window.draw(luck);
     this->game->window.draw(maxHp);
     this->game->window.draw(maxMp);
     this->game->window.draw(stBar);
     this->game->window.draw(viBar);
+    this->game->window.draw(maBar);
     this->game->window.draw(agBar);
     this->game->window.draw(luBar);
+    
       if (printSkillNames){
         for (auto& skillName : skillNamesForResults){
             this->game->window.draw(skillName);
@@ -742,6 +754,9 @@ void GameStateBattle::update(const float dt) {
                 vitalityVal = character->getVI();
                 vitalityValPercent = (float)vitalityVal / 99;
 
+                magicVal = character->getMAG();
+                magicValPercent = (float)magicVal / 99;
+
                 agilityVal = character->getAGI();
                 agilityValPercent = (float)agilityVal / 99;
 
@@ -759,6 +774,8 @@ void GameStateBattle::update(const float dt) {
                 stBar.setSize({500.0f * strengthValPercent, 10.0f});    
                 vitality.setString("VI              " + std::to_string(vitalityVal));
                 viBar.setSize({500.0f * vitalityValPercent, 10.0f});
+                magic.setString("MAG         " + std::to_string(magicVal));
+                maBar.setSize({500.0f * magicValPercent, 10.0f});
                 agility.setString("AG             " + std::to_string(agilityVal));
                 agBar.setSize({500.0f * agilityValPercent, 10.0f});
                 luck.setString("LU             " + std::to_string(luckVal));
@@ -775,9 +792,10 @@ void GameStateBattle::update(const float dt) {
             }
             strength.setFillColor(sf::Color::White);
             vitality.setFillColor(sf::Color::White);
+            magic.setFillColor(sf::Color::White);
             agility.setFillColor(sf::Color::White);
             luck.setFillColor(sf::Color::White);
-              switch ((levelUpAttributeIndex % 4 + 4) % 4){
+              switch ((levelUpAttributeIndex % 5 + 5) % 5){
                         case (0):
                             strength.setFillColor(sf::Color::Green);
                             break;
@@ -785,9 +803,12 @@ void GameStateBattle::update(const float dt) {
                             vitality.setFillColor(sf::Color::Green);
                             break;
                         case (2):
-                            agility.setFillColor(sf::Color::Green);
+                            magic.setFillColor(sf::Color::Green);
                             break;
                         case (3):
+                            agility.setFillColor(sf::Color::Green);
+                            break;
+                        case (4):
                             luck.setFillColor(sf::Color::Green);
                             break;
               }

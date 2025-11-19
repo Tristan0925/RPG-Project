@@ -51,19 +51,23 @@ private:
     sf::Text levelUpHeaderText;
 
     sf::Text strength;
-    int strengthVal = 99;
+    int strengthVal = 0;
     float strengthValPercent = (float)strengthVal / 99;
 
     sf::Text vitality;
-    int vitalityVal = 23;
+    int vitalityVal = 0;
     float vitalityValPercent = (float)vitalityVal / 99;
 
+    sf::Text magic;
+    int magicVal = 0;
+    float magicValPercent = (float)magicVal / 99;
+
     sf::Text agility;
-    int agilityVal = 65;
+    int agilityVal = 0;
     float agilityValPercent = (float)agilityVal / 99;
 
     sf::Text luck;
-    int luckVal = 42;
+    int luckVal = 0;
     float luckValPercent = (float)luckVal / 99;
 
     sf::Text maxHp;
@@ -105,12 +109,13 @@ private:
     //Shapes for LEVEL UP! screen
     sf::RectangleShape nameplateBackground;
     sf::RectangleShape nameplate;
-    std::array<sf::RectangleShape, 4> statBoxes;
-    std::array<sf::RectangleShape,4> statBackgrounds;
+    std::array<sf::RectangleShape, 5> statBoxes;
+    std::array<sf::RectangleShape,5> statBackgrounds;
     std::array<sf::RectangleShape, 2> maxStatBoxes;
     std::array<sf::RectangleShape,2> maxStatBackgrounds;
     sf::RectangleShape stBar;
     sf::RectangleShape viBar;
+    sf::RectangleShape maBar;
     sf::RectangleShape agBar;
     sf::RectangleShape luBar;
     sf::RectangleShape pointsToDistributeTextbox;
