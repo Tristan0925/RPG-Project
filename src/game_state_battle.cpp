@@ -412,6 +412,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     
     strength.setFont(font);
     strength.setString("ST             " + std::to_string(strengthVal));
+    strength.setFillColor(sf::Color::Green);
     strength.setPosition(100.0f, 365.0f);
 
     stBar.setSize({500.0f * strengthValPercent, 10.0f});
@@ -734,7 +735,7 @@ void GameStateBattle::update(const float dt) {
         if (levelUpIterator != levelUpBooleanMap.end()){
             Player* character = levelUpIterator->first;
             bool leveledUp = levelUpIterator->second;
-            if (leveledUp){
+            if (leveledUp && !statsSet){
                 strengthVal = character->getSTR();
                 strengthValPercent = (float)strengthVal / 99;
 
@@ -770,7 +771,27 @@ void GameStateBattle::update(const float dt) {
                     if(skill && skill->getName() != "EMPTY SLOT" && skill->getUnlockLevel() <= character->getLVL()){
                         skillNamesForResults[x-1].setString(skill->getName());
                     }
+                statsSet = true;
             }
+            strength.setFillColor(sf::Color::White);
+            vitality.setFillColor(sf::Color::White);
+            agility.setFillColor(sf::Color::White);
+            luck.setFillColor(sf::Color::White);
+              switch ((levelUpAttributeIndex % 4 + 4) % 4){
+                        case (0):
+                            strength.setFillColor(sf::Color::Green);
+                            break;
+                        case (1):
+                            vitality.setFillColor(sf::Color::Green);
+                            break;
+                        case (2):
+                            agility.setFillColor(sf::Color::Green);
+                            break;
+                        case (3):
+                            luck.setFillColor(sf::Color::Green);
+                            break;
+              }
+              std::cout << (levelUpAttributeIndex + 4) % 4 << std::endl;
             printSkillNames = true;
         }
     }
@@ -914,7 +935,7 @@ void GameStateBattle::handleInput() {
                         this->game->requestPop();
                         return;
                     }
-                    if (levelUpIterator != levelUpBooleanMap.end()){
+                    if (levelUpIterator != levelUpBooleanMap.end() && usedSkillPoints == skillPoints){
                         ++levelUpIterator; 
                     }
                 
@@ -922,6 +943,50 @@ void GameStateBattle::handleInput() {
                 if (battleOver && distributionFinished){
                     levelUpTime = true;
                 }
+            }
+            else if (event.key.code == sf::Keyboard::W){
+                if (levelUpTime){
+                    levelUpAttributeIndex--;
+                    } 
+                }
+            
+            else if (event.key.code == sf::Keyboard::S){
+                if (levelUpTime){
+                      levelUpAttributeIndex++;
+            }
+        }
+            else if (event.key.code == sf::Keyboard::D){
+                if (levelUpTime){
+                    switch ((levelUpAttributeIndex % 4 + 4) % 4){
+                        case (0):
+                            strengthVal++;
+                            strength.setString("ST             " + std::to_string(strengthVal));
+                            strengthValPercent = (float)strengthVal / 99;
+                            stBar.setSize({500.0f * strengthValPercent, 10.0f});
+                            break;
+                        case (1):
+                            vitalityVal++;
+                            vitality.setString("VI             " + std::to_string(vitalityVal));
+                            vitalityValPercent = (float)vitalityVal / 99;
+                            viBar.setSize({500.0f * vitalityValPercent, 10.0f});
+                            recalculatedMaxHp = (levelUpIterator->first->getLVL() + vitalityVal) * 6;
+                            maxHp.setString("Max HP                 " + std::to_string(maxHpVal) + "  ==>  " + std::to_string(recalculatedMaxHp));
+                            break;
+                        case (2):
+                            vitality.setFillColor(sf::Color::White);
+                            agility.setFillColor(sf::Color::Green);
+                            break;
+                        case (3):
+                           agility.setFillColor(sf::Color::White);
+                           luck.setFillColor(sf::Color::Green);
+                           break;
+                        default:
+                            levelUpAttributeIndex = 3;
+                    } 
+            }
+        }
+            else if (event.key.code == sf::Keyboard::A){
+
             }
         
         }
