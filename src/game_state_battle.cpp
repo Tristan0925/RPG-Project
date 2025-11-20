@@ -724,8 +724,7 @@ void GameStateBattle::update(const float dt) {
                         // Use the "Attack" skill if present; fallback baseAtk/crit defaults
                         const Skill* atkSkill = findSkillByName(this->game, "Attack");
                         int baseAtk = atkSkill ? atkSkill->getBaseAtk() : 15;
-                        float critChance = atkSkill ? atkSkill->getCritRate() : 0.05f;
-
+                        float critChance = atkSkill ? atkSkill->getCritRate() : 0.05f;                    
                         // compute damage using attacking enemy's physATK (enemy inherits Player)
                         int damage = actingEnemy->physATK(1.0f, baseAtk, false);
 
