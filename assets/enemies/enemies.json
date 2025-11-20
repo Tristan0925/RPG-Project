@@ -2,7 +2,7 @@
     {
       "name": "Jack Frost",
       "sprite": "assets/enemies/jack_frost.png",
-      "level": 3,
+      "level": 1,
       "STR": 5,
       "VIT": 2,
       "MAG": 1,
@@ -23,7 +23,7 @@
     {
       "name": "Pyro Jack",
       "sprite": "assets/enemies/jack_o_lantern.png",
-      "level": 3,
+      "level": 1,
       "STR": 3,
       "VIT": 5,
       "MAG": 2,
@@ -44,7 +44,7 @@
     {
       "name": "Seiten Taisei",
       "sprite": "assets/enemies/seiten_taisei.png",
-      "level": 3,
+      "level": 1,
       "STR": 8,
       "VIT": 5,
       "MAG": 2,
@@ -65,7 +65,7 @@
     {
       "name": "Ares",
       "sprite": "assets/enemies/ares.png",
-      "level": 3,
+      "level": 1,
       "STR": 6,
       "VIT": 5,
       "MAG": 2,
@@ -86,7 +86,7 @@
     {
       "name": "Chernobog",
       "sprite": "assets/enemies/chernobog.png",
-      "level": 3,
+      "level": 1,
       "STR": 8,
       "VIT": 5,
       "MAG": 2,
@@ -108,7 +108,7 @@
       "name": "Indra",
       "sprite": "assets/enemies/indrajit.png",
       "level": 3,
-      "STR": 8,
+      "STR": 1,
       "VIT": 5,
       "MAG": 2,
       "AGI": 3,
@@ -128,7 +128,7 @@
     {
       "name": "Shiva",
       "sprite": "assets/enemies/shiva.png",
-      "level": 3,
+      "level": 1,
       "STR": 8,
       "VIT": 5,
       "MAG": 2,
@@ -143,6 +143,27 @@
         "Ice": 1.0,
         "Electric": 1.0,
         "Force": 1.5,
+        "Almighty": 1.0
+      }
+    },
+    {
+      "name": "Susano-o",
+      "sprite": "assets/enemies/susano-o.png",
+      "level": 1,
+      "STR": 8,
+      "VIT": 5,
+      "MAG": 2,
+      "AGI": 3,
+      "LU": 2,
+      "baseXP": 200,
+      "skills": ["Focus", "Attack"], 
+      "isBoss": false,
+      "affinities": {
+        "Physical": 1.0,
+        "Fire": 1.0,
+        "Ice": 1.0,
+        "Electric": 0.5,
+        "Force": 0.5,
         "Almighty": 1.0
       }
     }
