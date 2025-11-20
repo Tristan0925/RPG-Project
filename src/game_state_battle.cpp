@@ -457,7 +457,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     maxHp.setPosition(730.0f, 365.0f);
 
     maxMp.setFont(font);
-    maxMp.setString("Max HP                 " + std::to_string(maxMpVal) + "  ==>  " + std::to_string(recalculatedMaxMp));
+    maxMp.setString("Max MP                 " + std::to_string(maxMpVal) + "  ==>  " + std::to_string(recalculatedMaxMp));
     maxMp.setPosition(730.0f,408.0f);
 
     pointsToDistributeTextbox.setSize({290.0f,122.0f});
@@ -789,7 +789,7 @@ void GameStateBattle::update(const float dt) {
                         skillNamesForResults[x-1].setString(skill->getName());
                     }
                 statsSet = true;
-            }
+            }}
             strength.setFillColor(sf::Color::White);
             vitality.setFillColor(sf::Color::White);
             magic.setFillColor(sf::Color::White);
@@ -816,7 +816,7 @@ void GameStateBattle::update(const float dt) {
             printSkillNames = true;
         }
     }
-}
+
     else{
     for (size_t i = 0; i < party.size(); ++i) {
         auto* p = party[i];
@@ -961,7 +961,7 @@ void GameStateBattle::handleInput() {
                     }
                 
                 }
-                if (battleOver && distributionFinished){
+                if (battleOver && distributionFinished){ //use this to check if anyone leveld up then pop.
                     levelUpTime = true;
                 }
             }
@@ -978,7 +978,7 @@ void GameStateBattle::handleInput() {
         }
             else if (event.key.code == sf::Keyboard::D){
                 if (levelUpTime){
-                    switch ((levelUpAttributeIndex % 4 + 4) % 4){
+                    switch ((levelUpAttributeIndex % 5 + 5) % 5){
                         case (0):
                             strengthVal++;
                             strength.setString("ST             " + std::to_string(strengthVal));
@@ -1001,8 +1001,10 @@ void GameStateBattle::handleInput() {
                            agility.setFillColor(sf::Color::White);
                            luck.setFillColor(sf::Color::Green);
                            break;
-                        default:
-                            levelUpAttributeIndex = 3;
+                        case (4):
+                           agility.setFillColor(sf::Color::White);
+                           luck.setFillColor(sf::Color::Green);
+                           break;
                     } 
             }
         }
