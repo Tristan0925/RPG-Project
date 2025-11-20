@@ -256,7 +256,7 @@ int Player::getVIT() const { return VIT; }
     int peak = ((limit - correction) / baseAtk) * (255/24);
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> damageDifferential(-5,5); //damage has a +/- 5% added to it, to keep damage from being deterministic
+    std::uniform_real_distribution<> damageDifferential(-0.05f ,0.05f); //damage has a +/- 5% added to it, to keep damage from being deterministic
     int damageDifference = damageDifferential(gen);
     int damage;
     float weaknessMultiplier;
@@ -265,6 +265,7 @@ int Player::getVIT() const { return VIT; }
 
     if (LVL < peak){
         damage = 0.004 * (5 * (MAG + 36) - LVL) * ((24 * baseAtk * (LVL / 255) + correction));
+        std::cout << (int) (damage + (damage * (damageDifference))) * weaknessMultiplier << std::endl;
         return (int) (damage + (damage * (damageDifference))) * weaknessMultiplier;
     }
     else if (LVL == peak){
