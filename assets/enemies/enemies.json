@@ -10,7 +10,15 @@
       "LU": 1,
       "baseXP": 10,
       "skills": ["Bufu", "Attack"],
-      "isBoss": false
+      "isBoss": false,
+      "affinities": {
+        "Physical": 1.0,
+        "Fire": 1.5,
+        "Ice": 0.5,
+        "Electric": 1.0,
+        "Force": 1.0,
+        "Almighty": 1.0
+      }
     },
     {
       "name": "Pyro Jack",
@@ -23,7 +31,15 @@
       "LU": 2,
       "baseXP": 20,
       "skills": ["Agi", "Fire Breath"], 
-      "isBoss": false
+      "isBoss": false,
+      "affinities": {
+        "Physical": 1.0,
+        "Fire": 0.5,
+        "Ice": 1.5,
+        "Electric": 1.0,
+        "Force": 1.0,
+        "Almighty": 1.0
+      }
     },
     {
       "name": "Seiten Taisei",
@@ -36,7 +52,15 @@
       "LU": 2,
       "baseXP": 20,
       "skills": ["Focus", "Attack"], 
-      "isBoss": false
+      "isBoss": false,
+      "affinities": {
+        "Physical": 1.0,
+        "Fire": 1.0,
+        "Ice": 1.0,
+        "Electric": 1.5,
+        "Force": 0.5,
+        "Almighty": 1.0
+      }
     },
     {
       "name": "Ares",
@@ -49,7 +73,15 @@
       "LU": 2,
       "baseXP": 20,
       "skills": ["Focus", "Attack"], 
-      "isBoss": false
+      "isBoss": false,
+      "affinities": {
+        "Physical": 1.0,
+        "Fire": 1.0,
+        "Ice": 1.0,
+        "Electric": 1.0,
+        "Force": 1.0,
+        "Almighty": 1.0
+      }
     },
     {
       "name": "Chernobog",
@@ -62,7 +94,57 @@
       "LU": 2,
       "baseXP": 20,
       "skills": ["Focus", "Attack"], 
-      "isBoss": false
+      "isBoss": false,
+      "affinities": {
+        "Physical": 1.0,
+        "Fire": 0.5,
+        "Ice": 1.0,
+        "Electric": 1.5,
+        "Force": 1.0,
+        "Almighty": 1.0
+      }
+    },
+    {
+      "name": "Indra",
+      "sprite": "assets/enemies/indrajit.png",
+      "level": 5,
+      "STR": 8,
+      "VIT": 5,
+      "MAG": 2,
+      "AGI": 3,
+      "LU": 2,
+      "baseXP": 20,
+      "skills": ["Focus", "Attack"], 
+      "isBoss": false,
+      "affinities": {
+        "Physical": 1.0,
+        "Fire": 1.0,
+        "Ice": 1.0,
+        "Electric": 0.5,
+        "Force": 1.0,
+        "Almighty": 1.0
+      }
+    },
+    {
+      "name": "Shiva",
+      "sprite": "assets/enemies/shiva.png",
+      "level": 5,
+      "STR": 8,
+      "VIT": 5,
+      "MAG": 2,
+      "AGI": 3,
+      "LU": 2,
+      "baseXP": 20,
+      "skills": ["Focus", "Attack"], 
+      "isBoss": false,
+      "affinities": {
+        "Physical": 1.0,
+        "Fire": 0.5,
+        "Ice": 1.0,
+        "Electric": 1.0,
+        "Force": 1.5,
+        "Almighty": 1.0
+      }
     }
   ]
   

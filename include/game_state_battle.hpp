@@ -127,9 +127,7 @@ private:
     std::vector<sf::RectangleShape> enemyHealthBarsBack;
     std::vector<sf::RectangleShape> enemyHealthBarsFront;
     void cleanupDeadEnemies();
-
-
-
+    int getEnemyIndex(NPC* e) const;
         
     // Submenu UI
     std::vector<Button> skillButtons;
@@ -178,7 +176,9 @@ private:
         int turnsRemaining = 0;
     };
     std::unordered_map<Player*, BuffInstance> activeBuffs;
-    void updateBuffTimers();
+    //void updateBuffTimers();
+    float getElementMultiplier(const Player* target, const Skill* skill) const;
+
 
 public:
     GameStateBattle(Game* game, bool isBossBattle);

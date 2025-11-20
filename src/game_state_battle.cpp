@@ -38,6 +38,19 @@ namespace {
     }
 }
 
+static std::string getSkillElement(const Skill* s) {
+    std::string t = s->getType();
+
+    if (t == "Fire") return "Fire";
+    if (t == "Ice") return "Ice";
+    if (t == "Electric") return "Electric";
+    if (t == "Force") return "Force";
+    if (t == "Magic-Almighty") return "Almighty";
+    if (t == "Almighty") return "Almighty";
+    
+    return ""; // physical/heal/buffs etc.
+}
+
 // Constructor and setup 
 
 GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
@@ -775,6 +788,7 @@ void GameStateBattle::update(const float dt) {
 }
 
 // Input Handling
+// Input Handling
 void GameStateBattle::handleInput() {
     sf::Event event;
     while (this->game->window.pollEvent(event)) {
@@ -987,29 +1001,29 @@ void GameStateBattle::handleInput() {
 
                 for (auto& b : skillButtons) {
                     if (!b.wasClicked(this->game->window)) continue;
-            
+
                     // It's assumed the front of turnQueue is the actor using the skill.
                     if (turnQueue.empty()) {
                         battleText.setString("No one can act right now.");
                         break;
                     }
                     Player* attacker = turnQueue.front();
-            
+
                     // safety: ensure actor is a player
                     bool isPartyActor = (std::find(party.begin(), party.end(), attacker) != party.end());
                     if (!isPartyActor) {
                         battleText.setString("It's not your turn!");
                         break;
                     }
-            
-                    // find the Skill* from attacker's known skills (uses player's getSkillPtr)
+
+                    // find the Skill* from attacker's known skills
                     const std::string skillName = b.getText();
                     const Skill* s = attacker->getSkillPtr(skillName, this->game->skillMasterList);
                     if (!s) {
                         battleText.setString("Skill not found.");
                         break;
                     }
-            
+
                     // Check MP (and HP if you use HP costs)
                     int mpCost = s->getMpCost();
                     if (mpCost > 0 && attacker->getMP() < mpCost) {
@@ -1027,10 +1041,10 @@ void GameStateBattle::handleInput() {
                         // apply HP cost (we use takeDamage to subtract HP)
                         attacker->takeDamage(hpCost);
                     }
-            
+
                     // Spend MP
                     if (mpCost > 0) attacker->spendMP(mpCost);
-            
+
                     // Determine whether this is healing or damaging skill by type string
                     const std::string type = s->getType(); // e.g. "Physical", "Fire", "Healing", "Almighty", "Damage Amp", etc.
                     bool isHealing = (type == "Healing");
@@ -1039,14 +1053,14 @@ void GameStateBattle::handleInput() {
                     bool isDamageAmpSkill = (type == "Damage Amp"); // buff-like
                     bool isHitEvadeBoost = (type == "Hit Evade Boost" || type == "Hit Evade Reduction");
                     bool isDamageResistSkill = (type == "Damage Resist");
-            
+
                     // Basic scalar: use damage amp if present, otherwise 1.0
                     float scalar = (s->getDamageAmp() > 0.0f) ? s->getDamageAmp() : 1.0f;
-            
+
                     // Determine targets: single vs all
                     bool singleTarget = s->getIsSingleTarget();
-            
-                    // Convenience lambdas for popups + text update
+
+                    // Convenience lambdas for popups + text update (uses your font & sprites)
                     auto spawnPopupAtEnemyIndex = [&](int enemyIdx, int dmg, bool crit) {
                         DamagePopup dp;
                         dp.text.setFont(font);
@@ -1062,7 +1076,7 @@ void GameStateBattle::handleInput() {
                         dp.life = 1.0f;
                         damagePopups.push_back(dp);
                     };
-            
+
                     auto spawnPopupAtPlayerIndex = [&](int pIdx, int dmg, bool crit) {
                         DamagePopup dp;
                         dp.text.setFont(font);
@@ -1076,11 +1090,11 @@ void GameStateBattle::handleInput() {
                         dp.life = 1.0f;
                         damagePopups.push_back(dp);
                     };
-            
+
                     // handle healing skills
                     if (isHealing) {
                         // healing percent stored in skill
-                        float healPct = s->getHealthRestorePercent(); // e.g. 1.25 => 125%? you used that when constructing
+                        float healPct = s->getHealthRestorePercent(); // e.g. 1.25 => 125%
                         if (singleTarget) {
                             // heal the active party member (front of queue) or first alive ally
                             int idx = 0;
@@ -1108,14 +1122,15 @@ void GameStateBattle::handleInput() {
                             }
                             battleText.setString(attacker->getName() + " used " + s->getName() + " and healed the party!");
                         }
-            
+
                         // end turn: rotate
                         if (!turnQueue.empty()) {
                             Player* front = turnQueue.front(); turnQueue.pop_front(); turnQueue.push_back(front);
+                            //updateBuffTimers();
                         }
                         break; // processed skill click
                     }
-            
+
                     // handle buff/utility skills (Damage Amp, Damage Resist, Hit/Evade)
                     if (isDamageAmpSkill || isDamageResistSkill || isHitEvadeBoost) {
                         // Simple implementation: apply an effect to attacker or to party.
@@ -1128,52 +1143,49 @@ void GameStateBattle::handleInput() {
                         } else {
                             battleText.setString(attacker->getName() + " used " + s->getName() + ". (Hit/Evade mod applied - implement persistent buff to take effect)");
                         }
-            
+
                         // rotate turn
                         if (!turnQueue.empty()) {
                             Player* front = turnQueue.front(); turnQueue.pop_front(); turnQueue.push_back(front);
+                            //updateBuffTimers();
                         }
                         break;
                     }
-            
-                    // else: damage skill (physical, magic, almighty, elementals, etc.)
-                    // Determine targets (single or all)
-                    std::vector<Player*> allyTargets; // unused here but kept for extensibility
+
+                    // else: damage skill (physical, magic, almighty, etc.)
+                    // Determine targets: single or all
                     std::vector<NPC*> enemyTargets;
                     if (singleTarget) {
-                        // pick the currently selected enemy (currentEnemyIndex) or first living enemy
                         int tidx = currentEnemyIndex;
                         if (tidx < 0 || tidx >= static_cast<int>(enemies.size()) || enemies[tidx].isDead()) {
                             tidx = getFirstLivingEnemy();
                         }
                         if (tidx >= 0) enemyTargets.push_back(&enemies[tidx]);
                     } else {
-                        // all enemies
                         for (auto& en : enemies) if (!en.isDead()) enemyTargets.push_back(&en);
                     }
-            
+
                     if (enemyTargets.empty()) {
                         battleText.setString("No valid targets for " + s->getName() + ".");
                         break;
                     }
-            
+
                     // compute damage for each target (respecting physical vs magic vs almighty)
                     int totalDamage = 0;
                     for (size_t ei = 0; ei < enemyTargets.size(); ++ei) {
                         NPC* target = enemyTargets[ei];
-            
-                        // Determine magic vs physical: use type string
+
                         int damage = 0;
                         bool crit = false;
                         float critChance = s->getCritRate();
                         if (critChance <= 0.f) critChance = 0.05f; // fallback
-            
+
                         // roll crit
                         std::uniform_real_distribution<float> cr(0.f, 1.f);
                         crit = (cr(globalRng()) < critChance);
-            
+
                         if (isPhysical) {
-                            // Use physATK. Use baseAtk and damage amp scalar if provided.
+                            // Use physATK. Use baseAtk and scalar if provided.
                             int baseAtk = s->getBaseAtk();
                             float usedScalar = scalar;
                             damage = attacker->physATK(usedScalar, baseAtk, crit);
@@ -1182,41 +1194,39 @@ void GameStateBattle::handleInput() {
                             int baseAtk = s->getBaseAtk();
                             int limit   = s->getLimit();
                             int corr    = s->getCorrection();
-            
-                            // isWeak currently unknown (requires reading target affinities). We'll assume false unless affinity logic added.
-                            bool isWeak = false;
-            
-                            // For almighty, affinity doesn't apply — magATK still used but set isWeak=false.
-                            damage = attacker->magATK(1.0f /*scalar*/, baseAtk, limit, corr, isWeak);
+
+                            // Determine weakness from target affinities via helper: getElementMultiplier
+                            // getElementMultiplier should return e.g. 1.5 for weak, 0.5 for resist, 1.0 for neutral.
+                            float elementMul = 1.0f;
+                            // If you named your helper differently, change this call accordingly
+                            elementMul = getElementMultiplier(target, s);
+
+                            // magATK uses its own scalar behaviour; pass isWeak (true if multiplier > 1.0)
+                            bool isWeak = (elementMul > 1.0f);
+
+                            damage = attacker->magATK(1.0f /* scalar for mag formula */, baseAtk, limit, corr, isWeak);
                             if (crit) damage = static_cast<int>(damage * 1.5f);
+
+                            // apply element multiplier
+                            damage = static_cast<int>(std::round(damage * elementMul));
                         }
-            
-                        // TODO: apply elemental affinity multiplier here:
-                        // e.g.
-                        // float affinityMul = 1.0f;
-                        // if (Player had a getter like target->getAffinityFor(type)) affinityMul = target->getAffinityFor(type);
-                        // damage = static_cast<int>(damage * affinityMul);
-                        // (Add getter in Player and uncomment/apply)
-            
-                        // Apply damage to target
+
+                        // apply damage to target
                         target->takeDamage(damage);
                         totalDamage += damage;
-            
+
                         // spawn popup: find enemy index in enemies vector
-                        int enemyIndexInVector = -1;
-                        for (size_t k = 0; k < enemies.size(); ++k) {
-                            if (&enemies[k] == target) { enemyIndexInVector = static_cast<int>(k); break; }
-                        }
+                        int enemyIndexInVector = getEnemyIndex(target);
                         spawnPopupAtEnemyIndex(enemyIndexInVector, damage, crit);
                     } // end for each enemy target
-            
+
                     // update battle text
                     if (enemyTargets.size() == 1) {
                         battleText.setString(attacker->getName() + " used " + s->getName() + " on " + enemyTargets.front()->getName() + " for " + std::to_string(totalDamage) + " damage!");
                     } else {
                         battleText.setString(attacker->getName() + " used " + s->getName() + " and dealt " + std::to_string(totalDamage) + " total damage to the enemies!");
                     }
-            
+
                     // Remove dead enemies from turnQueue and check battle over
                     cleanupDeadEnemies();
                     bool anyAlive = false;
@@ -1228,40 +1238,28 @@ void GameStateBattle::handleInput() {
                         int first = getFirstLivingEnemy();
                         if (first >= 0) currentEnemyIndex = first;
                     }
-            
+
                     // end turn: rotate queue
                     if (!turnQueue.empty()) {
                         Player* front = turnQueue.front();
                         turnQueue.pop_front();
                         turnQueue.push_back(front);
+                        //updateBuffTimers();
                     }
-            
+
                     break; // handled this skill click
                 } // end for skillButtons
-            
+
                 // Back button (return to main menu)
                 if (backButton.wasClicked(this->game->window)) {
                     currentMenuState = BattleMenuState::Main;
                 }
-            }
-
-            else if (currentMenuState == BattleMenuState::Item) {
-                for (auto& b : itemButtons) {
-                    if (b.wasClicked(this->game->window)) {
-                        // item selected
-                    }
-                }
-                if (backButton.wasClicked(this->game->window)) {
-                    currentMenuState = BattleMenuState::Main;
-                }
-            }
+            } // end Skill branch
         }
     }
 }
-
   
-
-// Loading random enemies
+// load random enemies
 std::vector<NPC> GameStateBattle::loadRandomEnemies(int count) {
     std::ifstream file("assets/enemies/enemies.json");
     if (!file.is_open()) {
@@ -1291,19 +1289,42 @@ std::vector<NPC> GameStateBattle::loadRandomEnemies(int count) {
 
     for (int i = 0; i < count; ++i) {
         auto& e = j[dis(gen)];
+
+        // --- Load affinities from JSON ---
+        std::map<std::string, float> aff;
+
+        if (e.contains("affinities")) {
+            for (auto& [key, val] : e["affinities"].items()) {
+                aff[key] = val.get<float>();
+            }
+        }
+
+        // Ensure all expected elements exist (fallback = neutral)
+        static const std::vector<std::string> elems = {
+            "Physical", "Fire", "Ice", "Electric", "Force", "Almighty"
+        };
+
+        for (const std::string& elem : elems) {
+            if (aff.find(elem) == aff.end())
+                aff[elem] = 1.0f;
+        }
+
+        // --- Create the NPC ---
         selectedEnemies.emplace_back(
             e.value("name", "Unknown"),
             e.value("sprite", "default.png"),
-            e.value("LVL", 1),
+            e.value("level", 1),
             e.value("STR", 1),
             e.value("VIT", 1),
             e.value("MAG", 0),
             e.value("AGI", 1),
             e.value("LU", 1),
-            e.value("XP", 0),
-            std::map<std::string,float>{{"fire",1.0f}, {"ice",1.0f}}  // placeholder
+            e.value("baseXP", 0),
+            aff,
+            e.value("isBoss", false)
         );
     }
+
     return selectedEnemies;
 }
 
@@ -1519,7 +1540,7 @@ void GameStateBattle::cleanupDeadEnemies() {
     currentEnemyIndex = getFirstLivingEnemy();
 }
 
-float getElementMultiplier(const Player* target, const Skill* s) {
+float GameStateBattle::getElementMultiplier(const Player* target, const Skill* s) const {
     if (s->getType() == "Physical-Almighty" ||
         s->getType() == "Magic-Almighty" ||
         s->getType() == "Almighty")
@@ -1533,3 +1554,13 @@ float getElementMultiplier(const Player* target, const Skill* s) {
     if (a == 0.0f) return 0.0f;   // NULL
     return a;                     // 0.5 resist, 1.0 neutral, 1.5 weak
 }
+
+int GameStateBattle::getEnemyIndex(NPC* e) const {
+    if (!e) return -1;
+    for (size_t i = 0; i < enemies.size(); ++i) {
+        if (&enemies[i] == e)
+            return static_cast<int>(i);
+    }
+    return -1;
+}
+
