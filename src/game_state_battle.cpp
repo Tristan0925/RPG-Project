@@ -51,6 +51,13 @@ static std::string getSkillElement(const Skill* s) {
     return ""; // physical/heal/buffs etc.
 }
 
+// ---- Enemy Turn Timing State ----
+static bool enemyTurnPending = false;
+static float enemyTurnTimer = 0.f;
+static const float ENEMY_TURN_DELAY = 1.5f; // delay before enemy acts
+static Player* pendingEnemy = nullptr;
+
+
 // Constructor and setup 
 
 GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
@@ -184,7 +191,6 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
 
         // store base scales consistently
         portraitBaseScales[i] = scale;
-        // turnPortraitBaseScales[i] = scale; // Removed assignment, scale calculated in updateTurnPanel
 
         // Store a copy for battle area icons
         playerBackgrounds.push_back(bgBox);
@@ -203,11 +209,9 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
         hpTexts.push_back(hpText);
         mpTexts.push_back(mpText);
 
-        // Now set the portrait sprite for the turn panel (use same texture)
+        // Now set the portrait sprite for the turn panel 
         if (i < turnPortraitSprites.size()) {
             turnPortraitSprites[i].setTexture(this->game->texmgr.getRef(texName), true);
-            // turnPortraitSprites[i].setScale(scale, scale); // REMOVED: Scale will be calculated in updateTurnPanel
-            // set an initial position; actual centering will happen in updateTurnPanel()
             turnPortraitSprites[i].setPosition(xOffset, yOffset);
         }
     }   
@@ -315,6 +319,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     itemButton.enableHexBackground(true);
     guardButton.enableHexBackground(true);
     escapeButton.enableHexBackground(true);
+
     //Set Up results screen text
     topBarText.setFont(font);
     topBarText.setCharacterSize(75);
@@ -377,7 +382,9 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     gameOver = false;
     gameOverMenuState = GameOverMenuState::Main;
 
-    
+    enemyTurnPending = false;
+    enemyTurnTimer = 0.f;
+    pendingEnemy = nullptr;
 }
 
 // Results Screen
@@ -698,83 +705,92 @@ void GameStateBattle::update(const float dt) {
     // We'll use a static pointer to remember who acted last update.
     static Player* lastActor = nullptr;
     if (!turnQueue.empty()) {
-        Player* currentActor = turnQueue.front();
-        if (currentActor != lastActor) {
-            // new actor this frame
-            lastActor = currentActor;
 
-            // If currentActor is an NPC from enemies (i.e., an enemy), perform AI action immediately
-            bool actorIsEnemy = (std::find(party.begin(), party.end(), currentActor) == party.end());
+        // If we are NOT currently waiting for a delayed enemy action:
+        if (!enemyTurnPending) {
+            Player* actor = turnQueue.front();
+
+            // Is this actor an ENEMY (not a player)?
+            bool actorIsEnemy = (std::find(party.begin(), party.end(), actor) == party.end());
+
             if (actorIsEnemy) {
-                // Find which enemy in our enemies vector this corresponds to
+                pendingEnemy = actor;
+                enemyTurnPending = true;
+                enemyTurnTimer = ENEMY_TURN_DELAY;  // start the delay countdown
+            }
+        }
+        else {
+            // We ARE currently waiting for the enemy delay
+            enemyTurnTimer -= dt;
+            if (enemyTurnTimer <= 0.f && pendingEnemy != nullptr) {
+
                 NPC* actingEnemy = nullptr;
                 for (auto& e : enemies) {
-                    if (&e == currentActor) { actingEnemy = &e; break; }
+                    if (&e == pendingEnemy) {
+                        actingEnemy = &e;
+                        break;
+                    }
                 }
 
+                // Should not happen, but safe check
                 if (actingEnemy && !actingEnemy->isDead()) {
-                    // Choose random living party member target
+
+                    // Pick random living party member
                     std::vector<Player*> livingTargets;
-                    for (auto* p : party) if (p && p->getHP() > 0) livingTargets.push_back(p);
+                    for (auto* p : party)
+                        if (p && p->getHP() > 0) livingTargets.push_back(p);
 
                     if (!livingTargets.empty()) {
-                        std::uniform_int_distribution<> dis(0, static_cast<int>(livingTargets.size()) - 1);
+                        std::uniform_int_distribution<> dis(0, livingTargets.size() - 1);
                         Player* target = livingTargets[dis(globalRng())];
 
-                        // Use the "Attack" skill if present; fallback baseAtk/crit defaults
                         const Skill* atkSkill = findSkillByName(this->game, "Attack");
                         int baseAtk = atkSkill ? atkSkill->getBaseAtk() : 15;
-                        float critChance = atkSkill ? atkSkill->getCritRate() : 0.05f;                    
-                        // compute damage using attacking enemy's physATK (enemy inherits Player)
-                        int damage = actingEnemy->physATK(1.0f, baseAtk, false);
+                        float critChance = atkSkill ? atkSkill->getCritRate() : 0.05f;
 
-                        // crit roll (simple)
+                        int dmg = actingEnemy->physATK(1.0f, baseAtk, false);
                         std::uniform_real_distribution<float> cr(0.f, 1.f);
-                        bool isCrit = (cr(globalRng()) < critChance);
-                        if (isCrit) {
-                            damage = static_cast<int>(damage * 1.5f);
-                        }
+                        bool crit = (cr(globalRng()) < critChance);
+                        if (crit) dmg = static_cast<int>(dmg * 1.5f);
 
-                        target->takeDamage(damage);
+                        target->takeDamage(dmg);
 
-                        // spawn damage popup above target's approximate screen position
+                        // popup
                         DamagePopup dp;
                         dp.text.setFont(font);
                         dp.text.setCharacterSize(28);
-                        dp.text.setString((isCrit ? std::string("CRIT ") : std::string("")) + std::to_string(damage));
+                        dp.text.setString((crit ? "CRIT " : "") + std::to_string(dmg));
                         dp.text.setFillColor(sf::Color::Red);
-                        // approximate target screen position: we only have player icons; place near corresponding icon
-                        // We'll try to place popup above the first matching playerIcon (best effort)
-                        sf::Vector2f popupPos(200.f, 700.f); // fallback
-                        for (size_t i = 0; i < playerIcons.size(); ++i) {
-                            if (i < party.size() && party[i] == target) {
-                                popupPos = playerIcons[i].getPosition() - sf::Vector2f(0.f, 40.f);
-                                break;
-                            }
-                        }
-                        dp.text.setPosition(popupPos);
+
+                        sf::Vector2f pos(200.f, 700.f);
+                        for (size_t i = 0; i < playerIcons.size(); ++i)
+                            if (party[i] == target)
+                                pos = playerIcons[i].getPosition() - sf::Vector2f(0.f, 40.f);
+
+                        dp.text.setPosition(pos);
                         dp.velocity = sf::Vector2f(0.f, -30.f);
                         dp.life = 1.0f;
                         damagePopups.push_back(dp);
 
-                        // message
-                        battleText.setString(actingEnemy->getName() + " attacked " + target->getName() + " for " + std::to_string(damage) + "!");
+                        battleText.setString(
+                            actingEnemy->getName() +
+                            " attacked " + target->getName() + " for " +
+                            std::to_string(dmg) + "damage!"
+                        );
+
                         cleanupDeadEnemies();
                     }
-
-                    // rotate queue (end enemy's turn)
-                    if (!turnQueue.empty()) {
-                        Player* front = turnQueue.front();
-                        turnQueue.pop_front();
-                        turnQueue.push_back(front);
-                    }
-                } else {
-                    // If acting enemy is dead or invalid, just pop them out
-                    for (auto it = turnQueue.begin(); it != turnQueue.end();) {
-                        if (*it == actingEnemy) it = turnQueue.erase(it);
-                        else ++it;
-                    }
                 }
+
+                // End enemy turn
+                if (!turnQueue.empty()) {
+                    Player* front = turnQueue.front();
+                    turnQueue.pop_front();
+                    turnQueue.push_back(front);
+                }
+
+                enemyTurnPending = false;
+                pendingEnemy = nullptr;
             }
         }
     }

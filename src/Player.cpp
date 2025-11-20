@@ -265,7 +265,6 @@ int Player::getVIT() const { return VIT; }
 
     if (LVL < peak){
         damage = 0.004 * (5 * (MAG + 36) - LVL) * ((24 * baseAtk * (LVL / 255) + correction));
-        std::cout << (int) (damage + (damage * (damageDifference))) * weaknessMultiplier << std::endl;
         return (int) (damage + (damage * (damageDifference))) * weaknessMultiplier;
     }
     else if (LVL == peak){
