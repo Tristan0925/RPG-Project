@@ -241,13 +241,12 @@ int Player::getVIT() const { return VIT; }
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> damageDifferential(-0.05f, 0.05f); //damage has a +/- 5% added to it, to keep damage from being deterministic
-    int damageDifference = damageDifferential(gen);
-    int raw = ((static_cast<float>(LVL) + static_cast<float>(STR)) * static_cast<float>(baseAtk) / 15.0f) * scalar;
-    float varied = raw + raw * damageDifference;
+    float damageDifference = damageDifferential(gen);
+    float raw = ((static_cast<float>(LVL) + static_cast<float>(STR)) * static_cast<float>(baseAtk) / 15.0f) * scalar;
+    float varied = raw * (1.0f + damageDifference); // equivalent to raw + raw * damageDifference
     if (isCrit) varied *= 1.5f;
 
     int damage = static_cast<int>(std::round(varied));
-
     if (damage < 0) damage = 0;
     return damage;
  }

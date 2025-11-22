@@ -56,6 +56,8 @@ class Player {
         int LVL, maxMP, maxHP, HP, MP, STR, VIT, MAG, AGI, LU, XP;
         std::map<std::string, float> affinities; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [NULL(0)/RESIST(0.5)/NEUTRAL(1.0)/WEAK(1.5)]) If resist, x0.5 dmg, If weak, 1.5x dmg.
         std::array<const Skill*, 9> skillsList;  // Attack + every affinity + phys-almighty (ignores resistances, uses physical damage formula) + some extra skills. This probably should be its own class.
+        protected:
+        std::vector<Skill> skills;   // Stores actual Skill objects for players/NPCs
     public:
         int inDoor;
         Player(); // Constructor
@@ -113,7 +115,5 @@ class Player {
         const std::map<std::string, float>& getAffinityMap() const {
             return affinities;
         }        
-                    
-
 };
 

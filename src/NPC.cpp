@@ -19,7 +19,7 @@ NPC::NPC(std::string name, std::string spriteLoc, int LVL, int STR, int VIT, int
 : Player(name, LVL, STR, VIT, MAG, AGI, LU, 0, affinities), baseXPAmount(baseXP),
 animationsLocation({}),
 spriteLocation(spriteLoc),
-isBoss(false)
+isBoss(isBoss)
 {}
 
 // Boss constructor

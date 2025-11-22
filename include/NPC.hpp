@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 #include <vector>
+#include <string>
 
 class NPC : public Player {
     private:
@@ -22,10 +23,12 @@ class NPC : public Player {
         std::vector<std::string> getAnimationsLocation() const;
         std::string getSpriteLocation () const;
         bool getIsBoss() const;
+        std::vector<std::string> skillNames;
     public:
         const std::string& getName() const { return name; }
         const std::string& getDisplayName() const { return name; }
-
+        void setSkillNames(const std::vector<std::string>& names) { skillNames = names; }
+        const std::vector<std::string>& getSkillNames() const { return skillNames; }
 };
 
 #endif // NPC_H
