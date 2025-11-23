@@ -15,11 +15,12 @@ isBoss(false)
 {}
 
 // Enemy constructor
-NPC::NPC(std::string name, std::string spriteLoc, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int baseXP, std::map<std::string, float> affinities, bool isBoss)
+NPC::NPC(std::string name, std::string spriteLoc, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int baseXP, std::map<std::string, float> affinities, bool isBoss, const std::vector<std::string>& skills)
 : Player(name, LVL, STR, VIT, MAG, AGI, LU, 0, affinities), baseXPAmount(baseXP),
 animationsLocation({}),
 spriteLocation(spriteLoc),
-isBoss(isBoss)
+isBoss(isBoss),
+skillNames(skills)  
 {}
 
 // Boss constructor

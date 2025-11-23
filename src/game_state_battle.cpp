@@ -709,10 +709,24 @@ void GameStateBattle::update(const float dt) {
                                 // skip pure utility/healing for now (enemies will not heal themselves)
                                 std::string t = sc->getType();
                                 if (t == "Healing" || t == "Damage Amp" || t == "Damage Resist" || t == "Hit Evade Boost" || t == "Hit Evade Reduction")
+                                {
+                                    actingEnemy->addBuff("Damage Amp", 1.25f, 3, true, false);
+                                    battleText.setString(actingEnemy->getName() + " powered up!");
+                                    // small popup above enemy sprite
+                                    DamagePopup dp;
+                                    dp.text.setFont(font);
+                                    dp.text.setCharacterSize(24);
+                                    dp.text.setString("DMG UP!");
+                                    dp.text.setFillColor(sf::Color(255,200,50));
+                                    dp.velocity = sf::Vector2f(0.f, -25.f);
+                                    dp.life = 1.2f;
+                                    damagePopups.push_back(dp);
                                     continue;
-                                // skip if MP cost unaffordable
-                                if (sc->getMpCost() > 0 && actingEnemy->getMP() < sc->getMpCost()) continue;
-                                candidates.push_back(sc);
+                                }
+                                    // End enemy turn immediately after applying buff (do not treat as damaging)
+                                    // rotate turn queue as you do normally
+                                    if (sc->getMpCost() > 0 && actingEnemy->getMP() < sc->getMpCost()) continue;
+                                    candidates.push_back(sc);
                             }
 
                             if (!candidates.empty()) {
@@ -787,6 +801,7 @@ void GameStateBattle::update(const float dt) {
                                 if (scalar <= 0.0f) scalar = 1.0f;
 
                                 damage = actingEnemy->physATK(scalar, baseAtk, crit);
+                                damage = static_cast<int>(std::round(damage * t->getIncomingDamageMultiplier()));
                             } else {
                                     // magic / almighty / element
                                     int baseAtk = chosenSkill ? chosenSkill->getBaseAtk() : 10;
@@ -801,6 +816,8 @@ void GameStateBattle::update(const float dt) {
 
                                     // calculate magic damage
                                     damage = actingEnemy->magATK(1.0f, baseAtk, limit, corr, isWeak);
+                                    damage = static_cast<int>(std::round(damage * t->getIncomingDamageMultiplier()));
+
 
                                     // magic does not crit
                                     crit = false;
@@ -871,6 +888,7 @@ void GameStateBattle::update(const float dt) {
                     Player* front = turnQueue.front();
                     turnQueue.pop_front();
                     turnQueue.push_back(front);
+                    if (front) front->decrementBuffTurns();
                 }
 
                 enemyTurnPending = false;
@@ -957,6 +975,7 @@ void GameStateBattle::handleInput() {
                     Player* front = turnQueue.front();
                     turnQueue.pop_front();
                     turnQueue.push_back(front);
+                    if (front) front->decrementBuffTurns();
                 }
             }
             else if (event.key.code == sf::Keyboard::Right) {
@@ -1037,6 +1056,7 @@ void GameStateBattle::handleInput() {
 
                     // compute damage using attacking player's physATK (player inherits Player)
                     int damage = attacker->physATK(1.0f, baseAtk, false);
+                    damage = static_cast<int>(std::round(damage * target->getIncomingDamageMultiplier()));
 
                     // crit roll
                     std::uniform_real_distribution<float> cr(0.f, 1.f);
@@ -1094,6 +1114,7 @@ void GameStateBattle::handleInput() {
                         Player* front = turnQueue.front();
                         turnQueue.pop_front();
                         turnQueue.push_back(front);
+                        if (front) front->decrementBuffTurns();
                     }
 
                     return; // end click event
@@ -1264,25 +1285,34 @@ void GameStateBattle::handleInput() {
                     }
 
                     // handle buff/utility skills (Damage Amp, Damage Resist, Hit/Evade)
-                    if (isDamageAmpSkill || isDamageResistSkill || isHitEvadeBoost) {
-                        // Simple implementation: apply an effect to attacker or to party.
-                        // TODO: integrate into a persistent buff system (GameStateBattle::activeBuffs) so damage calculation reads these.
-                        // For now just show a message and spend mp.
-                        if (isDamageAmpSkill) {
-                            battleText.setString(attacker->getName() + " used " + s->getName() + ". (Damage Amp applied - implement persistent buff to take effect)");
-                        } else if (isDamageResistSkill) {
-                            battleText.setString(attacker->getName() + " used " + s->getName() + ". (Damage Resist applied - implement persistent buff to take effect)");
-                        } else {
-                            battleText.setString(attacker->getName() + " used " + s->getName() + ". (Hit/Evade mod applied - implement persistent buff to take effect)");
-                        }
-
-                        // rotate turn
-                        if (!turnQueue.empty()) {
-                            Player* front = turnQueue.front(); turnQueue.pop_front(); turnQueue.push_back(front);
-                            //updateBuffTimers();
-                        }
-                        break;
+                    if (isDamageAmpSkill) {
+                        // +25% outgoing damage for 3 turns on attacker
+                        attacker->addBuff("Damage Amp", 1.25f, 3, /*affectsOutgoing=*/true, /*affectsIncoming=*/false);
+                        battleText.setString(attacker->getName() + " used " + s->getName() + ". Damage increased!");
+                        // popup
+                        DamagePopup dp;
+                        dp.text.setFont(font);
+                        dp.text.setCharacterSize(24);
+                        dp.text.setString("DMG UP!");
+                        dp.text.setFillColor(sf::Color(255,200,50)); // gold-ish
+                        dp.text.setPosition(playerIcons[0].getPosition() - sf::Vector2f(0.f, 40.f)); // adjust actor pos
+                        dp.velocity = sf::Vector2f(0.f, -25.f);
+                        dp.life = 1.2f;
+                        damagePopups.push_back(dp);
                     }
+                    else if (isDamageResistSkill) {
+                        // 20% incoming damage reduction (multiplier 0.8) for 3 turns
+                        attacker->addBuff("Damage Resist", 0.80f, 3, /*affectsOutgoing=*/false, /*affectsIncoming=*/true);
+                        battleText.setString(attacker->getName() + " used " + s->getName() + ". Damage taken reduced!");
+                        // popup (similar)
+                    }
+                    else if (isHitEvadeBoost) {
+                        // add both hit & evade buffs (use standardized names)
+                        attacker->addBuff("Hit Boost", 1.15f, 3, true, false);
+                        attacker->addBuff("Evade Boost", 1.15f, 3, false, false);
+                        battleText.setString(attacker->getName() + " used " + s->getName() + ". Accuracy & Evasion up!");
+                    }
+                    
 
                     // else: damage skill (physical, magic, almighty, etc.)
                     // Determine targets: single or all
@@ -1338,7 +1368,7 @@ void GameStateBattle::handleInput() {
                             bool isWeak = (elementMul > 1.0f);
 
                             damage = attacker->magATK(1.0f /* scalar for mag formula */, baseAtk, limit, corr, isWeak);
-                            if (crit) damage = static_cast<int>(damage * 1.5f);
+                            damage = static_cast<int>(std::round(damage * elementMul * target->getIncomingDamageMultiplier()));
 
                             // apply element multiplier
                             damage = static_cast<int>(std::round(damage * elementMul));
@@ -1377,7 +1407,7 @@ void GameStateBattle::handleInput() {
                         Player* front = turnQueue.front();
                         turnQueue.pop_front();
                         turnQueue.push_back(front);
-                        //updateBuffTimers();
+                        if (front) front->decrementBuffTurns();
                     }
 
                     break; // handled this skill click
@@ -1442,6 +1472,16 @@ std::vector<NPC> GameStateBattle::loadRandomEnemies(int count) {
                 aff[elem] = 1.0f;
         }
 
+        // Load skill list from JSON and attach to NPC
+        std::vector<std::string> sks;
+        if (e.contains("skills") && e["skills"].is_array()) {
+            for (auto &it : e["skills"]) {
+                try {
+                    sks.push_back(it.get<std::string>());
+                    } catch (...) { /* ignore malformed entries */ }
+                }
+            }
+
         // --- Create the NPC
         selectedEnemies.emplace_back(
             e.value("name", "Unknown"),
@@ -1454,19 +1494,10 @@ std::vector<NPC> GameStateBattle::loadRandomEnemies(int count) {
             e.value("LU", 1),
             e.value("baseXP", 0),
             aff,
-            e.value("isBoss", false)
-        );
-
-        // Load skill list from JSON and attach to NPC
-        std::vector<std::string> sks;
-        if (e.contains("skills") && e["skills"].is_array()) {
-            for (auto &it : e["skills"]) {
-                try {
-                    sks.push_back(it.get<std::string>());
-                } catch (...) { /* ignore malformed entries */ }
-            }
-        }
-    }
+            e.value("isBoss", false),
+            sks
+       );
+    }    
     return selectedEnemies;
 }
 

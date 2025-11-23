@@ -246,6 +246,10 @@ int Player::getVIT() const { return VIT; }
     float varied = raw * (1.0f + damageDifference); // equivalent to raw + raw * damageDifference
     if (isCrit) varied *= 1.5f;
 
+    // Buff multiplier
+    float outgoingMult = getOutgoingDamageMultiplier();
+    varied *= outgoingMult;
+
     int damage = static_cast<int>(std::round(varied));
     if (damage < 0) damage = 0;
     return damage;
@@ -257,31 +261,38 @@ int Player::getVIT() const { return VIT; }
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> damageDifferential(-0.05f ,0.05f); //damage has a +/- 5% added to it, to keep damage from being deterministic
     int damageDifference = damageDifferential(gen);
-    int damage;
-    float weaknessMultiplier;
-    if (isWeak) weaknessMultiplier = 1.5;
-    else weaknessMultiplier = 1.0;
+
+    float weaknessMultiplier = isWeak ? 1.5f : 1.0f;;
+    float dmg = 0.f;  // use float internally, convert to int later
 
     if (LVL < peak){
-        damage = 0.004 * (5 * (MAG + 36) - LVL) * ((24 * baseAtk * (LVL / 255) + correction));
-        return (int) (damage + (damage * (damageDifference))) * weaknessMultiplier;
+        dmg = 0.004f * (5 * (MAG + 36) - LVL) * ((24 * baseAtk * (LVL / 255.0f) + correction));
     }
     else if (LVL == peak){
-        damage = 0.004 * ((5 * (MAG + 36)) - ((limit - correction) / baseAtk) * (255/24)) * limit;
-        return (int) (damage + (damage * (damageDifference))) * weaknessMultiplier;
+        dmg = 0.004f * ((5 * (MAG + 36)) - ((limit - correction) / (float)baseAtk) * (255/24.0f)) * limit;
     }
     else if (LVL > peak && LVL <= 160){
-        damage = 0.004 * (5 * (MAG + 36) - LVL) * limit;
-        return (int) (damage + (damage * (damageDifference))) * weaknessMultiplier;
+        dmg = 0.004f * (5 * (MAG + 36) - LVL) * limit;
     }
     else if (LVL > 160){
-        damage = 0.004 * (5 * (MAG + 36) - 160) * limit;
-        return (int) (damage + (damage * (damageDifference))) * weaknessMultiplier;
+        dmg = 0.004f * (5 * (MAG + 36) - 160) * limit;
     }
     else {
-     std::cout << "Something went horribly wrong while attacking if you are seeing this" << std::endl;
-     std::exit(100);
+        std::cout << "Something went horribly wrong while attacking if you are seeing this" << std::endl;
+        std::exit(100);
     }
+
+    // Apply randomness
+    dmg = dmg + dmg * damageDifference;
+
+    // Apply weakness (from element multiplier logic outside)
+    dmg *= weaknessMultiplier;
+
+    // Outgoing damage buff multiplier
+    float outgoingMult = getOutgoingDamageMultiplier();
+    dmg *= outgoingMult;
+
+    return (int) dmg;
  }
  
  void Player::levelUp(std::map<std::string, int> skillPointDistribution){
@@ -491,4 +502,54 @@ bool Player::loadFromFile(const std::string& filename, const std::vector<Skill>&
    
 std::string Player::getName() const{
     return name;
+}
+
+
+// Buff/Debuff function locations
+
+void Player::addBuff(const std::string& name, float value, int turns,
+                     bool affectsOutgoing, bool affectsIncoming) {
+    ActiveBuff b;
+    b.name = name;
+    b.value = value;
+    b.turnsRemaining = turns;
+    b.affectsOutgoing = affectsOutgoing;
+    b.affectsIncoming = affectsIncoming;
+    activeBuffs.push_back(b);
+}
+
+void Player::decrementBuffTurns() {
+    for (auto &b : activeBuffs) b.turnsRemaining--;
+    removeExpiredBuffs();
+}
+
+void Player::removeExpiredBuffs() {
+    activeBuffs.erase(std::remove_if(activeBuffs.begin(), activeBuffs.end(),
+        [](const ActiveBuff& b){ return b.turnsRemaining <= 0; }), activeBuffs.end());
+}
+
+float Player::getOutgoingDamageMultiplier() const {
+    float mult = 1.0f;
+    for (const auto &b : activeBuffs) {
+        if (b.affectsOutgoing) mult *= b.value;
+    }
+    return mult;
+}
+
+float Player::getIncomingDamageMultiplier() const {
+    float mult = 1.0f;
+    for (const auto &b : activeBuffs) {
+        if (b.affectsIncoming) mult *= b.value;
+    }
+    return mult;
+}
+
+float Player::getHitModifier() const {
+    float mult = 1.0f;
+    for (const auto &b : activeBuffs) {
+        // We will use name match or standardized buff names for hit modifiers
+        if (b.name == "Hit Boost" || b.name == "Evade Boost") mult *= b.value;
+        if (b.name == "Hit Reduction" || b.name == "Evade Reduction") mult *= b.value;
+    }
+    return mult;
 }

@@ -19,6 +19,8 @@ Like having modules in python to handle classes and then you import the files yo
 #include <array>
 #include "skill.hpp"
 #include <unordered_map>
+#include <algorithm>
+
 
 class Map;
 
@@ -114,6 +116,27 @@ class Player {
         // Returns map<string, float> of affinities like Fire=0.5, Ice=1.5, etc.
         const std::map<std::string, float>& getAffinityMap() const {
             return affinities;
-        }        
+        }
+
+        // Buff/debuff declarations
+        struct ActiveBuff {
+            std::string name; // e.g. "Damage Amp", "Damage Resist", "Hit Boost", "Hit Reduction"
+            float value; // multipler (e.g. 1.25f for +25%, 0.80f for -20%)
+            int turnsRemaining; // number of actor turns remaining
+            bool affectsOutgoing; // true if buff modifies outgoing damage/hit (actor-side)
+            bool affectsIncoming; // true if buff modifies incoming damage (target-side)
+        };
+
+        std::vector<ActiveBuff> activeBuffs;
+
+        // Buff API
+        void addBuff(const std::string& name, float value, int turns, bool affectsOutgoing = true, bool affectsIncoming = false);
+        void decrementBuffTurns(); // decrement and remove expired buffs (called when actor finishes turn)
+        void removeExpiredBuffs();
+
+        float getOutgoingDamageMultiplier() const; // multiplies outgoing damage (actor)
+        float getIncomingDamageMultiplier() const; // multiplies incoming damage (target)
+        float getHitModifier() const; // multiplies hit chance/evasion as needed
+
 };
 

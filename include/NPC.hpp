@@ -16,7 +16,7 @@ class NPC : public Player {
         bool isBoss = false;
         public:
         NPC(std::string name, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int XP, std::map<std::string, float> affinities); //party member constructor
-        NPC(std::string name, std::string spriteLocation, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int baseXPAmount, std::map<std::string, float> affinities, bool isBoss = false); //enemy constructor
+        NPC(std::string name, std::string spriteLocation, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int baseXPAmount, std::map<std::string, float> affinities, bool isBoss, const std::vector<std::string>& skills); //enemy constructor
         NPC(std::string name, std::string spriteLocation, std::vector<std::string> animationsLocation, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int XP, std::map<std::string, float> affinities, bool isBoss = true); //boss constructor, only they have animations for my own sanity
         ~NPC();
         int getBaseXPAmount() const;
