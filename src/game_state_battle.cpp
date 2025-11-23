@@ -257,54 +257,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     }
     
 
-    // --- Populate Skill Buttons (filtered by unlock level, 2-column layout) ---
-    skillButtons.clear();
-
-    // Layout parameters
-    float baseX = 150.f;
-    float baseY = 780.f;
-    float offsetY = 55.f;        // vertical distance between buttons
-    float columnSpacing = 260.f; // distance between columns
-
-    int playerLevel = this->game->player.getLVL();
-
-    size_t visibleIndex = 0;
-    
-    // Loop through skill names (strings)
-    
-    for (size_t i = 1; i < this->game->playerSkills.size(); ++i) {
-        const Skill* s = this->game->player.getSkillPtr(this->game->playerSkills[i], this->game->skillMasterList);
-
-        if (!s) continue;
-    
-        if (playerLevel < s->getUnlockLevel())
-            continue;
-    
-        // 2-column layout
-        size_t col = visibleIndex % 2;
-        size_t row = visibleIndex / 2;
-        float x = baseX + col * columnSpacing;
-        float y = baseY + row * offsetY;
-    
-        skillButtons.emplace_back(s->getName(), sf::Vector2f(x, y), 28, game, sf::Color::White);
-        visibleIndex++;
-    }    
-
-    // now set positions for skill buttons if needed
-    {
-        float baseX = 150.f;
-        float baseY = 800.f;
-        float offsetY = 50.f;  // vertical spacing between buttons
-        float columnSpacing = 250.f; // space between columns
-
-        for (size_t k = 1; k < skillButtons.size(); ++k) {
-            size_t col = k % 2; // 0 = left column, 1 = right column
-            size_t row = k / 2; // go down every two items
-            float x = baseX + col * columnSpacing;
-            float y = baseY + row * offsetY;
-            skillButtons[k].changePosition(x, y);
-        }
-    }
+    buildSkillButtonsFor(&this->game->player);
 
     // Populate Items dynamically from inventory 
     itemButtons.clear();
