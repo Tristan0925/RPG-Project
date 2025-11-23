@@ -1097,7 +1097,7 @@ void GameStateBattle::handleInput() {
                     dp.text.setFont(font);
                     dp.text.setCharacterSize(32);
                     dp.text.setString((isCrit ? std::string("CRIT ") : std::string("")) + std::to_string(damage));
-                    dp.text.setFillColor(isCrit ? sf::Color::Yellow : sf::Color::White);
+                    dp.text.setFillColor(isCrit ? sf::Color::Red : sf::Color::White);
 
                     // place popup near enemy sprite center
                     sf::FloatRect eb = enemySprites[targetIdx].getGlobalBounds();
