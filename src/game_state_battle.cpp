@@ -849,8 +849,8 @@ void GameStateBattle::update(const float dt) {
                                     // calculate magic damage
                                     damage = actingEnemy->magATK(1.0f, baseAtk, limit, corr, isWeak);
 
-                                    // apply crit
-                                    if (crit) damage = static_cast<int>(damage * 1.5f);
+                                    // magic does not crit
+                                    crit = false;
 
                                     // apply affinity multiplier
                                     damage = static_cast<int>(std::round(damage * elementMul));
