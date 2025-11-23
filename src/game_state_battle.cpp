@@ -420,7 +420,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     stBar.setPosition(200.0f, 380.0f);
 
     vitality.setFont(font);
-    vitality.setString("VI              " + std::to_string(vitalityVal));
+    vitality.setString("VI             " + std::to_string(vitalityVal));
     vitality.setPosition(100.0f, 408.0f);
 
     viBar.setSize({500.0f * vitalityValPercent, 10.0f});
@@ -428,7 +428,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     viBar.setPosition(200.0f, 423.0f);
 
     magic.setFont(font);
-    magic.setString("MAG             " + std::to_string(magicVal));
+    magic.setString("MA             " + std::to_string(magicVal));
     magic.setFillColor(sf::Color::Green);
     magic.setPosition(100.0f, 451.0f);
 
@@ -698,7 +698,6 @@ void GameStateBattle::update(const float dt) {
 
                     levelUpTexts[3].setFillColor(sf::Color(0,255,0,255));
                     levelUpBooleanMap[&this->game->pmember4] = true;
-                  
                     levelupflags = true;
                 }
                 this->game->player.levelUp();
@@ -725,6 +724,9 @@ void GameStateBattle::update(const float dt) {
                 nextLevelPmember4Xp = this->game->pmember4.getXpForNextLevel();
                 nextLevelPmember4.setString("Next Exp:                                " + std::to_string(nextLevelPmember4Xp));
                 XPdecrementer = 0; //very bandaid fix but we reset the decrementer whenever we level up so it will correctly decrement the exp.
+                tempSkillPoints += 8; // on every level up, you gain 8 points you can distribute freely (this is probably not the best for balance)
+                skillPoints = tempSkillPoints;
+                distributionText.setString("Distribute points.\n" + std::to_string(skillPoints) + " points remaining.");
             }
             float xpPercent = (float)playerXP/(float)nextLevelPlayerXp;
             expBarPlayer.setSize({1460.0f * xpPercent,10.0f});
@@ -745,7 +747,7 @@ void GameStateBattle::update(const float dt) {
     } 
     else if (battleOver && levelUpTime){
         if (levelUpIterator != levelUpBooleanMap.end()){
-            Player* character = levelUpIterator->first;
+            character = levelUpIterator->first;
             bool leveledUp = levelUpIterator->second;
             if (leveledUp && !statsSet){
                 strengthVal = character->getSTR();
@@ -772,16 +774,16 @@ void GameStateBattle::update(const float dt) {
                 nameOfCharacterForLevelUp.setString(character->getName());
                 strength.setString("ST             " + std::to_string(strengthVal));
                 stBar.setSize({500.0f * strengthValPercent, 10.0f});    
-                vitality.setString("VI              " + std::to_string(vitalityVal));
+                vitality.setString("VI             " + std::to_string(vitalityVal));
                 viBar.setSize({500.0f * vitalityValPercent, 10.0f});
-                magic.setString("MAG         " + std::to_string(magicVal));
+                magic.setString("MA             " + std::to_string(magicVal));
                 maBar.setSize({500.0f * magicValPercent, 10.0f});
                 agility.setString("AG             " + std::to_string(agilityVal));
                 agBar.setSize({500.0f * agilityValPercent, 10.0f});
                 luck.setString("LU             " + std::to_string(luckVal));
                 luBar.setSize({500.0f * luckValPercent, 10.0f});
                 maxHp.setString("Max HP                 " + std::to_string(maxHpVal) + "  ==>  " + std::to_string(recalculatedMaxHp));
-                maxMp.setString("Max HP                 " + std::to_string(maxMpVal) + "  ==>  " + std::to_string(recalculatedMaxMp));
+                maxMp.setString("Max MP                 " + std::to_string(maxMpVal) + "  ==>  " + std::to_string(recalculatedMaxMp));
 
                  for (size_t x = 1; x < 9; x++){
                     auto* skill = character->getSkillsList()[x];
@@ -789,6 +791,7 @@ void GameStateBattle::update(const float dt) {
                         skillNamesForResults[x-1].setString(skill->getName());
                     }
                 statsSet = true;
+
             }}
             strength.setFillColor(sf::Color::White);
             vitality.setFillColor(sf::Color::White);
@@ -812,7 +815,7 @@ void GameStateBattle::update(const float dt) {
                             luck.setFillColor(sf::Color::Green);
                             break;
               }
-              std::cout << (levelUpAttributeIndex + 4) % 4 << std::endl;
+              std::cout << (levelUpAttributeIndex % 5 + 5) % 5 << std::endl;
             printSkillNames = true;
         }
     }
@@ -956,8 +959,10 @@ void GameStateBattle::handleInput() {
                         this->game->requestPop();
                         return;
                     }
-                    if (levelUpIterator != levelUpBooleanMap.end() && usedSkillPoints == skillPoints){
+                    if (levelUpIterator != levelUpBooleanMap.end() && skillPoints == 0){
+                        skillPoints = tempSkillPoints;
                         ++levelUpIterator; 
+                        statsSet = false;
                     }
                 
                 }
@@ -980,38 +985,114 @@ void GameStateBattle::handleInput() {
                 if (levelUpTime){
                     switch ((levelUpAttributeIndex % 5 + 5) % 5){
                         case (0):
-                            strengthVal++;
-                            strength.setString("ST             " + std::to_string(strengthVal));
-                            strengthValPercent = (float)strengthVal / 99;
-                            stBar.setSize({500.0f * strengthValPercent, 10.0f});
+                            if (skillPoints != 0 && strengthVal != 99){
+                                strengthVal++;
+                                strength.setString("ST             " + std::to_string(strengthVal));
+                                strengthValPercent = (float)strengthVal / 99;
+                                stBar.setSize({500.0f * strengthValPercent, 10.0f});
+                                skillPoints--;
+                            }
                             break;
                         case (1):
+                            if (skillPoints != 0 && vitalityVal != 99){
                             vitalityVal++;
                             vitality.setString("VI             " + std::to_string(vitalityVal));
                             vitalityValPercent = (float)vitalityVal / 99;
                             viBar.setSize({500.0f * vitalityValPercent, 10.0f});
                             recalculatedMaxHp = (levelUpIterator->first->getLVL() + vitalityVal) * 6;
                             maxHp.setString("Max HP                 " + std::to_string(maxHpVal) + "  ==>  " + std::to_string(recalculatedMaxHp));
+                            skillPoints--;
+                        }
                             break;
                         case (2):
-                            vitality.setFillColor(sf::Color::White);
-                            agility.setFillColor(sf::Color::Green);
+                            if (skillPoints != 0 && magicVal != 99){
+                            magicVal++;
+                            magic.setString("MA             " + std::to_string(magicVal));
+                            magicValPercent = (float)magicVal / 99;
+                            maBar.setSize({500.0f * magicValPercent, 10.0f});
+                            recalculatedMaxMp = (levelUpIterator->first->getLVL() + magicVal) * 3;
+                            maxMp.setString("Max MP                 " + std::to_string(maxMpVal) + "  ==>  " + std::to_string(recalculatedMaxMp));
+                            skillPoints--;
                             break;
+                        }
                         case (3):
-                           agility.setFillColor(sf::Color::White);
-                           luck.setFillColor(sf::Color::Green);
-                           break;
+                             if (skillPoints != 0 && agilityVal!= 99){
+                            agilityVal++;
+                            agility.setString("AG             " + std::to_string(agilityVal));
+                            agilityValPercent= (float)agilityVal / 99;
+                            agBar.setSize({500.0f * agilityValPercent, 10.0f});
+                            skillPoints--;
+                            break;
+                        }
                         case (4):
-                           agility.setFillColor(sf::Color::White);
-                           luck.setFillColor(sf::Color::Green);
-                           break;
-                    } 
+                            if (skillPoints != 0 && luckVal!= 99){
+                            luckVal++;
+                            luck.setString("LU             " + std::to_string(luckVal));
+                            luckValPercent= (float) luckVal / 99;
+                            luBar.setSize({500.0f * luckValPercent, 10.0f});
+                            skillPoints--;
+                            break;
+                        }
+                    }
+                    distributionText.setString("Distribute points.\n" + std::to_string(skillPoints) + " points remaining."); 
             }
         }
             else if (event.key.code == sf::Keyboard::A){
+                if (levelUpTime){
+                 switch ((levelUpAttributeIndex % 5 + 5) % 5){
+                        case (0):
+                            if (strengthVal != character->getSTR()){
+                                strengthVal--;
+                                strength.setString("ST             " + std::to_string(strengthVal));
+                                strengthValPercent = (float)strengthVal / 99;
+                                stBar.setSize({500.0f * strengthValPercent, 10.0f});
+                                skillPoints++;
+                            }
+                            break;
+                        case (1):
+                            if (vitalityVal != character->getVI()){
+                            vitalityVal--;
+                            vitality.setString("VI             " + std::to_string(vitalityVal));
+                            vitalityValPercent = (float)vitalityVal / 99;
+                            viBar.setSize({500.0f * vitalityValPercent, 10.0f});
+                            recalculatedMaxHp = (levelUpIterator->first->getLVL() + vitalityVal) * 6;
+                            maxHp.setString("Max HP                 " + std::to_string(maxHpVal) + "  ==>  " + std::to_string(recalculatedMaxHp));
+                            skillPoints++;
+                        }
+                            break;
+                        case (2):
+                            if (magicVal != character->getMAG()){
+                            magicVal--;
+                            magic.setString("MA             " + std::to_string(magicVal));
+                            magicValPercent = (float)magicVal / 99;
+                            maBar.setSize({500.0f * magicValPercent, 10.0f});
+                            recalculatedMaxMp = (levelUpIterator->first->getLVL() + magicVal) * 3;
+                            maxMp.setString("Max MP                 " + std::to_string(maxMpVal) + "  ==>  " + std::to_string(recalculatedMaxMp));
+                            skillPoints++;
+                            break;
+                        }
+                        case (3):
+                             if (agilityVal != character->getAGI()){
+                            agilityVal--;
+                            agility.setString("AG             " + std::to_string(agilityVal));
+                            agilityValPercent= (float)agilityVal / 99;
+                            agBar.setSize({500.0f * agilityValPercent, 10.0f});
+                            skillPoints++;
+                            break;
+                        }
+                        case (4):
+                            if (luckVal != character->getLU()){
+                            luckVal--;
+                            luck.setString("LU             " + std::to_string(luckVal));
+                            luckValPercent= (float)luckVal / 99;
+                            luBar.setSize({500.0f * luckValPercent, 10.0f});
+                            skillPoints++;
+                            break;
+                        }
+                    }
+                    distributionText.setString("Distribute points.\n" + std::to_string(skillPoints) + " points remaining.");
+                }
 
-            }
-        
         }
 
         // --- Mouse click events
@@ -1053,7 +1134,7 @@ void GameStateBattle::handleInput() {
         }
     }
 }
-
+}
 std::vector<NPC> GameStateBattle::loadRandomEnemies(int count) {
     std::ifstream file("assets/enemies/enemies.json");
     if (!file.is_open()) {

@@ -223,9 +223,10 @@ private:
 
     int totalXpGained = 500;
     int XPdecrementer = 0; //counts how many times the loop has iterated so we can have a cool next exp counter.
-    int skillPoints = 0; 
-    int usedSkillPoints = 0;
+    int skillPoints = 0;  //points actually distributed
+    int tempSkillPoints = 0;  //holds the total points awarded
     int levelUpAttributeIndex = 0; 
+    Player * character; 
 
 public:
     GameStateBattle(Game* game, bool isBossBattle);
