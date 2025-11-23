@@ -38,18 +38,18 @@ namespace {
     }
 }
 
-static std::string getSkillElement(const Skill* s) {
-    std::string t = s->getType();
+// static std::string getSkillElement(const Skill* s) {
+//     std::string t = s->getType();
 
-    if (t == "Fire") return "Fire";
-    if (t == "Ice") return "Ice";
-    if (t == "Electric") return "Electric";
-    if (t == "Force") return "Force";
-    if (t == "Magic-Almighty") return "Almighty";
-    if (t == "Almighty") return "Almighty";
+//     if (t == "Fire") return "Fire";
+//     if (t == "Ice") return "Ice";
+//     if (t == "Electric") return "Electric";
+//     if (t == "Force") return "Force";
+//     if (t == "Magic-Almighty") return "Almighty";
+//     if (t == "Almighty") return "Almighty";
     
-    return ""; // physical/heal/buffs etc.
-}
+//     return ""; // physical/heal/buffs etc.
+// }
 
 // ---- Enemy Turn Timing State ----
 static bool enemyTurnPending = false;
@@ -800,6 +800,13 @@ void GameStateBattle::update(const float dt) {
                             if (chosenSkill) {
                                 isPhysical = (chosenSkill->getType().find("Physical") != std::string::npos);
                             }
+                            
+                            float elementMul = 1.0f;  // default = neutral
+
+                            // If chosenSkill has an element, compute real multiplier
+                            if (chosenSkill) {
+                                elementMul = getElementMultiplier(t, chosenSkill);
+                            }
 
                             if (isPhysical) {
                                 // Prefer the chosen skill's baseAtk if it has one; otherwise try the enemy's Attack skill,
@@ -852,19 +859,45 @@ void GameStateBattle::update(const float dt) {
                             t->takeDamage(damage);
                             totalDmg += damage;
 
-                            // popup for this player
+                            // Popup for this player
+                            // Damage popup with weak/resist colors
                             DamagePopup dp;
                             dp.text.setFont(font);
                             dp.text.setCharacterSize(28);
-                            dp.text.setString((crit ? "CRIT " : "") + std::to_string(damage));
-                            dp.text.setFillColor(sf::Color::Red);
+
+                            // Label: include CRIT, WEAK, RESIST
+                            std::string label = "";
+                            if (crit) label += "CRIT ";
+                            if (elementMul > 1.0f) label += "WEAK ";
+                            else if (elementMul < 1.0f) label += "RESIST ";
+
+                            dp.text.setString(label + std::to_string(damage));
+
+                            // Choose popup color
+                            sf::Color popupColor = sf::Color::White;
+
+                            if (elementMul > 1.0f) {
+                                popupColor = sf::Color(255, 255, 0); // Yellow
+                            }
+                            else if (elementMul < 1.0f) {
+                                popupColor = sf::Color(100, 149, 255); // Blue
+                            }
+                            else if (crit) {
+                                popupColor = sf::Color::Red; // Crit = Red
+                            }
+
+                            dp.text.setFillColor(popupColor);
+
+                            // Position near this target
                             sf::Vector2f pos(200.f, 700.f);
                             for (size_t i = 0; i < playerIcons.size(); ++i)
                                 if (party[i] == t)
                                     pos = playerIcons[i].getPosition() - sf::Vector2f(0.f, 40.f);
+
                             dp.text.setPosition(pos);
                             dp.velocity = sf::Vector2f(0.f, -30.f);
                             dp.life = 1.0f;
+
                             damagePopups.push_back(dp);
                         }
 
@@ -1176,7 +1209,7 @@ void GameStateBattle::handleInput() {
                     const std::string type = s->getType(); // e.g. "Physical", "Fire", "Healing", "Almighty", "Damage Amp", etc.
                     bool isHealing = (type == "Healing");
                     bool isPhysical = (type.find("Physical") != std::string::npos);
-                    bool isAlmighty = (type.find("Almighty") != std::string::npos);
+                    //bool isAlmighty = (type.find("Almighty") != std::string::npos);
                     bool isDamageAmpSkill = (type == "Damage Amp"); // buff-like
                     bool isHitEvadeBoost = (type == "Hit Evade Boost" || type == "Hit Evade Reduction");
                     bool isDamageResistSkill = (type == "Damage Resist");
