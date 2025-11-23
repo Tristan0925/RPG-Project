@@ -575,7 +575,6 @@ void GameStateBattle::update(const float dt) {
         for (auto* p : party) turnQueue.push_back(p);
 
         // ensure enemies vector will not be reallocated later unexpectedly
-        // we already have enemies stored in this->enemies; store their addresses
         for (auto& e : enemies) turnQueue.push_back(&e);
 
         std::sort(turnQueue.begin(), turnQueue.end(),
@@ -615,15 +614,6 @@ void GameStateBattle::update(const float dt) {
             if (i < hpTexts.size()) hpTexts[i].setPosition(hpTexts[i].getPosition().x, base.y + 70.f + raise);
             if (i < mpTexts.size()) mpTexts[i].setPosition(mpTexts[i].getPosition().x, base.y + 90.f + raise);
         }
-
-        // small raise animations for portraits
-        for (size_t j = 0; j < party.size() && j < turnPortraitBaseScales.size() && j < turnPortraitSprites.size(); ++j) {
-            if (!turnQueue.empty() && turnQueue.front() == party[j]) {
-                // float scale = 1.1f * turnPortraitBaseScales[j]; // This logic is now in updateTurnPanel
-            } else {
-                // This logic is now in updateTurnPanel
-            }
-        }       
     }
 
     // Button Highlights
@@ -634,7 +624,6 @@ void GameStateBattle::update(const float dt) {
     escapeButton.setHighlight(escapeButton.isHovered(this->game->window));
 
     // dynamically update skill descriptions
-    // Show skill info on hover
     if (currentMenuState == BattleMenuState::Skill) {
         for (size_t i = 0; i < skillButtons.size(); ++i) {
             if (skillButtons[i].isHovered(this->game->window)) {
@@ -653,61 +642,43 @@ void GameStateBattle::update(const float dt) {
         }
     }
 
-    // --- Skip dead actors at the start of their turn
+    // --- Skip dead actors at the start of their turn ---
     while (!turnQueue.empty()) {
         Player* front = turnQueue.front();
         bool isEnemy = (std::find(party.begin(), party.end(), front) == party.end());
-        bool isDead = false;
-
-        if (isEnemy) {
-            NPC* npc = static_cast<NPC*>(front);
-            isDead = npc->isDead();
-        } else {
-            isDead = (front->getHP() <= 0);
-        }
+        bool isDead = isEnemy ? static_cast<NPC*>(front)->isDead() : (front->getHP() <= 0);
 
         if (isDead) {
             turnQueue.pop_front();
             turnQueue.push_back(front);
             if (front) front->decrementBuffTurns();
-        } else {
-            break; // stop at first living actor
-        }
+        } else break; // stop at first living actor
     }
 
-    // ---- Enemy AI turns
-    // We only want to process an enemy's turn once when they become the active actor.
-    // We'll use a static pointer to remember who acted last update.
     // ---- Enemy AI turns ----
     if (!turnQueue.empty()) {
         Player* actor = turnQueue.front();
         bool actorIsEnemy = (std::find(party.begin(), party.end(), actor) == party.end());
 
         if (actorIsEnemy) {
-            // If this enemy hasn't started its turn yet
             if (!enemyTurnPending) {
                 pendingEnemy = actor;
                 enemyTurnPending = true;
-                enemyTurnTimer = ENEMY_TURN_DELAY;  // start delay countdown
+                enemyTurnTimer = ENEMY_TURN_DELAY;
             } else {
-                // countdown timer
                 enemyTurnTimer -= dt;
                 if (enemyTurnTimer <= 0.f && pendingEnemy != nullptr) {
                     NPC* actingEnemy = nullptr;
 
                     // Find actual NPC* in enemies vector
                     for (auto& e : enemies) {
-                        if (&e == pendingEnemy) {
-                            actingEnemy = &e;
-                            break;
-                        }
+                        if (&e == pendingEnemy) { actingEnemy = &e; break; }
                     }
 
                     if (actingEnemy && !actingEnemy->isDead()) {
-                        // --- Pick random living player target ---
+                        // --- Build list of living targets once ---
                         std::vector<Player*> livingTargets;
-                        for (auto* p : party)
-                            if (p && p->getHP() > 0) livingTargets.push_back(p);
+                        for (auto* p : party) if (p && p->getHP() > 0) livingTargets.push_back(p);
 
                         if (!livingTargets.empty()) {
                             std::uniform_int_distribution<> dis(0, livingTargets.size() - 1);
@@ -718,6 +689,7 @@ void GameStateBattle::update(const float dt) {
                             const Skill* chosenSkill = nullptr;
                             std::vector<const Skill*> buffSkills;
                             std::vector<const Skill*> damageSkills;
+                            std::vector<const Skill*> healSkills;
 
                             for (const auto& sname : enemySkillNames) {
                                 const Skill* sc = actingEnemy->getSkillPtr(sname, this->game->skillMasterList);
@@ -729,13 +701,14 @@ void GameStateBattle::update(const float dt) {
                                     t == "Hit Evade Boost" || t == "Hit Evade Reduction");
 
                                 if (isBuff) buffSkills.push_back(sc);
-                                else if (t != "Healing") damageSkills.push_back(sc);
+                                else if (t == "Healing") healSkills.push_back(sc);
+                                else damageSkills.push_back(sc);
                             }
 
-                            // 25% chance to use buff
                             std::uniform_real_distribution<float> roll(0.f, 1.f);
                             bool usedBuff = false;
 
+                            // 25% chance to use buff
                             if (!buffSkills.empty() && roll(globalRng()) < 0.25f) {
                                 chosenSkill = buffSkills[rand() % buffSkills.size()];
                                 usedBuff = true;
@@ -752,7 +725,6 @@ void GameStateBattle::update(const float dt) {
 
                                 battleText.setString(actingEnemy->getName() + " used " + chosenSkill->getName() + "!");
 
-                                // Spawn "BUFF!" popup
                                 int idx = getEnemyIndex(actingEnemy);
                                 sf::Vector2f pos = enemySprites[idx].getPosition();
                                 DamagePopup dp;
@@ -768,22 +740,14 @@ void GameStateBattle::update(const float dt) {
 
                             // If not buffing, pick damaging skill
                             if (!usedBuff) {
-                                if (!damageSkills.empty())
-                                    chosenSkill = damageSkills[rand() % damageSkills.size()];
-                                else
-                                    chosenSkill = findSkillByName(this->game, "Attack"); // fallback
+                                if (!damageSkills.empty()) chosenSkill = damageSkills[rand() % damageSkills.size()];
+                                else chosenSkill = findSkillByName(this->game, "Attack"); // fallback
                             }
 
                             // --- Apply damage skill ---
                             if (!usedBuff && chosenSkill) {
-                                std::vector<Player*> targets;
-                                if (chosenSkill->getIsSingleTarget())
-                                    targets.push_back(target);
-                                else
-                                    targets = livingTargets; // all alive players
-
                                 int totalDmg = 0;
-                                for (auto* t : targets) {
+                                for (auto* t : (chosenSkill->getIsSingleTarget() ? std::vector<Player*>{target} : livingTargets)) {
                                     int damage = 0;
                                     bool crit = false;
                                     float critChance = chosenSkill->getCritRate();
@@ -793,7 +757,6 @@ void GameStateBattle::update(const float dt) {
                                     crit = (cr(globalRng()) < critChance);
 
                                     float elementMul = getElementMultiplier(t, chosenSkill);
-
                                     bool isPhysical = (chosenSkill->getType().find("Physical") != std::string::npos);
 
                                     if (isPhysical) {
@@ -814,7 +777,6 @@ void GameStateBattle::update(const float dt) {
                                     t->takeDamage(damage);
                                     totalDmg += damage;
 
-                                    // Spawn damage popup
                                     int pIdx = std::distance(party.begin(), std::find(party.begin(), party.end(), t));
                                     DamagePopup dp;
                                     dp.text.setFont(font);
@@ -830,11 +792,9 @@ void GameStateBattle::update(const float dt) {
                                     dp.life = 1.f;
                                     damagePopups.push_back(dp);
                                 }
-
                                 battleText.setString(actingEnemy->getName() + " used " + chosenSkill->getName() + " for " + std::to_string(totalDmg) + " total damage!");
                             }
 
-                            // Remove dead enemies/players if needed
                             cleanupDeadEnemies();
                         }
                     }
@@ -850,10 +810,9 @@ void GameStateBattle::update(const float dt) {
             }
         }
     }
+
     if (player->getHP() <= 0 && !gameOver) {
         gameOver = true;
-
-        // Stop battle music
         currentMusic.stop();
     }
 }
