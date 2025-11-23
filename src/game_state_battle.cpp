@@ -1221,21 +1221,40 @@ void GameStateBattle::handleInput() {
                     bool singleTarget = s->getIsSingleTarget();
 
                     // Convenience lambdas for popups + text update (uses your font & sprites)
-                    auto spawnPopupAtEnemyIndex = [&](int enemyIdx, int dmg, bool crit) {
+                    auto spawnPopupAtEnemyIndex = [&](int enemyIdx, int dmg, bool crit, float elementMul) {
                         DamagePopup dp;
                         dp.text.setFont(font);
                         dp.text.setCharacterSize(32);
-                        dp.text.setString((crit ? std::string("CRIT ") : std::string("")) + std::to_string(dmg));
-                        dp.text.setFillColor(crit ? sf::Color::Yellow : sf::Color::White);
-                        sf::FloatRect eb = (enemyIdx >= 0 && enemyIdx < static_cast<int>(enemySprites.size()))
-                                           ? enemySprites[enemyIdx].getGlobalBounds()
-                                           : sf::FloatRect(800.f, 300.f, 0.f, 0.f);
-                        dp.text.setPosition(eb.left + eb.width / 2.f - dp.text.getGlobalBounds().width / 2.f,
-                                            eb.top - 10.f);
+                    
+                        // Build label
+                        std::string label = "";
+                        if (crit) label += "CRIT ";
+                        if (elementMul > 1.0f)      label += "WEAK ";
+                        else if (elementMul < 1.0f) label += "RESIST ";
+                    
+                        dp.text.setString(label + std::to_string(dmg));
+                    
+                        // Color based on affinity
+                        sf::Color popupColor = sf::Color::White;
+                        if (elementMul > 1.0f)       popupColor = sf::Color(255, 255, 0);        // Yellow
+                        else if (elementMul < 1.0f)  popupColor = sf::Color(100, 149, 255);      // Blue
+                        else if (crit)               popupColor = sf::Color::Red;                // Red
+                    
+                        dp.text.setFillColor(popupColor);
+                    
+                        // Position at enemy sprite center
+                        sf::FloatRect eb = (enemyIdx >= 0 && enemyIdx < (int)enemySprites.size()) ? enemySprites[enemyIdx].getGlobalBounds() : sf::FloatRect(800.f, 300.f, 0.f, 0.f);
+                    
+                        dp.text.setPosition(
+                            eb.left + eb.width / 2.f - dp.text.getGlobalBounds().width / 2.f,
+                            eb.top - 10.f
+                        );
+                    
                         dp.velocity = sf::Vector2f(0.f, -30.f);
                         dp.life = 1.0f;
+                    
                         damagePopups.push_back(dp);
-                    };
+                    };                    
 
                     auto spawnPopupAtPlayerIndex = [&](int pIdx, int dmg, bool crit) {
                         DamagePopup dp;
@@ -1339,6 +1358,7 @@ void GameStateBattle::handleInput() {
                         bool crit = false;
                         float critChance = s->getCritRate();
                         if (critChance <= 0.f) critChance = 0.05f; // fallback
+                        float elementMul = getElementMultiplier(target, s);
 
                         // roll crit
                         std::uniform_real_distribution<float> cr(0.f, 1.f);
@@ -1377,7 +1397,7 @@ void GameStateBattle::handleInput() {
 
                         // spawn popup: find enemy index in enemies vector
                         int enemyIndexInVector = getEnemyIndex(target);
-                        spawnPopupAtEnemyIndex(enemyIndexInVector, damage, crit);
+                        spawnPopupAtEnemyIndex(enemyIndexInVector, damage, crit, elementMul);
                     } // end for each enemy target
 
                     // update battle text
