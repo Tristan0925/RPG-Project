@@ -9,7 +9,7 @@
       "AGI": 4,
       "LU": 1,
       "baseXP": 10,
-      "skills": ["Bufu", "Attack"],
+      "skills": ["Bufu", "Mabufula"],
       "isBoss": false,
       "affinities": {
         "Physical": 1.0,
@@ -51,7 +51,7 @@
       "AGI": 3,
       "LU": 2,
       "baseXP": 150,
-      "skills": ["Focus", "Attack"], 
+      "skills": ["Focus", "Debilitate"], 
       "isBoss": false,
       "affinities": {
         "Physical": 1.0,
@@ -72,7 +72,7 @@
       "AGI": 3,
       "LU": 2,
       "baseXP": 100,
-      "skills": ["Focus", "Attack"], 
+      "skills": ["Focus", "Spiral Viper"], 
       "isBoss": false,
       "affinities": {
         "Physical": 1.0,
@@ -93,7 +93,7 @@
       "AGI": 3,
       "LU": 2,
       "baseXP": 50,
-      "skills": ["Focus", "Attack"], 
+      "skills": ["Andalucia", "Diarama"], 
       "isBoss": false,
       "affinities": {
         "Physical": 1.0,
@@ -114,7 +114,7 @@
       "AGI": 3,
       "LU": 2,
       "baseXP": 200,
-      "skills": ["Focus", "Attack"], 
+      "skills": ["Zio", "Divine Shot"], 
       "isBoss": false,
       "affinities": {
         "Physical": 1.0,
@@ -135,7 +135,7 @@
       "AGI": 3,
       "LU": 2,
       "baseXP": 200,
-      "skills": ["Focus", "Attack"], 
+      "skills": ["Tornado", "Zanma", "Divine Shot"], 
       "isBoss": false,
       "affinities": {
         "Physical": 1.0,
@@ -156,7 +156,7 @@
       "AGI": 3,
       "LU": 2,
       "baseXP": 200,
-      "skills": ["Focus", "Attack"], 
+      "skills": ["Omni-Dimension", "Matarukaja"], 
       "isBoss": false,
       "affinities": {
         "Physical": 1.0,
