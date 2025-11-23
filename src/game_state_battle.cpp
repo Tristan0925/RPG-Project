@@ -656,243 +656,175 @@ void GameStateBattle::update(const float dt) {
     // ---- Enemy AI turns
     // We only want to process an enemy's turn once when they become the active actor.
     // We'll use a static pointer to remember who acted last update.
+    // ---- Enemy AI turns ----
     if (!turnQueue.empty()) {
+        Player* actor = turnQueue.front();
+        bool actorIsEnemy = (std::find(party.begin(), party.end(), actor) == party.end());
 
-        // If we are NOT currently waiting for a delayed enemy action:
-        if (!enemyTurnPending) {
-            Player* actor = turnQueue.front();
-
-            // Is this actor an ENEMY (not a player)?
-            bool actorIsEnemy = (std::find(party.begin(), party.end(), actor) == party.end());
-
-            if (actorIsEnemy) {
+        if (actorIsEnemy) {
+            // If this enemy hasn't started its turn yet
+            if (!enemyTurnPending) {
                 pendingEnemy = actor;
                 enemyTurnPending = true;
-                enemyTurnTimer = ENEMY_TURN_DELAY;  // start the delay countdown
-            }
-        }
-        else {
-            // We ARE currently waiting for the enemy delay
-            enemyTurnTimer -= dt;
-            if (enemyTurnTimer <= 0.f && pendingEnemy != nullptr) {
+                enemyTurnTimer = ENEMY_TURN_DELAY;  // start delay countdown
+            } else {
+                // countdown timer
+                enemyTurnTimer -= dt;
+                if (enemyTurnTimer <= 0.f && pendingEnemy != nullptr) {
+                    NPC* actingEnemy = nullptr;
 
-                NPC* actingEnemy = nullptr;
-                for (auto& e : enemies) {
-                    if (&e == pendingEnemy) {
-                        actingEnemy = &e;
-                        break;
+                    // Find actual NPC* in enemies vector
+                    for (auto& e : enemies) {
+                        if (&e == pendingEnemy) {
+                            actingEnemy = &e;
+                            break;
+                        }
                     }
-                }
 
-                // Should not happen, but safe check
-                if (actingEnemy && !actingEnemy->isDead()) {
+                    if (actingEnemy && !actingEnemy->isDead()) {
+                        // --- Pick random living player target ---
+                        std::vector<Player*> livingTargets;
+                        for (auto* p : party)
+                            if (p && p->getHP() > 0) livingTargets.push_back(p);
 
-                    // Pick random living party member
-                    std::vector<Player*> livingTargets;
-                    for (auto* p : party)
-                        if (p && p->getHP() > 0) livingTargets.push_back(p);
+                        if (!livingTargets.empty()) {
+                            std::uniform_int_distribution<> dis(0, livingTargets.size() - 1);
+                            Player* target = livingTargets[dis(globalRng())];
 
-                    if (!livingTargets.empty()) {
-                        std::uniform_int_distribution<> dis(0, livingTargets.size() - 1);
-                        Player* target = livingTargets[dis(globalRng())];
+                            // --- Enemy skill selection ---
+                            const std::vector<std::string>& enemySkillNames = actingEnemy->getSkillNames();
+                            const Skill* chosenSkill = nullptr;
+                            std::vector<const Skill*> buffSkills;
+                            std::vector<const Skill*> damageSkills;
 
-                        // --- Enemy chooses a skill to use (prefer damaging skills) ---
-                        const std::vector<std::string>& enemySkillNames = actingEnemy->getSkillNames();
-                        const Skill* chosenSkill = nullptr;
-
-                        if (!enemySkillNames.empty()) {
-                            // gather candidate damaging skills that exist in the master list
-                            std::vector<const Skill*> candidates;
                             for (const auto& sname : enemySkillNames) {
                                 const Skill* sc = actingEnemy->getSkillPtr(sname, this->game->skillMasterList);
                                 if (!sc) continue;
-                                // skip pure utility/healing for now (enemies will not heal themselves)
+
                                 std::string t = sc->getType();
-                                if (t == "Healing" || t == "Damage Amp" || t == "Damage Resist" || t == "Hit Evade Boost" || t == "Hit Evade Reduction")
-                                {
+                                bool isBuff =
+                                    (t == "Damage Amp" || t == "Damage Resist" ||
+                                    t == "Hit Evade Boost" || t == "Hit Evade Reduction");
+
+                                if (isBuff) buffSkills.push_back(sc);
+                                else if (t != "Healing") damageSkills.push_back(sc);
+                            }
+
+                            // 25% chance to use buff
+                            std::uniform_real_distribution<float> roll(0.f, 1.f);
+                            bool usedBuff = false;
+
+                            if (!buffSkills.empty() && roll(globalRng()) < 0.25f) {
+                                chosenSkill = buffSkills[rand() % buffSkills.size()];
+                                usedBuff = true;
+
+                                // Apply buff effects
+                                if (chosenSkill->getType() == "Damage Amp")
                                     actingEnemy->addBuff("Damage Amp", 1.25f, 3, true, false);
-                                    battleText.setString(actingEnemy->getName() + " powered up!");
-                                    // small popup above enemy sprite
-                                    DamagePopup dp;
-                                    dp.text.setFont(font);
-                                    dp.text.setCharacterSize(24);
-                                    dp.text.setString("DMG UP!");
-                                    dp.text.setFillColor(sf::Color(255,200,50));
-                                    dp.velocity = sf::Vector2f(0.f, -25.f);
-                                    dp.life = 1.2f;
-                                    damagePopups.push_back(dp);
-                                    continue;
-                                }
-                                    // End enemy turn immediately after applying buff (do not treat as damaging)
-                                    // rotate turn queue as you do normally
-                                    if (sc->getMpCost() > 0 && actingEnemy->getMP() < sc->getMpCost()) continue;
-                                    candidates.push_back(sc);
-                            }
-
-                            if (!candidates.empty()) {
-                                std::uniform_int_distribution<> d(0, static_cast<int>(candidates.size()) - 1);
-                                chosenSkill = candidates[d(globalRng())];
-                            }
-                        }
-
-                        // fallback to Attack
-                        if (!chosenSkill) chosenSkill = findSkillByName(this->game, "Attack");
-
-                        // If the chosen skill has an MP cost, spend it
-                        if (chosenSkill && chosenSkill->getMpCost() > 0) {
-                            actingEnemy->spendMP(chosenSkill->getMpCost());
-                        }
-
-                        // Determine whether single target or AoE
-                        bool singleTargetSkill = chosenSkill ? chosenSkill->getIsSingleTarget() : true;
-                        std::vector<Player*> targets;
-                        if (singleTargetSkill) {
-                            targets.push_back(target); // target chosen earlier (random living party member)
-                        } else {
-                            // all living party members
-                            for (auto* p : party) if (p && p->getHP() > 0) targets.push_back(p);
-                        }
-
-                        // Apply the skill to each target
-                        int totalDmg = 0;
-                        for (Player* t : targets) {
-                            int damage = 0;
-                            bool crit = false;
-                            float critChance = (chosenSkill ? chosenSkill->getCritRate() : 0.05f);
-                            if (critChance <= 0.f) critChance = 0.05f;
-                            std::uniform_real_distribution<float> cr(0.f, 1.f);
-                            crit = (cr(globalRng()) < critChance);
-
-                            bool isPhysical = false;
-                            if (chosenSkill) {
-                                isPhysical = (chosenSkill->getType().find("Physical") != std::string::npos);
-                            }
-                            
-                            float elementMul = 1.0f;  // default = neutral
-
-                            // If chosenSkill has an element, compute real multiplier
-                            if (chosenSkill) {
-                                elementMul = getElementMultiplier(t, chosenSkill);
-                            }
-
-                            if (isPhysical) {
-                                // Prefer the chosen skill's baseAtk if it has one; otherwise try the enemy's Attack skill,
-                                // then fallback to a STR-based baseAtk.
-                                int baseAtk = 10 + actingEnemy->getSTR() * 2; // safe fallback
-                                if (chosenSkill && chosenSkill->getBaseAtk() > 0) {
-                                    baseAtk = chosenSkill->getBaseAtk();
-                                } else {
-                                    const Skill* atkSkill = actingEnemy->getSkillPtr("Attack", this->game->skillMasterList);
-                                    if (atkSkill && atkSkill->getBaseAtk() > 0) baseAtk = atkSkill->getBaseAtk();
+                                else if (chosenSkill->getType() == "Damage Resist")
+                                    actingEnemy->addBuff("Damage Resist", 0.8f, 3, false, true);
+                                else if (chosenSkill->getType() == "Hit Evade Boost") {
+                                    actingEnemy->addBuff("Hit Boost", 1.15f, 3, true, false);
+                                    actingEnemy->addBuff("Evade Boost", 1.15f, 3, false, false);
                                 }
 
-                                // Physical skills should use a scalar of 1.0 unless the skill explicitly defines a multiplier.
-                                // Many skills have damage-amp fields that are zero by default — guard against that.
-                                float scalar = 1.0f;
-                                if (chosenSkill) {
-                                    // If your Skill class has a dedicated multiplier getter (e.g. getDamageMultiplier or getScalar),
-                                    // replace getDamageAmp() with that. Otherwise, only use getDamageAmp()
-                                    // when it is > 0.0f.
-                                    float maybe = chosenSkill->getDamageAmp();
-                                    if (maybe > 0.0f) scalar = maybe;
-                                }
+                                battleText.setString(actingEnemy->getName() + " used " + chosenSkill->getName() + "!");
 
-                                // Defensive: don't allow zero or negative scalar
-                                if (scalar <= 0.0f) scalar = 1.0f;
+                                // Spawn "BUFF!" popup
+                                int idx = getEnemyIndex(actingEnemy);
+                                sf::Vector2f pos = enemySprites[idx].getPosition();
+                                DamagePopup dp;
+                                dp.text.setFont(font);
+                                dp.text.setCharacterSize(24);
+                                dp.text.setString("BUFF!");
+                                dp.text.setFillColor(sf::Color(255,200,50));
+                                dp.text.setPosition(pos - sf::Vector2f(0.f, 40.f));
+                                dp.velocity = sf::Vector2f(0.f, -25.f);
+                                dp.life = 1.2f;
+                                damagePopups.push_back(dp);
+                            }
 
-                                damage = actingEnemy->physATK(scalar, baseAtk, crit);
-                                damage = static_cast<int>(std::round(damage * t->getIncomingDamageMultiplier()));
-                            } else {
-                                    // magic / almighty / element
-                                    int baseAtk = chosenSkill ? chosenSkill->getBaseAtk() : 10;
-                                    int limit   = chosenSkill ? chosenSkill->getLimit() : 1;
-                                    int corr    = chosenSkill ? chosenSkill->getCorrection() : 0;
+                            // If not buffing, pick damaging skill
+                            if (!usedBuff) {
+                                if (!damageSkills.empty())
+                                    chosenSkill = damageSkills[rand() % damageSkills.size()];
+                                else
+                                    chosenSkill = findSkillByName(this->game, "Attack"); // fallback
+                            }
 
-                                    // correct multiplier: target is the PLAYER (t), NEVER the enemy
+                            // --- Apply damage skill ---
+                            if (!usedBuff && chosenSkill) {
+                                std::vector<Player*> targets;
+                                if (chosenSkill->getIsSingleTarget())
+                                    targets.push_back(target);
+                                else
+                                    targets = livingTargets; // all alive players
+
+                                int totalDmg = 0;
+                                for (auto* t : targets) {
+                                    int damage = 0;
+                                    bool crit = false;
+                                    float critChance = chosenSkill->getCritRate();
+                                    if (critChance <= 0.f) critChance = 0.05f;
+
+                                    std::uniform_real_distribution<float> cr(0.f,1.f);
+                                    crit = (cr(globalRng()) < critChance);
+
                                     float elementMul = getElementMultiplier(t, chosenSkill);
 
-                                    // weakness check for magATK
-                                    bool isWeak = (elementMul > 1.0f);
+                                    bool isPhysical = (chosenSkill->getType().find("Physical") != std::string::npos);
 
-                                    // calculate magic damage
-                                    damage = actingEnemy->magATK(1.0f, baseAtk, limit, corr, isWeak);
-                                    damage = static_cast<int>(std::round(damage * t->getIncomingDamageMultiplier()));
+                                    if (isPhysical) {
+                                        int baseAtk = chosenSkill->getBaseAtk();
+                                        if (baseAtk <= 0) baseAtk = 10 + actingEnemy->getSTR()*2;
+                                        float scalar = (chosenSkill->getDamageAmp() > 0.f) ? chosenSkill->getDamageAmp() : 1.0f;
+                                        damage = actingEnemy->physATK(scalar, baseAtk, crit);
+                                        damage = static_cast<int>(std::round(damage * t->getIncomingDamageMultiplier()));
+                                    } else {
+                                        int baseAtk = chosenSkill->getBaseAtk();
+                                        int limit = chosenSkill->getLimit();
+                                        int corr  = chosenSkill->getCorrection();
+                                        bool isWeak = (elementMul > 1.0f);
+                                        damage = actingEnemy->magATK(1.0f, baseAtk, limit, corr, isWeak);
+                                        damage = static_cast<int>(std::round(damage * elementMul * t->getIncomingDamageMultiplier()));
+                                    }
 
+                                    t->takeDamage(damage);
+                                    totalDmg += damage;
 
-                                    // magic does not crit
-                                    crit = false;
+                                    // Spawn damage popup
+                                    int pIdx = std::distance(party.begin(), std::find(party.begin(), party.end(), t));
+                                    DamagePopup dp;
+                                    dp.text.setFont(font);
+                                    dp.text.setCharacterSize(28);
+                                    std::string label = std::string(crit ? "CRIT " : "")
+                                    + (elementMul > 1 ? "WEAK " : "")
+                                    + (elementMul < 1 ? "RESIST " : "")
+                                    + std::to_string(damage);                
+                                    dp.text.setString(label);
+                                    sf::Vector2f pos = playerIcons[pIdx].getPosition();
+                                    dp.text.setPosition(pos - sf::Vector2f(0.f,40.f));
+                                    dp.velocity = sf::Vector2f(0.f, -30.f);
+                                    dp.life = 1.f;
+                                    damagePopups.push_back(dp);
+                                }
 
-                                    // apply affinity multiplier
-                                    damage = static_cast<int>(std::round(damage * elementMul));
+                                battleText.setString(actingEnemy->getName() + " used " + chosenSkill->getName() + " for " + std::to_string(totalDmg) + " total damage!");
                             }
 
-                            t->takeDamage(damage);
-                            totalDmg += damage;
-
-                            // Popup for this player
-                            // Damage popup with weak/resist colors
-                            DamagePopup dp;
-                            dp.text.setFont(font);
-                            dp.text.setCharacterSize(28);
-
-                            // Label: include CRIT, WEAK, RESIST
-                            std::string label = "";
-                            if (crit) label += "CRIT ";
-                            if (elementMul > 1.0f) label += "WEAK ";
-                            else if (elementMul < 1.0f) label += "RESIST ";
-
-                            dp.text.setString(label + std::to_string(damage));
-
-                            // Choose popup color
-                            sf::Color popupColor = sf::Color::White;
-
-                            if (elementMul > 1.0f) {
-                                popupColor = sf::Color(255, 255, 0); // Yellow
-                            }
-                            else if (elementMul < 1.0f) {
-                                popupColor = sf::Color(100, 149, 255); // Blue
-                            }
-                            else if (crit) {
-                                popupColor = sf::Color::Red; // Crit = Red
-                            }
-
-                            dp.text.setFillColor(popupColor);
-
-                            // Position near this target
-                            sf::Vector2f pos(200.f, 700.f);
-                            for (size_t i = 0; i < playerIcons.size(); ++i)
-                                if (party[i] == t)
-                                    pos = playerIcons[i].getPosition() - sf::Vector2f(0.f, 40.f);
-
-                            dp.text.setPosition(pos);
-                            dp.velocity = sf::Vector2f(0.f, -30.f);
-                            dp.life = 1.0f;
-
-                            damagePopups.push_back(dp);
+                            // Remove dead enemies/players if needed
+                            cleanupDeadEnemies();
                         }
-
-                        // Message
-                        if (targets.size() == 1) {
-                            battleText.setString(actingEnemy->getName() + " used " + (chosenSkill ? chosenSkill->getName() : std::string("Attack")) 
-                                                + " on " + targets.front()->getName() + " for " + std::to_string(totalDmg) + " damage!");
-                        } else {
-                            battleText.setString(actingEnemy->getName() + " used " + (chosenSkill ? chosenSkill->getName() : std::string("Attack"))
-                                                + " and dealt " + std::to_string(totalDmg) + " total damage!");
-                        }
-                        cleanupDeadEnemies();
                     }
-                }
 
-                // End enemy turn
-                if (!turnQueue.empty()) {
-                    Player* front = turnQueue.front();
+                    // --- END OF ACTOR TURN ---
                     turnQueue.pop_front();
-                    turnQueue.push_back(front);
-                    if (front) front->decrementBuffTurns();
-                }
+                    turnQueue.push_back(actor);  // rotate
+                    if (actor) actor->decrementBuffTurns();
 
-                enemyTurnPending = false;
-                pendingEnemy = nullptr;
+                    enemyTurnPending = false;
+                    pendingEnemy = nullptr;
+                }
             }
         }
     }
