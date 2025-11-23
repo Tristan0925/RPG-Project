@@ -961,6 +961,7 @@ void GameStateBattle::handleInput() {
                     }
                     if (levelUpIterator != levelUpBooleanMap.end() && skillPoints == 0){
                         skillPoints = tempSkillPoints;
+                        character->statUp(strengthVal, vitalityVal, magicVal, agilityVal, luckVal);
                         ++levelUpIterator; 
                         statsSet = false;
                     }

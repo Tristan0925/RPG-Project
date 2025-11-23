@@ -273,31 +273,16 @@ int Player::getAGI() const {
     }
  }
  
- void Player::distributeSkillPoints(std::map<std::string, int> skillPointDistribution, int levelsGained){
-    LVL += levelsGained;
-    for (auto distribution : skillPointDistribution){
-        std::string trait = distribution.first;
-        int skillPoints = distribution.second;
-        if (trait == "STR"){
-            STR += skillPoints;
-        }
-        else if (trait == "VIT"){
-            VIT += skillPoints;
-        }
-        else if (trait == "AGI"){
-            AGI += skillPoints;
-        }
-        else if (trait == "LU"){
-            LU += skillPoints;
-        }
-        else if (trait == "MAG"){
-            MAG += skillPoints;
-        }
-    }
+ void Player::statUp(int strength, int vitality, int magic, int agility, int luck){
+    STR = strength;
+    VIT = vitality;
+    MAG = magic;
+    AGI = agility;
+    LU = luck;
     maxHP = (LVL + VIT) * 6;
     maxMP = (LVL + MAG) * 3;
     HP = maxHP;
-    MP = maxMP;
+    maxMP = maxMP;
  }
 
  const Skill* Player::getSkillPtr(std::string skillName, const std::vector<Skill>& masterList){
