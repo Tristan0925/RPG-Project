@@ -653,6 +653,28 @@ void GameStateBattle::update(const float dt) {
         }
     }
 
+    // --- Skip dead actors at the start of their turn
+    while (!turnQueue.empty()) {
+        Player* front = turnQueue.front();
+        bool isEnemy = (std::find(party.begin(), party.end(), front) == party.end());
+        bool isDead = false;
+
+        if (isEnemy) {
+            NPC* npc = static_cast<NPC*>(front);
+            isDead = npc->isDead();
+        } else {
+            isDead = (front->getHP() <= 0);
+        }
+
+        if (isDead) {
+            turnQueue.pop_front();
+            turnQueue.push_back(front);
+            if (front) front->decrementBuffTurns();
+        } else {
+            break; // stop at first living actor
+        }
+    }
+
     // ---- Enemy AI turns
     // We only want to process an enemy's turn once when they become the active actor.
     // We'll use a static pointer to remember who acted last update.
