@@ -18,6 +18,9 @@ Like having modules in python to handle classes and then you import the files yo
 #include "item.hpp"
 #include <array>
 #include "skill.hpp"
+#include <unordered_map>
+#include <algorithm>
+
 
 class Map;
 
@@ -48,7 +51,6 @@ class Player {
         float targetAngle;  // snapped target
         float turnSpeed;    // turn speed
         void tryMove(sf::Vector2f delta, const Map& map); // checks for walls
-        sf::Vector2f postion;
         // Attack + every affinity + almighty. I think the battle_game_state should figure out damage #'s and stuff.
         std::array<Item, 2> inventory; // Only 2 items in game: Dragon Morsel (healing) and Energizing Moss (mana restoration) 
     protected:
@@ -56,6 +58,8 @@ class Player {
         int LVL, maxMP, maxHP, HP, MP, STR, VIT, MAG, AGI, LU, XP;
         std::map<std::string, float> affinities; //Fire, Ice, Phys, Elec, Force (Format: [ELEMENT] - [NULL(0)/RESIST(0.5)/NEUTRAL(1.0)/WEAK(1.5)]) If resist, x0.5 dmg, If weak, 1.5x dmg.
         std::array<const Skill*, 9> skillsList;  // Attack + every affinity + phys-almighty (ignores resistances, uses physical damage formula) + some extra skills. This probably should be its own class.
+        protected:
+        std::vector<Skill> skills;   // Stores actual Skill objects for players/NPCs
     public:
         int inDoor;
         Player(); // Constructor
@@ -86,16 +90,55 @@ class Player {
         bool saveToFile(const std::string& filename) const;
         bool loadFromFile(const std::string& filename, const std::vector<Skill>& masterList);
         void setDefault(const Map& map);
+        bool isDead() const { return HP <= 0; }
 
 
-        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const, getAGI() const, getSTR() const, getLU() const, getVI() const, getXp() const, getMAG() const;
         int getXpForNextLevel();
+        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const, getAGI() const, getSTR() const, getVIT() const, getXp() const, getMAG() const, getLU() const;
         std::string getName() const;
         std::array<Item, 2> getInventory() const;
         std::array<const Skill*, 9> getSkillsList() const;
         void addToInventory(Item item, int quantity);
         const Skill* getSkillPtr(std::string skillName, const std::vector<Skill>& masterList);
         void addToSkillList(std::string skillName, const std::vector<Skill>& masterList);
-     
+        std::vector<std::string> getSkillNames() const {
+            std::vector<std::string> names;
+            for (const Skill* skillPtr : skillsList) {
+                if (skillPtr != nullptr)
+                    names.push_back(skillPtr->getName());
+            }
+            return names;
+        }
+        float getAffinity(const std::string& element) const {
+            auto it = affinities.find(element);
+            if (it != affinities.end())
+                return it->second;
+            return 1.0f; // default = neutral
+        }
+        // Returns map<string, float> of affinities like Fire=0.5, Ice=1.5, etc.
+        const std::map<std::string, float>& getAffinityMap() const {
+            return affinities;
+        }
+
+        // Buff/debuff declarations
+        struct ActiveBuff {
+            std::string name; // e.g. "Damage Amp", "Damage Resist", "Hit Boost", "Hit Reduction"
+            float value; // multipler (e.g. 1.25f for +25%, 0.80f for -20%)
+            int turnsRemaining; // number of actor turns remaining
+            bool affectsOutgoing; // true if buff modifies outgoing damage/hit (actor-side)
+            bool affectsIncoming; // true if buff modifies incoming damage (target-side)
+        };
+
+        std::vector<ActiveBuff> activeBuffs;
+
+        // Buff API
+        void addBuff(const std::string& name, float value, int turns, bool affectsOutgoing = true, bool affectsIncoming = false);
+        void decrementBuffTurns(); // decrement and remove expired buffs (called when actor finishes turn)
+        void removeExpiredBuffs();
+
+        float getOutgoingDamageMultiplier() const; // multiplies outgoing damage (actor)
+        float getIncomingDamageMultiplier() const; // multiplies incoming damage (target)
+        float getHitModifier() const; // multiplies hit chance/evasion as needed
+
 };
 

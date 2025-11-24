@@ -12,7 +12,7 @@ Button::Button(std::string words, sf::Vector2f location, int size, Game* game, s
     text.setFillColor(color);
     underline.setSize(sf::Vector2f(text.getGlobalBounds().width, 2.f));
     underline.setFillColor(color);
-    underline.setPosition(location.x, (location.y + 3.f));
+    underline.setPosition(location.x, (location.y + text.getGlobalBounds().height + 6.f));
 
     // Hexagon background
     hex.setPointCount(6);
@@ -24,6 +24,8 @@ Button::Button(std::string words, sf::Vector2f location, int size, Game* game, s
     }
     hex.setOrigin(hex.getLocalBounds().width / 2, hex.getLocalBounds().height / 2);
     hex.setFillColor(sf::Color(100, 0, 0, 150));
+
+    useHexBackground = false; 
 }
 
 

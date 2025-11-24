@@ -590,6 +590,7 @@ void GameStateEditor::update(const float dt) //If something needs to be updated 
         return;
     moveSpeed = 100.f * dt;   // movement speed
     this->game->player.update(dt);
+
     
    
     if (this->game->player.inDoor && !enteringDoor){
@@ -786,6 +787,7 @@ void GameStateEditor::handleInput() // Inputs go here
 
         // 5% chance per new tile
         if (rand() % 100 < 100) {
+            currentTrack.pause();
             this->game->requestPush(std::make_unique<GameStateBattle>(this->game, false));
             return; // exit handleInput immediately
         }

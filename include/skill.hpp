@@ -44,7 +44,7 @@ class Skill{
     float getHitEvadeBoost() const {return hitEvadeBoost;}
     float getHitEvadeReduction() const {return hitEvadeReduction; }
     float getHealthRestorePercent() const { return healthRestorePercent; }
-
+    float getCritRate() const { return critRate; }
 
 
     Skill() = default;
