@@ -71,7 +71,7 @@ class GameStateEditor : public GameState
     virtual void update(const float dt);
     virtual void handleInput();
  
-    GameStateEditor(Game* game, bool requestStartGame);
+    GameStateEditor(Game* game, bool requestStartGame, int floorNumber);
 };
 
 

@@ -22,7 +22,7 @@ class GameStateStart : public GameState
     Button slot3;
     Button backButton; // to exit slot menu
     sf::RectangleShape underline;
-
+    int floorNumber = 1;
     sf::Vector2f defaultTitlePos;
     sf::Vector2f defaultTitleScale;
 

@@ -227,6 +227,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         sf::Text locationText;
         locationText.setFont(this->game->font);
         if (currentFloor == 1) locationText.setString("Spooky Scary Dungeon 1F");
+        else if (currentFloor == 2) locationText.setString("Spooky Scary Dungeon 2F");
         locationText.setCharacterSize(24);
         locationText.setPosition(60.5f, 110.0f);
         this->game->window.draw(locationBackground);
@@ -797,7 +798,7 @@ void GameStateEditor::handleInput() // Inputs go here
 
 
 
-GameStateEditor::GameStateEditor(Game* game, bool requestStartGame)
+GameStateEditor::GameStateEditor(Game* game, bool requestStartGame, int floorNumber)
 : game(game),
   resumeButton("Resume", sf::Vector2f(0.f, 0.f), 40, game),
   settingsButton("Settings", sf::Vector2f(0.f, 0.f), 40, game),
@@ -816,7 +817,7 @@ GameStateEditor::GameStateEditor(Game* game, bool requestStartGame)
     pos *= 0.5f;
     this->guiView.setCenter(pos);
     this->gameView.setCenter(pos);
-
+    currentFloor = floorNumber;
     moveSpeed = 0.f;
 
     // Initialize lastTile to the player's starting tile
@@ -828,18 +829,30 @@ GameStateEditor::GameStateEditor(Game* game, bool requestStartGame)
     fader.setFillColor(sf::Color(255,0,0,static_cast<sf::Uint8>(transparency)));
   
     // Load textures once
-    doorTexture.loadFromFile("assets/door_texture.png");
+    if (currentFloor == 1){
+        doorTexture.loadFromFile("assets/door_texture.png");
+        wallTexture.loadFromFile("assets/wall_texture.jpg");  
+   }
+    else if (currentFloor == 2){
+          if (!map.loadFromFile("assets/map2.txt")) {
+            throw std::runtime_error("failed to load");
+          } else{
+            this->game->map = map;
+          }
+        sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
+        this->game->player.setPosition(spawn * 64.f); // scale by tile size
+        doorTexture.loadFromFile("assets/door_texture2.png");
+        wallTexture.loadFromFile("assets/wall_texture2.png");
+    }
     doorTexture.setSmooth(false);
     doorTexture.generateMipmap();
-    doorImage = wallTexture.copyToImage();
-    wallTexture.loadFromFile("assets/wall_texture.jpg");
+    doorImage = wallTexture.copyToImage();   
     wallTexture.setSmooth(false);   // prevents blur
     wallTexture.setRepeated(true);
     wallTexture.generateMipmap();   // improves close-up detail
     wallImage = wallTexture.copyToImage(); // for pixel-level access
     textureWidth = wallImage.getSize().x;
     textureHeight = wallImage.getSize().y; //dont change these since tex are the same size
-
     saveText.setFont(this->game->font);
     saveText.setCharacterSize(32);
     saveText.setFillColor(sf::Color::White);
@@ -878,7 +891,7 @@ GameStateEditor::GameStateEditor(Game* game, bool requestStartGame)
         if (skillName4 != "EMPTY SLOT") pmember4.addToSkillList(skillName4, masterList);
     }
     
-    
+  
 }
 if (currentFloor == 1){
     if(!currentTrack.openFromFile("./assets/music/spookyfloor1.mp3")){

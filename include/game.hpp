@@ -44,7 +44,7 @@ private:
     NPC pmember2;
     NPC pmember3;
     NPC pmember4;
-
+    int floorNumber = 2;
     std::array<std::string, 9> playerSkills = {"Attack", "Shock", "Dia", "Fire Breath", "Flash Freeze", "Tornado", "Divine Shot", "Freikugel", "Focus"};
     std::array<std::string, 9> pmember2Skills = {"Attack", "Zio", "Agi", "Matarukaja", "Bufula", "Megidola", "Omni-Dimension", "EMPTY SLOT", "EMPTY SLOT"}; //if you want you could make more skills 
     std::array<std::string, 9> pmember3Skills = {"Attack", "Zanma", "Diarama", "Marakunda", "Mediarama", "Scorched Earth", "EMPTY SLOT", "EMPTY SLOT", "EMPTY SLOT"};

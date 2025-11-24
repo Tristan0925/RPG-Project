@@ -1,8 +1,9 @@
-//This represents the main menu screen.
+
 
 #include <SFML/Graphics.hpp>
 #include "game_state_door.hpp"
 #include "game_state.hpp"
+#include "game_state_battle.hpp"
 #include <iostream>
 #include <string>
 #include "item.hpp"
@@ -14,14 +15,6 @@
 void GameStateDoor::draw(const float dt)
 {
     this->game->window.setView(this->view);
-
-//  if (x,y){
-//     textInTextbox.setString("You sense a terrifying presence ahead. Proceed?");
-//     this->game->window.draw(Textbox);
-//    this->game->window.draw(textInTextbox);
-//  }
-//  else
-
  if (isItemRoom){
     
    this->game->window.draw(treasureSprite);
@@ -44,7 +37,25 @@ std::cout << std::endl;
  }
 
  else if(isBossRoom){
-
+    textInTextbox.setString("You sense a terrifying presence ahead. After you face it, you cannot return. Proceed?\n Space - Head Back.     Enter - Proceed.");
+    this->game->window.draw(Textbox);
+    this->game->window.draw(textInTextbox);
+    if (floorNumber == 1){
+        if (!preludeTrack.openFromFile("./assets/music/boss1prelude.mp3")) {
+        std::cout << "Could not load music file" << std::endl;
+    } else {
+        preludeTrack.setLoop(true);
+        preludeTrack.play();
+    }
+    }
+    else if (floorNumber == 2){
+        if (!preludeTrack.openFromFile("./assets/music/boss2prelude.mp3")) {
+        std::cout << "Could not load music file" << std::endl;
+    } else {
+        preludeTrack.setLoop(true);
+        preludeTrack.play();
+    }
+    }
  }
 
  else{
@@ -53,21 +64,7 @@ std::cout << std::endl;
     
     std::exit(99);
  }
-
- 
-
-
-
-
-
-
-
-
-
-   this->game->window.draw(fader);
-   
-  
-    
+   this->game->window.draw(fader);  
 }
 
 void GameStateDoor::update(const float dt)
@@ -101,6 +98,10 @@ void GameStateDoor::handleInput()
             case sf::Event::KeyPressed:{
                 if (event.key.code == sf::Keyboard::Space){ // && !isBossRoom
                     this->game->requestPop();
+                    return;
+                }
+                else if (event.key.code == sf::Keyboard::Enter && isBossRoom){
+                    this->game->requestChange(std::make_unique<GameStateBattle>(this->game, true));
                     return;
                 }
             }
@@ -151,7 +152,14 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
 
 
  for (const auto& pair : this->game->doorCoordinatesToHasLoot) {
-        if (pair.first == coordinatePair && pair.second == true){
+       if (pair.first == coordinatePair && coordinatePair == "(34, 4)" && pair.second == true){ //replace with bossCoordinates
+            isBossRoom = true;
+            isEmptyRoom = false;
+            isItemRoom = false;
+            floorNumber = 1;
+            this->game->doorCoordinatesToHasLoot[pair.first] = false;
+        }
+        else if (pair.first == coordinatePair && pair.second == true){
             isItemRoom = true;
             isEmptyRoom = false;
             isBossRoom = false;
@@ -170,15 +178,8 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
             isEmptyRoom = true;
             isItemRoom = false;
             isBossRoom = false;
-           
         }
-        else if (pair.first == coordinatePair && coordinatePair == "hi"){ //replace with bossCoordinates
-            isBossRoom = true;
-            isEmptyRoom = false;
-            isItemRoom = false;
-
-            
-        }
+       
     }
 
 

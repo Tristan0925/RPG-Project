@@ -147,8 +147,6 @@ pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0, {{"Fire", 1.0}, {"Ice", 1.5}, {"Physica
     }
 
 
-    sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
-    this->player.setPosition(spawn * 64.f); // scale by tile size
 
     this->doorCoordinates = map.getDoorCoordinates();
     for (const auto& coord : doorCoordinates) {

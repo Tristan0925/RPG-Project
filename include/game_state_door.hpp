@@ -2,6 +2,7 @@
 #define GAME_STATE_DOOR_HPP
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "game_state.hpp"
 #include "game.hpp"
 #include "item.hpp"
@@ -24,10 +25,8 @@ class GameStateDoor : public GameState
     Player player;
     std::string coordinatePair;
     bool isItemRoom = false, isBossRoom = false, isEmptyRoom = false;
-    
-
-    void drawTreasureRoom(); 
-    void drawBossBattle(); //WIP
+    int floorNumber = 1;
+    sf::Music preludeTrack;
    
     
     public:

@@ -989,6 +989,7 @@ void GameStateBattle::update(const float dt) {
         enemyBaseScales.clear();
         int count = std::uniform_int_distribution<>(1, 4)(gen); // 1–4 enemies
         enemies = loadRandomEnemies(count);
+        
 
         // Reserve to avoid reallocation invalidating addresses
         enemySprites.clear();
@@ -1306,21 +1307,21 @@ void GameStateBattle::handleInput() {
                         this->game->player.loadFromFile("save1.json", this->game->skillMasterList);
                         loadMenuActive = false;
                         gameOver = false; // optionally reset game over state
-                        this->game->requestChange(std::make_unique<GameStateEditor>(this->game, false));
+                        this->game->requestChange(std::make_unique<GameStateEditor>(this->game, false, this->game->floorNumber));
                         return;
                     }
                     else if (slot2.wasClicked(this->game->window)) {
                         this->game->player.loadFromFile("save2.json", this->game->skillMasterList);
                         loadMenuActive = false;
                         gameOver = false;
-                        this->game->requestChange(std::make_unique<GameStateEditor>(this->game, false));
+                        this->game->requestChange(std::make_unique<GameStateEditor>(this->game, false, this->game->floorNumber));
                         return;
                     }
                     else if (slot3.wasClicked(this->game->window)) {
                         this->game->player.loadFromFile("save3.json", this->game->skillMasterList);
                         loadMenuActive = false;
                         gameOver = false;
-                        this->game->requestChange(std::make_unique<GameStateEditor>(this->game, false));
+                        this->game->requestChange(std::make_unique<GameStateEditor>(this->game, false, this->game->floorNumber));
                         return;
                     }
                     else if (backButton.wasClicked(this->game->window)) {

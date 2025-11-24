@@ -76,17 +76,17 @@ void GameStateStart::handleInput()
             else { // slot menu active
                 if (slot1.wasClicked(this->game->window)) {
                     this->game->player.loadFromFile("save1.json", this->game->skillMasterList);
-                    this->game->changeState(std::make_unique<GameStateEditor>(this->game, requestStartGame));
+                    this->game->changeState(std::make_unique<GameStateEditor>(this->game, requestStartGame, this->game->floorNumber));
                     return;
                 }
                 if (slot2.wasClicked(this->game->window)) {
                     this->game->player.loadFromFile("save2.json", this->game->skillMasterList);
-                    this->game->changeState(std::make_unique<GameStateEditor>(this->game, requestStartGame));
+                    this->game->changeState(std::make_unique<GameStateEditor>(this->game, requestStartGame, this->game->floorNumber));
                     return;
                 }
                 if (slot3.wasClicked(this->game->window)) {
                     this->game->player.loadFromFile("save3.json", this->game->skillMasterList);
-                    this->game->changeState(std::make_unique<GameStateEditor>(this->game, requestStartGame));
+                    this->game->changeState(std::make_unique<GameStateEditor>(this->game, requestStartGame, this->game->floorNumber));
                     return;
                 }
                 if (backButton.wasClicked(this->game->window)) {
@@ -139,7 +139,7 @@ void GameStateStart::handleInput()
         }
     }
     if (requestStartGame) {
-        this->game->changeState(std::make_unique<GameStateEditor>(this->game, requestStartGame));
+        this->game->changeState(std::make_unique<GameStateEditor>(this->game, requestStartGame, this->game->floorNumber));
         return; // stop further input for this frame
     }
 }
@@ -201,9 +201,7 @@ GameStateStart::GameStateStart(Game* game):
 
 void GameStateStart::loadgame()
 {
-    this->game->requestChange(
-        std::make_unique<GameStateEditor>(this->game,requestStartGame)
-    );
+    this->game->requestChange(std::make_unique<GameStateEditor>(this->game,requestStartGame, this->game->floorNumber));
     return;    
 }
 //std::unique_ptr<GameState> state

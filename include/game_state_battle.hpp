@@ -15,10 +15,10 @@ private:
 
     // Battle state
     bool isBossBattle = false;
-    bool battleOver = false; //change this later
+    bool battleOver = false; 
     // Music
     sf::Music currentMusic;
-    bool playResultsMusic; //
+    bool playResultsMusic; 
     
     
     // Text         
