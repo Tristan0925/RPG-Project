@@ -81,7 +81,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
 
     // Setup battle text
     battleText.setFont(font);
-    battleText.setString("* You feel like pressing enter to leave the battle state.");
+    battleText.setString("Doom Approaches!");
     battleText.setCharacterSize(36);
     battleText.setFillColor(sf::Color::White);
     battleText.setPosition(850.f, 620.f);
@@ -299,8 +299,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     thingsEarnedBackground[3].color= sf::Color(55,11,4);
 
     totalEarnedExp.setFont(font);
-    totalEarnedExpMessage = "EXP                                                                                                                                                                " + std::to_string(totalXpGained);  // + std::to_string(totalXpGained) or whatever it is
-    totalEarnedExp.setString(totalEarnedExpMessage);
+    totalEarnedExpMessage = "EXP                                                                                                                                                                " + std::to_string(totalXpGained); 
     totalEarnedExp.setCharacterSize(75);
     totalEarnedExp.setFillColor(sf::Color::Red);
     totalEarnedExp.setPosition(25.0f,250.0f);
@@ -555,6 +554,8 @@ void GameStateBattle::displayResultsScreen(){
         playerBackgrounds[i].setPosition(570.0f,backgroundOffsetY + 100.0f * i);
         playerIcons[i].setPosition(620.0f, iconOffsetY + 100.0f * i);
         }
+        totalEarnedExpMessage = "EXP                                                                                                                                                                " + std::to_string(totalXpGained); 
+        totalEarnedExp.setString(totalEarnedExpMessage);
         reuseArrays = true;
     }
     for (auto& background : portraitBackgrounds){
@@ -1347,7 +1348,7 @@ void GameStateBattle::handleInput() {
                         statsSet = false;
                     }
                 }
-                 if (battleOver && distributionFinished && levelupflags){ //use this to check if anyone leveld up then pop.
+                 if (battleOver && distributionFinished && levelupflags){
                     levelUpTime = true;
                    }
                  if (battleOver && distributionFinished && !levelupflags){
@@ -1371,13 +1372,6 @@ void GameStateBattle::handleInput() {
                 if (!enemies.empty()) {
                     int prev = getPrevLivingEnemy(currentEnemyIndex);
                     if (prev >= 0) currentEnemyIndex = prev;
-                }
-               
-                if (!turnQueue.empty()) {
-                    Player* front = turnQueue.front();
-                    turnQueue.pop_front();
-                    turnQueue.push_back(front);
-                    if (front) front->decrementBuffTurns();
                 }
             }
             else if (event.key.code == sf::Keyboard::Right) {
@@ -2024,6 +2018,7 @@ std::vector<NPC> GameStateBattle::loadRandomEnemies(int count) {
             e.value("isBoss", false),
             sks
        );
+       totalXpGained += e.value("baseXP",0);
     }    
     return selectedEnemies;
 }

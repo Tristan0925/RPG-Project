@@ -116,7 +116,7 @@ void GameStateStart::handleInput()
 
                 // Scale & reposition main menu elements
                 float scaleRatio = float(event.size.width) / this->game->background.getTexture()->getSize().x;
-                title.setPosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1400.f * scaleRatio));
+                title.setPosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1500.f * scaleRatio));
                 startgame.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1200.f * scaleRatio));
                 loadButton.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1100.f * scaleRatio));
                 settings.changePosition(event.size.width - (2200.f * scaleRatio), event.size.height - (1000.f * scaleRatio));
@@ -165,7 +165,7 @@ GameStateStart::GameStateStart(Game* game):
 
     // Setup title
     title.setFont(this->game->font);
-    title.setString("UNTITLED RPG GAME");
+    title.setString("Sloth Megami Tensei IV:\nMegatherium");
     title.setCharacterSize(100); 
     title.setFillColor(sf::Color::Red);
     title.setStyle(sf::Text::Italic | sf::Text::Bold);
@@ -177,7 +177,7 @@ GameStateStart::GameStateStart(Game* game):
     float scaleRatio = width / this->game->background.getTexture()->getSize().x;
 
     // Main menu buttons
-    title.setPosition(width - (2200.f * scaleRatio), height - (1400.f * scaleRatio));
+    title.setPosition(width - (2200.f * scaleRatio), height - (1500.f * scaleRatio));
     startgame.changePosition(width - (2200.f * scaleRatio), height - (1200.f * scaleRatio));
     loadButton.changePosition(width - (2200.f * scaleRatio), height - (1100.f * scaleRatio));
     settings.changePosition(width - (2200.f * scaleRatio), height - (1000.f * scaleRatio));

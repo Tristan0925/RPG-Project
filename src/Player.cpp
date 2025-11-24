@@ -322,7 +322,7 @@ int Player::getVIT() const { return VIT; }
     maxHP = (LVL + VIT) * 6;
     maxMP = (LVL + MAG) * 3;
     HP = maxHP;
-    maxMP = maxMP;
+    MP = maxMP;
  }
 
  const Skill* Player::getSkillPtr(std::string skillName, const std::vector<Skill>& masterList){
