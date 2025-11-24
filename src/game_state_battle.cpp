@@ -540,6 +540,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
 }
 
 void GameStateBattle::displayResultsScreen(){
+    this->game->window.clear();
     if (!reuseArrays){ //doing it like this so we reset positions one time.
         float iconOffsetY = 494.0f;
         float backgroundOffsetY = 493.0f;
@@ -575,6 +576,7 @@ void GameStateBattle::displayResultsScreen(){
         this->game->window.draw(icon);
     }
  
+     
     this->game->window.draw(topBarTextBackground);
     this->game->window.draw(topBarText);
     this->game->window.draw(thingsEarnedBackground);
@@ -595,10 +597,12 @@ void GameStateBattle::displayResultsScreen(){
     this->game->window.draw(expBarPmember2);
     this->game->window.draw(expBarPmember3);
     this->game->window.draw(expBarPmember4);
+  
 }
 
 
 void GameStateBattle::displayLevelUpScreen(){
+    this->game->window.clear();
     if (!reuseTextforLevelUp){
         topBarText.setString("LEVEL UP!");
         topBarText.setFillColor(sf::Color::White);
@@ -645,7 +649,6 @@ void GameStateBattle::displayLevelUpScreen(){
         }
     }
 }
-
 
 // Draw 
 void GameStateBattle::draw(const float dt) {
@@ -1269,7 +1272,7 @@ void GameStateBattle::handleInput() {
     while (this->game->window.pollEvent(event)) {
 
         // --- Close window
-        if (event.type == sf::Event::Closed) {
+        if (event.type == sf::Event::Closed) { 
             this->game->window.close();
             return;
         }
@@ -1325,12 +1328,8 @@ void GameStateBattle::handleInput() {
 
         // --- Key press events
         if (event.type == sf::Event::KeyPressed) {
-            if (event.key.code == sf::Keyboard::Enter) {
-                this->game->requestPop();
-                return;
-            }
-            else if (event.key.code == sf::Keyboard::Space) {
-                  if (battleOver && distributionFinished && levelUpTime){
+             if (event.key.code == sf::Keyboard::Space) {
+                 if (battleOver && distributionFinished && levelUpTime){
                     if (levelUpIterator == levelUpBooleanMap.end()){
                         this->game->requestPop();
                         return;
@@ -1345,6 +1344,25 @@ void GameStateBattle::handleInput() {
                  if (battleOver && distributionFinished){ //use this to check if anyone leveld up then pop.
                     levelUpTime = true;
                    }
+                if (!turnQueue.empty()) {
+                    Player* front = turnQueue.front();
+                    turnQueue.pop_front();
+                    turnQueue.push_back(front);
+                    if (front) front->decrementBuffTurns();
+                }
+            }
+            else if (event.key.code == sf::Keyboard::Right) {
+                if (!enemies.empty()) {
+                    int next = getNextLivingEnemy(currentEnemyIndex);
+                    if (next >= 0) currentEnemyIndex = next;
+                }
+            }
+            else if (event.key.code == sf::Keyboard::Left) {
+                if (!enemies.empty()) {
+                    int prev = getPrevLivingEnemy(currentEnemyIndex);
+                    if (prev >= 0) currentEnemyIndex = prev;
+                }
+               
                 if (!turnQueue.empty()) {
                     Player* front = turnQueue.front();
                     turnQueue.pop_front();
@@ -1487,9 +1505,9 @@ void GameStateBattle::handleInput() {
                     }
                     distributionText.setString("Distribute points.\n" + std::to_string(skillPoints) + " points remaining.");
                 }
-
         }
     }
+
         // --- Mouse click events for battle input
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
             if (currentMenuState == BattleMenuState::Main) {
@@ -1613,7 +1631,8 @@ void GameStateBattle::handleInput() {
                         if (front) front->decrementBuffTurns();
                     }
 
-                    return; // end click event
+                    currentMenuState = BattleMenuState::Main; // end click event
+                    return;
                 }                           
                 else if (skillButton.wasClicked(this->game->window)) {
                     if (!turnQueue.empty()) {
@@ -1906,7 +1925,8 @@ void GameStateBattle::handleInput() {
                         if (front) front->decrementBuffTurns();
                     }
 
-                    break; // handled this skill click
+                    currentMenuState = BattleMenuState::Main;
+                    return; // handled this skill click
                 } // end for skillButtons
 
                 // Back button (return to main menu)
