@@ -125,7 +125,7 @@ private:
     //map of player + pmember which maps to whether or not they leveled up
     std::map<Player*, bool> levelUpBooleanMap;
     std::map<Player*, bool>::iterator levelUpIterator;
-    bool levelupflags;
+    bool levelupflags = false;
 
     //Flags that lets me reuse certain parts of the UI 
     bool reuseArrays = false;

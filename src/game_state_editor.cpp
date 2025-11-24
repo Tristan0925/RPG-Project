@@ -775,7 +775,7 @@ void GameStateEditor::handleInput() // Inputs go here
         rightPressed = false;
     }
 
-        // Simple random encounter trigger (5% chance per movement key press)
+        // Simple random encounter trigger (9% chance per movement key press)
 
     sf::Vector2i currentTile(
         int(this->game->player.getPosition().x / 64.f),

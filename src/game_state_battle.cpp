@@ -1648,6 +1648,73 @@ void GameStateBattle::handleInput() {
                 else if (itemButton.wasClicked(this->game->window)) {
                     currentMenuState = BattleMenuState::Item;
                 }
+                else if (guardButton.wasClicked(this->game->window)) {
+                    if (turnQueue.empty()) return;
+
+                    Player* actor = turnQueue.front();
+
+                    // check if it's a party member's turn
+                    bool isPartyActor = (std::find(party.begin(), party.end(), actor) != party.end());
+                    if (!isPartyActor) {
+                        battleText.setString("It's not your turn!");
+                        return;
+                    }
+
+                    Player* defender = static_cast<Player*>(actor);
+
+                    // Apply guard buff (50% damage reduction for 1 turn)
+                    defender->addBuff("Guard", 0.5f, 1, false, true);
+
+                    battleText.setString(defender->getName() + " is guarding!");
+
+                    // End turn
+                    turnQueue.pop_front();
+                    turnQueue.push_back(defender);
+
+                    defender->decrementBuffTurns();
+
+                    return;
+                }
+                else if (escapeButton.wasClicked(this->game->window)) {
+                    
+                    if (turnQueue.empty()) return;
+
+                    Player* actor = turnQueue.front();
+
+                    // Check if it's a party member's turn
+                    bool isPartyActor = (std::find(party.begin(), party.end(), actor) != party.end());
+                    if (!isPartyActor) {
+                        battleText.setString("It's not your turn!");
+                        return;
+                    }
+
+                    Player* escaper = static_cast<Player*>(actor);
+
+                    // Roll escape chance
+                    std::uniform_real_distribution<float> dist(0.f, 1.f);
+                    bool success = (dist(globalRng()) < 0.50f); // 50% chance
+
+                    if (success)
+                    {
+                        totalXpGained = 0;
+                        battleText.setString("You escaped!");
+                        battleOver = true;
+                        return;
+                    }
+                    else
+                    {
+                        battleText.setString("Couldn't escape!");
+
+                        // Failed escape = lose turn
+                        turnQueue.pop_front();
+                        turnQueue.push_back(escaper);
+
+                        escaper->decrementBuffTurns();
+
+                        return;
+                    }
+                }
+
             }
 
             else if (currentMenuState == BattleMenuState::Skill) {
@@ -1938,6 +2005,89 @@ void GameStateBattle::handleInput() {
                     currentMenuState = BattleMenuState::Main;
                 }
             } // end Skill branch
+            else if (currentMenuState == BattleMenuState::Item) {
+
+                // BACK BUTTON FIX
+                if (backButton.wasClicked(this->game->window)) {
+                    currentMenuState = BattleMenuState::Main;
+                    return;
+                }
+            
+                for (auto& b : itemButtons)
+                {
+                    if (!b.wasClicked(this->game->window))
+                        continue;
+            
+                    if (turnQueue.empty()) break;
+            
+                    Player* user = static_cast<Player*>(turnQueue.front());
+                    Player* playerCharacter = &this->game->player;
+            
+                    bool isPartyActor = (std::find(party.begin(), party.end(), user) != party.end());
+                    if (!isPartyActor) {
+                        battleText.setString("It's not your turn!");
+                        break;
+                    }
+            
+                    std::string itemName = b.getText();
+                    PlayerData pdata = user->getData();
+                    PlayerData playerInventory = playerCharacter->getData();
+                    int foundIdx = -1;
+            
+                    for (size_t i = 0; i < pdata.inventory.size(); ++i) {
+                        if (playerInventory.inventory[i].showName() == itemName &&
+                            playerInventory.inventory[i].getQuantity() > 0) {
+                            foundIdx = (int)i;
+                            break;
+                        }
+                    }
+            
+                    if (foundIdx == -1) {
+                        battleText.setString("You don't have that item.");
+                        break;
+                    }
+            
+                    Item& it = playerInventory.inventory[foundIdx];
+            
+                    int healAmount = it.getHealAmount();
+                    int manaAmount = it.getManaAmount();
+            
+                    if (healAmount > 0 && user->getHP() != user->getmaxHP()){
+                        user->heal(healAmount);
+                    } 
+                    else if (healAmount > 0 && user->getHP() == user->getmaxHP()) {
+                        battleText.setString("Your health is full!");
+                        break;
+                    }
+                    else if (manaAmount > 0 && user->getMP() != user->getmaxMP()){
+                        user->regainMP(manaAmount);
+                    } else if (manaAmount > 0 && user->getMP() == user->getmaxMP()){
+                        battleText.setString("Your MP is full!");
+                        break;
+                    }
+            
+                    it.subFromQuantity();
+                    if (it.getQuantity() <= 0)
+                        playerInventory.inventory[foundIdx] = Item();
+            
+                    // MUST KEEP THIS TO PREVENT OVERWRITE
+                    pdata.HP = user->getHP();
+                    pdata.MP = user->getMP();
+            
+                    user->setData(pdata, this->game->skillMasterList);
+            
+                    battleText.setString(user->getName() + " used " + itemName + "!");
+            
+                    turnQueue.pop_front();
+                    turnQueue.push_back(user);
+                    user->decrementBuffTurns();
+            
+                    currentMenuState = BattleMenuState::Main;
+                    break;
+                }
+            
+                return;
+            }                  
         }
     }
 }

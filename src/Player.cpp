@@ -240,6 +240,7 @@ int Player::getVIT() const { return VIT; }
     else HP -= damage;
  }
  void Player::heal(int healAmount){
+    std::cout << HP << LVL << maxHP << std::endl;
     if (HP + healAmount > maxHP) HP = maxHP;
     else HP += healAmount;
  }
@@ -248,6 +249,7 @@ int Player::getVIT() const { return VIT; }
     else MP -= mpSpent; 
  }
  void Player::regainMP(int mpGained){
+     std::cout << MP << LVL << maxMP << std::endl;
     if (MP + mpGained > maxMP) MP = maxMP;
     else MP += mpGained;
  }
