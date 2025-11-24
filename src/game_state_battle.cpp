@@ -1397,6 +1397,13 @@ void GameStateBattle::handleInput() {
                 }
             } // end Skill branch
             else if (currentMenuState == BattleMenuState::Item) {
+
+                // BACK BUTTON FIX
+                if (backButton.wasClicked(this->game->window)) {
+                    currentMenuState = BattleMenuState::Main;
+                    return;
+                }
+            
                 for (auto& b : itemButtons)
                 {
                     if (!b.wasClicked(this->game->window))
@@ -1404,28 +1411,21 @@ void GameStateBattle::handleInput() {
             
                     if (turnQueue.empty()) break;
             
-                    Player* user = dynamic_cast<Player*>(turnQueue.front());
-                    if (!user) break;
+                    Player* user = static_cast<Player*>(turnQueue.front());
             
-                    // Must be a party member
                     bool isPartyActor = (std::find(party.begin(), party.end(), user) != party.end());
                     if (!isPartyActor) {
                         battleText.setString("It's not your turn!");
                         break;
                     }
             
-                    // This text ALWAYS matches showName() because the menu was built from showName()
                     std::string itemName = b.getText();
-            
-                    // EXACT same logic your menu uses:
                     PlayerData pdata = user->getData();
                     int foundIdx = -1;
             
-                    // Find the item by name + quantity
                     for (size_t i = 0; i < pdata.inventory.size(); ++i) {
                         if (pdata.inventory[i].showName() == itemName &&
-                            pdata.inventory[i].getQuantity() > 0)
-                        {
+                            pdata.inventory[i].getQuantity() > 0) {
                             foundIdx = (int)i;
                             break;
                         }
@@ -1436,61 +1436,36 @@ void GameStateBattle::handleInput() {
                         break;
                     }
             
-                    // Apply item effects
                     Item& it = pdata.inventory[foundIdx];
             
                     int healAmount = it.getHealAmount();
                     int manaAmount = it.getManaAmount();
             
-                    if (healAmount > 0)
-                        user->heal(healAmount);
+                    if (healAmount > 0) user->heal(healAmount);
+                    if (manaAmount > 0) user->regainMP(manaAmount);
             
-                    if (manaAmount > 0)
-                        user->regainMP(manaAmount);
-            
-                    // Reduce quantity
                     it.subFromQuantity();
-            
-                    // If empty, replace slot with default Item()
-                    if (it.getQuantity() <= 0) {
+                    if (it.getQuantity() <= 0)
                         pdata.inventory[foundIdx] = Item();
-                    }
             
-                    // Write back to player
+                    // MUST KEEP THIS TO PREVENT OVERWRITE
+                    pdata.HP = user->getHP();
+                    pdata.MP = user->getMP();
+            
                     user->setData(pdata, this->game->skillMasterList);
             
-                    // Set battle text
-                    std::string msg = user->getName() + " used " + itemName;
-                    if (healAmount > 0 || manaAmount > 0) {
-                        msg += " and ";
-                        bool first = true;
-                        if (healAmount > 0) {
-                            msg += "restored " + std::to_string(healAmount) + " HP";
-                            first = false;
-                        }
-                        if (manaAmount > 0) {
-                            if (!first) msg += " & ";
-                            msg += "restored " + std::to_string(manaAmount) + " MP";
-                        }
-                        msg += "!";
-                    } else {
-                        msg += ".";
-                    }
-                    battleText.setString(msg);
+                    battleText.setString(user->getName() + " used " + itemName + "!");
             
-                    // End turn
                     turnQueue.pop_front();
                     turnQueue.push_back(user);
                     user->decrementBuffTurns();
             
-                    // Back to main menu
                     currentMenuState = BattleMenuState::Main;
-            
                     break;
                 }
             
                 return;
-            }            
+            }                  
         }
     }
 }

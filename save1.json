@@ -1,9 +1,9 @@
 {
     "AGI": 3,
-    "HP": 12,
+    "HP": 24,
     "LU": 2,
     "LVL": 1,
-    "MP": 0,
+    "MP": 12,
     "STR": 4,
     "VIT": 3,
     "XP": 0,
@@ -17,11 +17,11 @@
     "angle": 4.71238899230957,
     "inventory": [
         {
-            "description": "None",
-            "healAmount": 0,
+            "description": "Makes you feel like something, but you can't put your finger on it. Heals 100HP.",
+            "healAmount": 100,
             "manaAmount": 0,
-            "name": "Empty Slot",
-            "quantity": 0
+            "name": "Dragon Morsel",
+            "quantity": 1
         },
         {
             "description": "None",
@@ -34,8 +34,8 @@
     "maxHP": 24,
     "maxMP": 12,
     "position": [
-        128.8863983154297,
-        256.0
+        77.29523468017578,
+        93.25640106201172
     ],
     "skills": [
         "Attack",
