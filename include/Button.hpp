@@ -16,6 +16,8 @@ class Button{
     void setHighlight(bool on); 
     void setVisible(bool visible);
     void enableHexBackground(bool enable ) {useHexBackground = enable;}
+    std::string getText() const { return text.getString(); }
+
 
     private:
 

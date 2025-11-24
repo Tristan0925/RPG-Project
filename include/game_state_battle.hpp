@@ -7,6 +7,7 @@
 #include <SFML/Audio.hpp>
 #include "Button.hpp"
 #include <array>
+#include <unordered_map>
 
 class GameStateBattle : public GameState {
 private:
@@ -14,7 +15,7 @@ private:
 
     // Battle state
     bool isBossBattle = false;
-    bool battleOver = true; //change this later
+    bool battleOver = false; //change this later
     // Music
     sf::Music currentMusic;
     bool playResultsMusic; //
@@ -171,6 +172,7 @@ private:
     std::vector<sf::Sprite> turnPortraitSprites;
     sf::RectangleShape turnPanelBackground;
     void updateTurnPanel();
+    void buildSkillButtonsFor(Player* character);
 
     // Battle Buttons
     bool skillMenuActive = false;
@@ -190,6 +192,17 @@ private:
     std::vector<sf::Texture> enemyTextures; 
     std::vector<sf::Sprite> enemySprites; 
     std::vector<sf::Text> turnEnemyNames; 
+    std::vector<sf::RectangleShape> enemyNameBackgrounds;
+    int currentEnemyIndex = 0;
+
+    // Enemy helpers
+    int getFirstLivingEnemy();
+    int getNextLivingEnemy(int index);
+    int getPrevLivingEnemy(int index);
+    std::vector<sf::RectangleShape> enemyHealthBarsBack;
+    std::vector<sf::RectangleShape> enemyHealthBarsFront;
+    void cleanupDeadEnemies();
+    int getEnemyIndex(NPC* e) const;
         
     // Submenu UI
     std::vector<Button> skillButtons;
@@ -205,6 +218,22 @@ private:
     };
 
     BattleMenuState currentMenuState = BattleMenuState::Main;
+
+    // Game over Menu State
+    enum class GameOverMenuState {
+        Main
+    };
+
+    bool gameOver = false;
+    GameOverMenuState gameOverMenuState;
+    sf::Text gameOverText;
+    Button quitButton;
+    Button loadButton;
+    bool loadMenuActive = false;
+    Button slot1;
+    Button slot2;
+    Button slot3;
+
 
     // UI tuning
     float ui_startX = 550.f;
@@ -227,6 +256,19 @@ private:
     int tempSkillPoints = 0;  //holds the total points awarded
     int levelUpAttributeIndex = 0; 
     Player * character; 
+
+    // BuffState
+    struct BuffInstance {
+        float damageAmp = 1.0f;
+        float damageResist = 1.0f;
+        float accBoost = 0.0f;
+        float evadeBoost = 0.0f;
+        int turnsRemaining = 0;
+    };
+    std::unordered_map<Player*, BuffInstance> activeBuffs;
+    //void updateBuffTimers();
+    float getElementMultiplier(const Player* target, const Skill* skill) const;
+
 
 public:
     GameStateBattle(Game* game, bool isBossBattle);
