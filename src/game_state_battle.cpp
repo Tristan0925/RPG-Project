@@ -803,6 +803,8 @@ void GameStateBattle::draw(const float dt) {
     } else if (currentMenuState == BattleMenuState::Item) {
         for (auto& b : itemButtons) b.draw(this->game->window);
         backButton.draw(this->game->window);
+    } else if (currentMenuState == BattleMenuState::EnemyTurn){
+        return;
     }
 
     // Commit the frame
@@ -1109,6 +1111,8 @@ void GameStateBattle::update(const float dt) {
         bool actorIsEnemy = (std::find(party.begin(), party.end(), actor) == party.end());
 
         if (actorIsEnemy) {
+            setPlayerMenuState = false;
+            currentMenuState = BattleMenuState::EnemyTurn;
             if (!enemyTurnPending) {
                 pendingEnemy = actor;
                 enemyTurnPending = true;
@@ -1117,7 +1121,6 @@ void GameStateBattle::update(const float dt) {
                 enemyTurnTimer -= dt;
                 if (enemyTurnTimer <= 0.f && pendingEnemy != nullptr) {
                     NPC* actingEnemy = nullptr;
-
                     // Find actual NPC* in enemies vector
                     for (auto& e : enemies) {
                         if (&e == pendingEnemy) { actingEnemy = &e; break; }
@@ -1256,6 +1259,9 @@ void GameStateBattle::update(const float dt) {
                     pendingEnemy = nullptr;
                 }
             }
+        } else if (!setPlayerMenuState){
+            currentMenuState = BattleMenuState::Main;
+            setPlayerMenuState = true;
         }
     }
 
@@ -1341,9 +1347,13 @@ void GameStateBattle::handleInput() {
                         statsSet = false;
                     }
                 }
-                 if (battleOver && distributionFinished){ //use this to check if anyone leveld up then pop.
+                 if (battleOver && distributionFinished && levelupflags){ //use this to check if anyone leveld up then pop.
                     levelUpTime = true;
                    }
+                 if (battleOver && distributionFinished && !levelupflags){
+                    this->game->requestPop();
+                    return;
+                 }
                 if (!turnQueue.empty()) {
                     Player* front = turnQueue.front();
                     turnQueue.pop_front();

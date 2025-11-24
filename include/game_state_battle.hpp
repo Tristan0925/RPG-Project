@@ -214,11 +214,11 @@ private:
     enum class BattleMenuState {
         Main,
         Skill,
-        Item
+        Item,
+        EnemyTurn
     };
-
     BattleMenuState currentMenuState = BattleMenuState::Main;
-
+    bool setPlayerMenuState = false;
     // Game over Menu State
     enum class GameOverMenuState {
         Main
@@ -250,7 +250,7 @@ private:
     bool printSkillNames = false;
     bool statsSet = false;
 
-    int totalXpGained = 500;
+    int totalXpGained = 0;
     int XPdecrementer = 0; //counts how many times the loop has iterated so we can have a cool next exp counter.
     int skillPoints = 0;  //points actually distributed
     int tempSkillPoints = 0;  //holds the total points awarded

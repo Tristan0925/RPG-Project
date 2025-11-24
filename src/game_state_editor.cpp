@@ -786,7 +786,7 @@ void GameStateEditor::handleInput() // Inputs go here
         lastTile = currentTile;
 
         // 5% chance per new tile
-        if (rand() % 100 < 100) {
+        if (rand() % 100 < 5) {
             currentTrack.pause();
             this->game->requestPush(std::make_unique<GameStateBattle>(this->game, false));
             return; // exit handleInput immediately
