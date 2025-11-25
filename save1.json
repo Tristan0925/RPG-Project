@@ -1,11 +1,11 @@
 {
     "AGI": 3,
-    "HP": 120,
+    "HP": 156,
     "LU": 2,
-    "LVL": 4,
-    "MP": 45,
-    "STR": 7,
-    "VIT": 16,
+    "LVL": 7,
+    "MP": 61,
+    "STR": 20,
+    "VIT": 19,
     "XP": 50,
     "affinities": {
         "Electric": 1.0,
@@ -14,28 +14,28 @@
         "Ice": 1.5,
         "Physical": 1.0
     },
-    "angle": 3.1415927410125732,
+    "angle": 4.371138828673793e-08,
     "inventory": [
         {
-            "description": "None",
+            "description": "Some moss you found in a chest. Not safe for human consumption, but somehow restores 100MP.",
             "healAmount": 0,
-            "manaAmount": 0,
-            "name": "Empty Slot",
-            "quantity": 0
+            "manaAmount": 100,
+            "name": "Energizing Moss",
+            "quantity": 2
         },
         {
-            "description": "None",
-            "healAmount": 0,
+            "description": "Makes you feel like something, but you can't put your finger on it. Heals 100HP.",
+            "healAmount": 100,
             "manaAmount": 0,
-            "name": "Empty Slot",
-            "quantity": 0
+            "name": "Dragon Morsel",
+            "quantity": 2
         }
     ],
-    "maxHP": 120,
-    "maxMP": 45,
+    "maxHP": 156,
+    "maxMP": 78,
     "position": [
-        703.7260131835938,
-        424.97296142578125
+        449.21783447265625,
+        1104.1484375
     ],
     "skills": [
         "Attack",
