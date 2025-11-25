@@ -738,7 +738,7 @@ void GameStateBattle::draw(const float dt) {
                                      (static_cast<int>(i) == currentEnemyIndex) ? base * 1.15f : base);
         }
 
-     
+
         this->game->window.draw(enemySprites[i]);
 
         // Highlight active enemy
@@ -989,7 +989,7 @@ void GameStateBattle::update(const float dt) {
     }
 
     else{
-    // update damage popups (position + life)
+ 
     if (isBossBattle && !setAnimationVariables){
         if (this->game->floorNumber == 1){
             frameHeight = 100;
@@ -998,6 +998,9 @@ void GameStateBattle::update(const float dt) {
             setAnimationVariables = true;
         }
         else if (this->game->floorNumber == 2){
+            frameHeight = 73;
+            frameWidth = 77;
+            totalFrames = 5;
             setAnimationVariables = true;
         }
     }
@@ -1012,7 +1015,13 @@ void GameStateBattle::update(const float dt) {
             }
         }
         else if (this->game->floorNumber == 2){
-
+            elapsed += dt;
+            animationSpeed =  12.f/60.f;
+            if (elapsed >= animationSpeed){
+                currentFrame = (currentFrame + 1) % totalFrames;
+                enemySprites[0].setTextureRect(sf::IntRect(currentFrame * 82, 0, frameWidth, frameHeight));
+                elapsed = 0.f;
+            }
         }
     }
     for (auto it = damagePopups.begin(); it != damagePopups.end();) {
