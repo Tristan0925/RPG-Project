@@ -102,6 +102,9 @@ void Player::update(float dt) {
     angle = normalizeAngle(angle);
 }
 
+std::array<const Skill*, 9> Player::getSkillsList() const{
+    return skillsList;
+}
 
 float Player::getAngle() const {
     return angle; // for recognition in minimap
