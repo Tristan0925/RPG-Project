@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <array>
 
 class GameState; // forward declaration
 
@@ -24,15 +25,10 @@ struct PendingState {
     std::unique_ptr<GameState> state;
 };
 
-#include "texture_manager.hpp"
-#include "Player.hpp"
-#include "Map.hpp"
-#include <string>
-#include <array>
-
 class Game
 {
 private:
+
     void loadTextures();
 
     // store a pending state request to be applied safely in the game loop
@@ -44,6 +40,17 @@ private:
     NPC pmember2;
     NPC pmember3;
     NPC pmember4;
+    std::vector<Player> party;
+
+    struct GameData {
+        PlayerData player;
+        PlayerData pmember2;
+        PlayerData pmember3;
+        PlayerData pmember4;
+    };
+
+    void saveFromFile(const std::string& filename) const;
+    bool loadFromFile(const std::string& filename, const std::vector<Skill>& masterList);
 
     std::array<std::string, 9> playerSkills = {"Attack", "Shock", "Dia", "Fire Breath", "Flash Freeze", "Tornado", "Divine Shot", "Freikugel", "Focus"};
     std::array<std::string, 9> pmember2Skills = {"Attack", "Zio", "Agi", "Matarukaja", "Bufula", "Megidola", "Omni-Dimension", "EMPTY SLOT", "EMPTY SLOT"}; //if you want you could make more skills 

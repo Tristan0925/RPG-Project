@@ -1,0 +1,48 @@
+{
+    "party": [],
+    "player": {
+        "AGI": 3,
+        "HP": 24,
+        "LU": 2,
+        "LVL": 1,
+        "MP": 12,
+        "STR": 4,
+        "VIT": 3,
+        "XP": 0,
+        "affinities": {
+            "Electric": 1.0,
+            "Fire": 0.0,
+            "Force": 1.0,
+            "Ice": 1.5,
+            "Physical": 1.0
+        },
+        "angle": 0.0,
+        "inventory": [
+            {
+                "name": "Empty Slot",
+                "quantity": 0
+            },
+            {
+                "name": "Empty Slot",
+                "quantity": 0
+            }
+        ],
+        "maxHP": 24,
+        "maxMP": 12,
+        "position": [
+            128.15911865234375,
+            256.0
+        ],
+        "skills": [
+            "Attack",
+            "Shock",
+            "Dia",
+            "Fire Breath",
+            "Flash Freeze",
+            "Tornado",
+            "Divine Shot",
+            "Freikugel",
+            "Focus"
+        ]
+    }
+}
