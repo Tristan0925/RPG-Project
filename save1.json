@@ -1,51 +1,229 @@
 {
-    "AGI": 3,
-    "HP": 156,
-    "LU": 2,
-    "LVL": 7,
-    "MP": 61,
-    "STR": 20,
-    "VIT": 19,
-    "XP": 50,
-    "affinities": {
-        "Electric": 1.0,
-        "Fire": 0.0,
-        "Force": 1.0,
-        "Ice": 1.5,
-        "Physical": 1.0
-    },
-    "angle": 4.371138828673793e-08,
-    "inventory": [
+    "party": [
         {
-            "description": "Some moss you found in a chest. Not safe for human consumption, but somehow restores 100MP.",
-            "healAmount": 0,
-            "manaAmount": 100,
-            "name": "Energizing Moss",
-            "quantity": 2
+            "AGI": 3,
+            "HP": 24,
+            "LU": 2,
+            "LVL": 1,
+            "MP": 12,
+            "STR": 4,
+            "VIT": 3,
+            "XP": 0,
+            "affinities": {
+                "Electric": 1.0,
+                "Fire": 0.0,
+                "Force": 1.0,
+                "Ice": 1.5,
+                "Physical": 1.0
+            },
+            "angle": 0.0,
+            "inventory": [
+                {
+                    "name": "Empty Slot",
+                    "quantity": 0
+                },
+                {
+                    "name": "Empty Slot",
+                    "quantity": 0
+                }
+            ],
+            "maxHP": 24,
+            "maxMP": 12,
+            "position": [
+                64.0,
+                256.0
+            ],
+            "skills": [
+                "Attack",
+                "Shock",
+                "Dia",
+                "Fire Breath",
+                "Flash Freeze",
+                "Tornado",
+                "Divine Shot",
+                "Freikugel",
+                "Focus"
+            ]
         },
         {
-            "description": "Makes you feel like something, but you can't put your finger on it. Heals 100HP.",
-            "healAmount": 100,
-            "manaAmount": 0,
-            "name": "Dragon Morsel",
-            "quantity": 2
+            "AGI": 3,
+            "HP": 78,
+            "LU": 3,
+            "LVL": 10,
+            "MP": 45,
+            "STR": 2,
+            "VIT": 3,
+            "XP": 0,
+            "affinities": {
+                "Electric": 1.0,
+                "Fire": 1.0,
+                "Force": 1.5,
+                "Ice": 0.5,
+                "Physical": 1.0
+            },
+            "angle": 0.0,
+            "inventory": [
+                {
+                    "name": "Empty Slot",
+                    "quantity": 0
+                },
+                {
+                    "name": "Empty Slot",
+                    "quantity": 0
+                }
+            ],
+            "maxHP": 78,
+            "maxMP": 45,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "skills": [
+                "Attack",
+                "Zio",
+                "Agi",
+                "Matarukaja",
+                "Bufula",
+                "Megidola",
+                "Omni-Dimension",
+                "EMPTY SLOT",
+                "EMPTY SLOT"
+            ]
+        },
+        {
+            "AGI": 3,
+            "HP": 24,
+            "LU": 2,
+            "LVL": 1,
+            "MP": 15,
+            "STR": 3,
+            "VIT": 3,
+            "XP": 0,
+            "affinities": {
+                "Electric": 1.5,
+                "Fire": 1.5,
+                "Force": 1.0,
+                "Ice": 1.0,
+                "Physical": 1.0
+            },
+            "angle": 0.0,
+            "inventory": [
+                {
+                    "name": "Empty Slot",
+                    "quantity": 0
+                },
+                {
+                    "name": "Empty Slot",
+                    "quantity": 0
+                }
+            ],
+            "maxHP": 24,
+            "maxMP": 15,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "skills": [
+                "Attack",
+                "Zanma",
+                "Diarama",
+                "Marakunda",
+                "Mediarama",
+                "Scorched Earth",
+                "EMPTY SLOT",
+                "EMPTY SLOT",
+                "EMPTY SLOT"
+            ]
+        },
+        {
+            "AGI": 2,
+            "HP": 18,
+            "LU": 3,
+            "LVL": 1,
+            "MP": 12,
+            "STR": 5,
+            "VIT": 2,
+            "XP": 0,
+            "affinities": {
+                "Electric": 1.0,
+                "Fire": 1.0,
+                "Force": 1.0,
+                "Ice": 1.5,
+                "Physical": 0.5
+            },
+            "angle": 0.0,
+            "inventory": [
+                {
+                    "name": "Empty Slot",
+                    "quantity": 0
+                },
+                {
+                    "name": "Empty Slot",
+                    "quantity": 0
+                }
+            ],
+            "maxHP": 18,
+            "maxMP": 12,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "skills": [
+                "Attack",
+                "Andalucia",
+                "Mabufula",
+                "Masukukaja",
+                "Debilitate",
+                "Spiral Viper",
+                "EMPTY SLOT",
+                "EMPTY SLOT",
+                "EMPTY SLOT"
+            ]
         }
     ],
-    "maxHP": 156,
-    "maxMP": 78,
-    "position": [
-        449.21783447265625,
-        1104.1484375
-    ],
-    "skills": [
-        "Attack",
-        "Shock",
-        "Dia",
-        "Fire Breath",
-        "Flash Freeze",
-        "Tornado",
-        "Divine Shot",
-        "Freikugel",
-        "Focus"
-    ]
+    "player": {
+        "AGI": 3,
+        "HP": 24,
+        "LU": 2,
+        "LVL": 1,
+        "MP": 12,
+        "STR": 4,
+        "VIT": 3,
+        "XP": 0,
+        "affinities": {
+            "Electric": 1.0,
+            "Fire": 0.0,
+            "Force": 1.0,
+            "Ice": 1.5,
+            "Physical": 1.0
+        },
+        "angle": 0.0,
+        "inventory": [
+            {
+                "name": "Empty Slot",
+                "quantity": 0
+            },
+            {
+                "name": "Empty Slot",
+                "quantity": 0
+            }
+        ],
+        "maxHP": 24,
+        "maxMP": 12,
+        "position": [
+            64.0,
+            256.0
+        ],
+        "skills": [
+            "Attack",
+            "Shock",
+            "Dia",
+            "Fire Breath",
+            "Flash Freeze",
+            "Tornado",
+            "Divine Shot",
+            "Freikugel",
+            "Focus"
+        ]
+    }
 }

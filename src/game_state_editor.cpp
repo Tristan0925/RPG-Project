@@ -702,13 +702,13 @@ void GameStateEditor::handleInput() // Inputs go here
                         {
                             if (slotMenuMode == SlotMenuMode::Save)
                             {
-                                this->game->player.saveToFile(saveFiles[i]);
+                                this->game->saveFromFile(saveFiles[i]);
                                 showSaveText = true;
                                 saveClock.restart();
                             }
                             else if (slotMenuMode == SlotMenuMode::Load)
                             {
-                                this->game->player.loadFromFile(saveFiles[i], this->game->skillMasterList);
+                                this->game->loadFromFile(saveFiles[i], this->game->skillMasterList);
                                 std::cout << "Loaded position: " << this->game->player.getPosition().x
                                 << ", " << this->game->player.getPosition().y << std::endl;
                                 // Force camera to follow new player position

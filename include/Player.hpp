@@ -86,7 +86,7 @@ class Player {
         void turnRight();
         void update(float dt);
         PlayerData getData() const;       // Create a snapshot of player state
-        void setData(const PlayerData&, const std::vector<Skill>& masterList);  // Restore player state from snapshot
+        void setData(const PlayerData&, const std::vector<Skill>& masterList, bool preserveLevel = true);  // Restore player state from snapshot
         bool saveToFile(const std::string& filename) const;
         bool loadFromFile(const std::string& filename, const std::vector<Skill>& masterList);
         void setDefault(const Map& map);
