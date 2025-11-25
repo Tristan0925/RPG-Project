@@ -963,9 +963,9 @@ void GameStateBattle::update(const float dt) {
     // update damage popups (position + life)
     if (isBossBattle && !setAnimationVariables){
         if (this->game->floorNumber == 1){
-            frameHeight = 95;
-            frameWidth = 67;
-            totalFrames = 6;
+            frameHeight = 100;
+            frameWidth = 156;
+            totalFrames = 4;
             setAnimationVariables = true;
         }
         else if (this->game->floorNumber == 2){
@@ -975,15 +975,9 @@ void GameStateBattle::update(const float dt) {
     if (isBossBattle){
         if (this->game->floorNumber == 1){
             elapsed += dt;
+            animationSpeed =  0.25f;
             if (elapsed >= animationSpeed){
                 currentFrame = (currentFrame + 1) % totalFrames;
-                 if (frameWidth == 67 && frameHeight == 95) {
-                frameWidth = 165;
-                frameHeight = 95;
-                } else {
-                frameWidth = 67;
-                frameHeight = 95;
-                }
                 enemySprites[0].setTextureRect(sf::IntRect(currentFrame * frameWidth, 0, frameWidth, frameHeight));
                 elapsed = 0.f;
             }

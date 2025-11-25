@@ -1,8 +1,8 @@
 [
        {
-      "name": "Shaddai",
+      "name": "Sabaoth",
       "sprite": "assets/bosses/base/shaddai_base.png",
-      "animations": "assets/bosses/animations/shaddai_animation.png",
+      "animations": "assets/bosses/animations/sabaoth_animations.png",
       "level": 7,
       "STR": 5,
       "VIT": 1,
