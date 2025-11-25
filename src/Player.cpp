@@ -420,8 +420,7 @@ void Player::levelUp(){
 
 // Buff/Debuff function locations
 
-void Player::addBuff(const std::string& name, float value, int turns,
-                     bool affectsOutgoing, bool affectsIncoming) {
+void Player::addBuff(const std::string& name, float value, int turns, bool affectsOutgoing, bool affectsIncoming) {
     ActiveBuff b;
     b.name = name;
     b.value = value;
