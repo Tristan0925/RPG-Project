@@ -1368,21 +1368,21 @@ void GameStateBattle::handleInput() {
                 else { 
                     // Slot menu active
                     if (slot1.wasClicked(this->game->window)) {
-                        this->game->player.loadFromFile("save1.json", this->game->skillMasterList);
+                        this->game->loadFromFile("save1.json", this->game->skillMasterList);
                         loadMenuActive = false;
                         gameOver = false; // optionally reset game over state
                         this->game->requestChange(std::make_unique<GameStateEditor>(this->game, false, this->game->floorNumber));
                         return;
                     }
                     else if (slot2.wasClicked(this->game->window)) {
-                        this->game->player.loadFromFile("save2.json", this->game->skillMasterList);
+                        this->game->loadFromFile("save2.json", this->game->skillMasterList);
                         loadMenuActive = false;
                         gameOver = false;
                         this->game->requestChange(std::make_unique<GameStateEditor>(this->game, false, this->game->floorNumber));
                         return;
                     }
                     else if (slot3.wasClicked(this->game->window)) {
-                        this->game->player.loadFromFile("save3.json", this->game->skillMasterList);
+                        this->game->loadFromFile("save3.json", this->game->skillMasterList);
                         loadMenuActive = false;
                         gameOver = false;
                         this->game->requestChange(std::make_unique<GameStateEditor>(this->game, false, this->game->floorNumber));
