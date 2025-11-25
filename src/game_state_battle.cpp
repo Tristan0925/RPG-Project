@@ -251,12 +251,40 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle, int bossIndex)
     currentEnemyIndex = getFirstLivingEnemy();
 
     // Music
-    if (!currentMusic.openFromFile("./assets/music/normalbattle.mp3")) {
-        std::cout << "Could not load music file" << std::endl;
-    } else {
-        currentMusic.setLoop(true);
-        currentMusic.play();
+
+    switch (isBossBattle){
+        case false:
+            if (!currentMusic.openFromFile("./assets/music/normalbattle.mp3") && !isBossBattle) {
+                std::cout << "Could not load music file" << std::endl;
+            } else{
+                currentMusic.setLoop(true);
+                currentMusic.play();
+            }
+            break;
+        case true:
+            if (this->game->floorNumber == 1){
+                if (!currentMusic.openFromFile("./assets/music/boss1.mp3")){
+                        std::cout << "Could not load music file" << std::endl;
+                }else{
+                    currentMusic.setLoop(true);
+                    currentMusic.play();
+                    }
+                    break;
+            }
+
+            else if (this->game->floorNumber == 2){
+                if (!currentMusic.openFromFile("./assets/music/boss2.mp3")){
+                        std::cout << "Could not load music file" << std::endl;
+                }else{
+                    currentMusic.setLoop(true);
+                    currentMusic.play();
+                    }
+                    break;
+            }
     }
+
+
+    
     
 
     buildSkillButtonsFor(&this->game->player);

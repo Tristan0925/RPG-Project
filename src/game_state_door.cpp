@@ -38,22 +38,7 @@ std::cout << std::endl;
     textInTextbox.setString("You sense a terrifying presence ahead. After you face it, you cannot return. Proceed?\n Space - Head Back.     Enter - Proceed.");
     this->game->window.draw(Textbox);
     this->game->window.draw(textInTextbox);
-    if (this->game->floorNumber == 1){
-        if (!preludeTrack.openFromFile("./assets/music/boss1prelude.mp3")) {
-        std::cout << "Could not load music file" << std::endl;
-    } else {
-        preludeTrack.setLoop(true);
-        preludeTrack.play();
-    }
-    }
-    else if (this->game->floorNumber == 2){
-        if (!preludeTrack.openFromFile("./assets/music/boss2prelude.mp3")) {
-        std::cout << "Could not load music file" << std::endl;
-    } else {
-        preludeTrack.setLoop(true);
-        preludeTrack.play();
-    }
-    }
+   
  }
 
  else{
@@ -147,6 +132,22 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
     player = this->game->player;
     std::array<Item, 2> playerinv = this->game->player.getInventory(); 
 
+     if (this->game->floorNumber == 1){
+        if (!preludeTrack.openFromFile("./assets/music/boss1prelude.mp3")) {
+        std::cout << "Could not load music file" << std::endl;
+    } else {
+        preludeTrack.setLoop(true);
+        preludeTrack.play();
+    }
+    }
+    else if (this->game->floorNumber == 2){
+        if (!preludeTrack.openFromFile("./assets/music/boss2prelude.mp3")) {
+        std::cout << "Could not load music file" << std::endl;
+    } else {
+        preludeTrack.setLoop(true);
+        preludeTrack.play();
+    }
+    }
 
 
  for (const auto& pair : this->game->doorCoordinatesToHasLoot) {
