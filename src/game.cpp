@@ -12,6 +12,8 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <fstream>
+#include "game_state_editor.hpp"
+
 
 void Game::loadTextures() // load textures used in game_state_start and game_state_editor (for the most part anyway)
 { 
@@ -254,6 +256,14 @@ bool Game::loadFromFile(const std::string& filename, const std::vector<Skill>& m
     json j;
     in >> j;
 
+    int floorNumber = 1; // default
+    if (j.contains("floorNumber")) {
+        floorNumber = j["floorNumber"];
+    }
+    this->states.push(std::make_unique<GameStateEditor>(this, false, floorNumber));
+
+
+
     // --- Load main player ---
     if (j.contains("player")) {
         PlayerData pdata;
@@ -272,7 +282,6 @@ bool Game::loadFromFile(const std::string& filename, const std::vector<Skill>& m
         pdata.LU = j["player"].value("LU", pdata.LU);
         pdata.XP = j["player"].value("XP", pdata.XP);
         pdata.LVL = j["player"].value("LVL", pdata.LVL);
-        floorNumber = j.value("floorNumber", 1);
 
         // inventory
         if (j["player"].contains("inventory") && j["player"]["inventory"].is_array()) {
