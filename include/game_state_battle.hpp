@@ -31,7 +31,6 @@ private:
     sf::Music currentMusic;
     bool playResultsMusic; 
     
-    
     // Text         
     sf::Font font;
     sf::Text battleText;
