@@ -192,6 +192,7 @@ void Game::saveFromFile(const std::string& filename) const {
     j["player"]["LU"] = pdata.LU;
     j["player"]["XP"] = pdata.XP;
     j["player"]["LVL"] = pdata.LVL;
+    j["floorNumber"] = floorNumber;
 
     j["player"]["inventory"] = json::array();
     for (const auto& item : pdata.inventory) {
@@ -271,6 +272,7 @@ bool Game::loadFromFile(const std::string& filename, const std::vector<Skill>& m
         pdata.LU = j["player"].value("LU", pdata.LU);
         pdata.XP = j["player"].value("XP", pdata.XP);
         pdata.LVL = j["player"].value("LVL", pdata.LVL);
+        floorNumber = j.value("floorNumber", 1);
 
         // inventory
         if (j["player"].contains("inventory") && j["player"]["inventory"].is_array()) {

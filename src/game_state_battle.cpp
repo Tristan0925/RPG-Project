@@ -58,6 +58,15 @@ static float enemyTurnTimer = 0.f;
 static const float ENEMY_TURN_DELAY = 1.5f; // delay before enemy acts
 static Player* pendingEnemy = nullptr;
 
+// --- Item selection state (file-local, similar to other static flags) ---
+enum class ItemUseState {
+    NONE,
+    SELECTING_TARGET
+};
+static ItemUseState itemUseState = ItemUseState::NONE;
+static int selectedItemInventoryIndex = -1; // index in the player's inventory of the item chosen
+
+
 
 // Constructor and setup 
 
@@ -728,6 +737,16 @@ void GameStateBattle::draw(const float dt) {
         this->game->window.draw(mpBars[i]);
         this->game->window.draw(hpTexts[i]);
         this->game->window.draw(mpTexts[i]);
+
+        if (itemUseState == ItemUseState::SELECTING_TARGET) {
+            sf::FloatRect b = playerIcons[i].getGlobalBounds();
+            sf::RectangleShape highlight(sf::Vector2f(b.width + 8.f, b.height + 8.f));
+            highlight.setPosition(b.left - 4.f, b.top - 4.f);
+            highlight.setFillColor(sf::Color(255, 255, 255, 40));
+            highlight.setOutlineColor(sf::Color::Green);
+            highlight.setOutlineThickness(2.f);
+            this->game->window.draw(highlight);
+        }
     }
 
     // Draw enemies
@@ -953,14 +972,14 @@ void GameStateBattle::update(const float dt) {
                 maxHp.setString("Max HP                 " + std::to_string(maxHpVal) + "  ==>  " + std::to_string(recalculatedMaxHp));
                 maxMp.setString("Max MP                 " + std::to_string(maxMpVal) + "  ==>  " + std::to_string(recalculatedMaxMp));
 
-                 for (size_t x = 1; x < 9; x++){
-                    auto* skill = character->getSkillsList()[x];
-                    if(skill && skill->getName() != "EMPTY SLOT" && skill->getUnlockLevel() <= character->getLVL()){
-                        skillNamesForResults[x-1].setString(skill->getName());
-                    }
+                //  for (size_t x = 1; x < 9; x++){
+                //     const Skill* skill = character->getSkillPtr(character->skillSlots[x], this->masterSkillList);
+                //     if(skill && skill->getName() != "EMPTY SLOT" && skill->getUnlockLevel() <= character->getLVL()){
+                //         skillNamesForResults[x-1].setString(skill->getName());
+                //     } fix later
                 statsSet = true;
-
-            }}
+           // }   
+        }
             strength.setFillColor(sf::Color::White);
             vitality.setFillColor(sf::Color::White);
             magic.setFillColor(sf::Color::White);
@@ -1158,9 +1177,9 @@ void GameStateBattle::update(const float dt) {
                 );
                 if (s) {
                     battleText.setString(
-                        s->getName() + "\n" +
-                        s->getDescription() + "\nMP Cost: " +
-                        std::to_string(s->getMpCost())
+                        s->getName() + "\tMP Cost: " +
+                        std::to_string(s->getMpCost()) + "\n" +
+                        s->getDescription() 
                     );
                 }
             }
@@ -1592,6 +1611,83 @@ void GameStateBattle::handleInput() {
                     }
                     distributionText.setString("Distribute points.\n" + std::to_string(skillPoints) + " points remaining.");
                 }
+        }
+    }
+    // --- If we're waiting for the player to pick a target for an item:
+    if (itemUseState == ItemUseState::SELECTING_TARGET) {
+        // Only handle left clicks
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+
+            sf::Vector2f mousePos = this->game->window.mapPixelToCoords(
+                { event.mouseButton.x, event.mouseButton.y }
+            );
+
+            // check each party portrait / background for a click (use larger background area)
+            for (int i = 0; i < static_cast<int>(playerBackgrounds.size()); ++i) {
+                sf::FloatRect bounds = playerBackgrounds[i].getGlobalBounds(); // <- use background, not small icon
+                // right after you detect the background contains the mouse:
+                battleText.setString("Clicked portrait index " + std::to_string(i));
+                if (!bounds.contains(mousePos)) continue;
+
+                // found the target index i
+                if (i < static_cast<int>(party.size()) && party[i]) {
+                    Player* target = party[i];
+
+                    // Ensure inventory index is valid on the real player
+                    PlayerData pData = this->game->player.getData();
+                    if (selectedItemInventoryIndex < 0 || selectedItemInventoryIndex >= static_cast<int>(pData.inventory.size())) {
+                        battleText.setString("Item index invalid.");
+                        itemUseState = ItemUseState::NONE;
+                        selectedItemInventoryIndex = -1;
+                        break;
+                    }
+
+                    Item &it = pData.inventory[selectedItemInventoryIndex];
+                    int healAmount = it.getHealAmount();
+                    int manaAmount = it.getManaAmount();
+
+                    // If it is a heal item but target already full, show message and don't consume
+                    if (healAmount > 0 && target->getHP() == target->getmaxHP()) {
+                        battleText.setString(target->getName() + " is already at full HP!");
+                    } else {
+                        // Apply effects
+                        if (healAmount > 0) {
+                            target->heal(healAmount);
+                            battleText.setString(target->getName() + " recovered " + std::to_string(healAmount) + " HP!");
+                        }
+                        if (manaAmount > 0) {
+                            target->regainMP(manaAmount);
+                            battleText.setString(target->getName() + " recovered " + std::to_string(manaAmount) + " MP!");
+                        }
+
+                        // decrement quantity and if 0 replace with empty slot
+                        it.subFromQuantity();
+                        if (it.getQuantity() <= 0) it = Item();
+
+                        // write the modified PlayerData back to the real player (updates inventory)
+                        this->game->player.setData(pData, this->game->skillMasterList, true);
+
+                        // End the actor's turn: rotate the turnQueue and decrement buff turns
+                        if (!turnQueue.empty()) {
+                            Player* actor = turnQueue.front();
+                            turnQueue.pop_front();
+                            turnQueue.push_back(actor);
+                            if (actor) actor->decrementBuffTurns();
+                        }
+                    }
+
+                    // reset selection state
+                    itemUseState = ItemUseState::NONE;
+                    selectedItemInventoryIndex = -1;
+
+                    // close item menu (return to main)
+                    currentMenuState = BattleMenuState::Main;
+                }
+                break;
+            }
+
+            // consume the click (we handled target selection); continue to next polled event
+            continue;
         }
     }
 
@@ -2096,77 +2192,46 @@ void GameStateBattle::handleInput() {
                     return;
                 }
             
+                // itemButtons handling: choose item to use (enter target selection)
                 for (auto& b : itemButtons)
                 {
                     if (!b.wasClicked(this->game->window))
                         continue;
-            
+
                     if (turnQueue.empty()) break;
-            
+
                     Player* user = static_cast<Player*>(turnQueue.front());
                     Player* playerCharacter = &this->game->player;
-            
+
                     bool isPartyActor = (std::find(party.begin(), party.end(), user) != party.end());
                     if (!isPartyActor) {
                         battleText.setString("It's not your turn!");
                         break;
                     }
-            
+
                     std::string itemName = b.getText();
-                    PlayerData pdata = user->getData();
-                    PlayerData playerInventory = playerCharacter->getData();
+                    PlayerData pdata = playerCharacter->getData(); // snapshot of player's current data
                     int foundIdx = -1;
-            
+
                     for (size_t i = 0; i < pdata.inventory.size(); ++i) {
-                        if (playerInventory.inventory[i].showName() == itemName &&
-                            playerInventory.inventory[i].getQuantity() > 0) {
-                            foundIdx = (int)i;
+                        if (pdata.inventory[i].showName() == itemName &&
+                            pdata.inventory[i].getQuantity() > 0) {
+                            foundIdx = static_cast<int>(i);
                             break;
                         }
                     }
-            
+
                     if (foundIdx == -1) {
                         battleText.setString("You don't have that item.");
                         break;
                     }
-            
-                    Item& it = playerInventory.inventory[foundIdx];
-            
-                    int healAmount = it.getHealAmount();
-                    int manaAmount = it.getManaAmount();
-            
-                    if (healAmount > 0 && user->getHP() != user->getmaxHP()){
-                        user->heal(healAmount);
-                    } 
-                    else if (healAmount > 0 && user->getHP() == user->getmaxHP()) {
-                        battleText.setString("Your health is full!");
-                        break;
-                    }
-                    else if (manaAmount > 0 && user->getMP() != user->getmaxMP()){
-                        user->regainMP(manaAmount);
-                    } else if (manaAmount > 0 && user->getMP() == user->getmaxMP()){
-                        battleText.setString("Your MP is full!");
-                        break;
-                    }
-            
-                    it.subFromQuantity();
-                    if (it.getQuantity() <= 0)
-                        playerInventory.inventory[foundIdx] = Item();
-            
-                    // MUST KEEP THIS TO PREVENT OVERWRITE
-                    pdata.HP = user->getHP();
-                    pdata.MP = user->getMP();
-            
-                    user->setData(pdata, this->game->skillMasterList);
-            
-                    battleText.setString(user->getName() + " used " + itemName + "!");
-            
-                    turnQueue.pop_front();
-                    turnQueue.push_back(user);
-                    user->decrementBuffTurns();
-            
-                    currentMenuState = BattleMenuState::Main;
-                    break;
+
+                    // Enter target selection mode. Store the inventory index so we can modify the real inventory later.
+                    selectedItemInventoryIndex = foundIdx;
+                    itemUseState = ItemUseState::SELECTING_TARGET;
+                    battleText.setString("Select a target to use " + itemName + " on.");
+                    // keep the item menu visible while selecting target (your UI will highlight party)
+                    return; // stop further handling until player selects target
                 }
             
                 return;
