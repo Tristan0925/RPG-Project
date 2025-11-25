@@ -1,5 +1,3 @@
-
-
 #include <SFML/Graphics.hpp>
 #include "game_state_door.hpp"
 #include "game_state.hpp"
@@ -40,7 +38,7 @@ std::cout << std::endl;
     textInTextbox.setString("You sense a terrifying presence ahead. After you face it, you cannot return. Proceed?\n Space - Head Back.     Enter - Proceed.");
     this->game->window.draw(Textbox);
     this->game->window.draw(textInTextbox);
-    if (floorNumber == 1){
+    if (this->game->floorNumber == 1){
         if (!preludeTrack.openFromFile("./assets/music/boss1prelude.mp3")) {
         std::cout << "Could not load music file" << std::endl;
     } else {
@@ -48,7 +46,7 @@ std::cout << std::endl;
         preludeTrack.play();
     }
     }
-    else if (floorNumber == 2){
+    else if (this->game->floorNumber == 2){
         if (!preludeTrack.openFromFile("./assets/music/boss2prelude.mp3")) {
         std::cout << "Could not load music file" << std::endl;
     } else {
@@ -101,7 +99,7 @@ void GameStateDoor::handleInput()
                     return;
                 }
                 else if (event.key.code == sf::Keyboard::Enter && isBossRoom){
-                    this->game->requestChange(std::make_unique<GameStateBattle>(this->game, true));
+                    this->game->requestChange(std::make_unique<GameStateBattle>(this->game, true, bossIndex));
                     return;
                 }
             }
@@ -156,7 +154,6 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
             isBossRoom = true;
             isEmptyRoom = false;
             isItemRoom = false;
-            floorNumber = 1;
             this->game->doorCoordinatesToHasLoot[pair.first] = false;
         }
         else if (pair.first == coordinatePair && pair.second == true){
@@ -180,6 +177,12 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
             isBossRoom = false;
         }
        
+    }
+
+    if (this->game->floorNumber == 1){
+        bossIndex = 0;
+    } else if(this->game->floorNumber == 2){
+        bossIndex = 1;
     }
 
 

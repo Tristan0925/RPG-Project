@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include "Button.hpp"
+#include <fstream>
 #include <filesystem>
 #include <nlohmann/json.hpp>
 #include <fstream>
@@ -60,7 +61,7 @@ static Player* pendingEnemy = nullptr;
 
 // Constructor and setup 
 
-GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
+GameStateBattle::GameStateBattle(Game* game, bool isBossBattle, int bossIndex)
 :   topBarTextBackground(sf::Quads,4), 
     thingsEarnedBackground(sf::Quads,4),
     attackButton("Attack", {150.f, 800.f}, 30, game, sf::Color::White),
@@ -78,7 +79,8 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     this->game = game;
     this->player = &game->player;
     font = this->game->font;
-
+    this->bossIndex = bossIndex;
+    this->isBossBattle = isBossBattle;
     // Setup battle text
     battleText.setFont(font);
     battleText.setString("Doom Approaches!");
@@ -786,10 +788,10 @@ void GameStateBattle::draw(const float dt) {
             this->game->window.draw(turnEnemyNames[i]);
     }
 
-    // Floating damage popups
-    for (auto& dp : damagePopups) {
-        this->game->window.draw(dp.text);
-    }
+    // Floating damage popups (this crashes bosses for some reason)
+    // for (auto& dp : damagePopups) {
+    //     this->game->window.draw(dp.text);
+    // }
 
     // Battle menu buttons
     if (currentMenuState == BattleMenuState::Main) {
@@ -987,9 +989,13 @@ void GameStateBattle::update(const float dt) {
         std::random_device rd;
         std::mt19937 gen(rd());
         enemyBaseScales.clear();
+        if (!isBossBattle){
         int count = std::uniform_int_distribution<>(1, 4)(gen); // 1–4 enemies
-        enemies = loadRandomEnemies(count);
-        
+        enemies = loadEnemies(count, false, 0);
+        }else{
+            enemies = loadEnemies(1,true,bossIndex);
+
+        }
 
         // Reserve to avoid reallocation invalidating addresses
         enemySprites.clear();
@@ -1339,8 +1345,17 @@ void GameStateBattle::handleInput() {
              if (event.key.code == sf::Keyboard::Space) {
                  if (battleOver && distributionFinished && levelUpTime){
                     if (levelUpIterator == levelUpBooleanMap.end()){
+                         if (isBossBattle && this->game->floorNumber == 1){
+                            this->game->floorNumber+=1;
+                            this->game->changeState(std::make_unique<GameStateEditor>(this->game, false, this->game->floorNumber));
+                            return;
+                         } else if (isBossBattle && this->game->floorNumber == 2){
+                            std::cout << "Thanks for Playing!" << std::endl;
+                            std::exit(67);
+                         } else{
                         this->game->requestPop();
                         return;
+                         }
                     }
                     if (levelUpIterator != levelUpBooleanMap.end() && skillPoints == 0){
                         skillPoints = tempSkillPoints;
@@ -2095,10 +2110,16 @@ void GameStateBattle::handleInput() {
 
   
 // load random enemies
-std::vector<NPC> GameStateBattle::loadRandomEnemies(int count) {
-    std::ifstream file("assets/enemies/enemies.json");
+std::vector<NPC> GameStateBattle::loadEnemies(int count, bool isBoss, int bossIndex) {
+    std::ifstream file;
+    if (isBoss){
+         file.open("assets/bosses/bosses.json");
+    } else{
+     file.open("assets/enemies/enemies.json");
+    }
+
     if (!file.is_open()) {
-        std::cerr << "Could not open enemies.json\n";
+        std::cerr << "Could not open .json file\n";
         return {};
     }
 
@@ -2106,12 +2127,12 @@ std::vector<NPC> GameStateBattle::loadRandomEnemies(int count) {
     try {
         file >> j;
     } catch (std::exception& ex) {
-        std::cerr << "Failed to parse enemies.json: " << ex.what() << "\n";
+        std::cerr << "Failed to parse .json: " << ex.what() << "\n";
         return {};
     }
 
     if (!j.is_array() || j.empty()) {
-        std::cerr << "enemies.json is empty or invalid\n";
+        std::cerr << ".json is empty or invalid\n";
         return {};
     }
 
@@ -2121,10 +2142,16 @@ std::vector<NPC> GameStateBattle::loadRandomEnemies(int count) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, static_cast<int>(j.size()) - 1);
-
+    
+   
     for (int i = 0; i < count; ++i) {
-        auto& e = j[dis(gen)];
-
+        nlohmann::json e;
+        if (!isBoss){
+         e = j[dis(gen)];
+        }
+        else {
+         e = j[bossIndex];
+        }
         // --- Load affinities from JSON ---
         std::map<std::string, float> aff;
 
@@ -2155,6 +2182,7 @@ std::vector<NPC> GameStateBattle::loadRandomEnemies(int count) {
             }
 
         // --- Create the NPC
+        if (!isBoss){
         selectedEnemies.emplace_back(
             e.value("name", "Unknown"),
             e.value("sprite", "default.png"),
@@ -2169,6 +2197,24 @@ std::vector<NPC> GameStateBattle::loadRandomEnemies(int count) {
             e.value("isBoss", false),
             sks
        );
+    } else{
+          selectedEnemies.emplace_back(
+            e.value("name", "Unknown"),
+            e.value("sprite", "default.png"),
+            e.value("animations", "default.png"),
+            e.value("level", 1),
+            e.value("STR", 1),
+            e.value("VIT", 1),
+            e.value("MAG", 1),
+            e.value("AGI", 1),
+            e.value("LU", 1),
+            e.value("baseXP", 0),
+            aff,
+            e.value("isBoss", true),
+            sks
+          );
+
+    }
        totalXpGained += e.value("baseXP",0);
     }    
     return selectedEnemies;

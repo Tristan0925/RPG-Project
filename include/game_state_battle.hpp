@@ -9,6 +9,7 @@
 #include <array>
 #include <unordered_map>
 
+
 class GameStateBattle : public GameState {
 private:
     Player* player;  
@@ -187,7 +188,8 @@ private:
     void spawnEnemies(bool isBossBattle);
     void setupTurnOrder();
     void enemy(NPC& enemy);
-    std::vector<NPC> loadRandomEnemies(int count); 
+    std::vector<NPC> loadEnemies(int count, bool isBossBattle, int bossIndex); 
+    int bossIndex;
     std::vector<NPC> enemies;
     std::vector<sf::Texture> enemyTextures; 
     std::vector<sf::Sprite> enemySprites; 
@@ -271,7 +273,7 @@ private:
 
 
 public:
-    GameStateBattle(Game* game, bool isBossBattle);
+    GameStateBattle(Game* game, bool isBossBattle, int bossIndex);
     virtual ~GameStateBattle() {}
 
     virtual void draw(const float dt);

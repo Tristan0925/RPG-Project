@@ -25,7 +25,7 @@ class GameStateDoor : public GameState
     Player player;
     std::string coordinatePair;
     bool isItemRoom = false, isBossRoom = false, isEmptyRoom = false;
-    int floorNumber = 1;
+    int bossIndex = 0;
     sf::Music preludeTrack;
    
     

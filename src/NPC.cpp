@@ -24,12 +24,13 @@ skillNames(skills)
 {}
 
 // Boss constructor
-NPC::NPC(std::string name, std::string spriteLoc, std::vector<std::string> animLoc, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int baseXP, std::map<std::string, float> affinities, bool boss)
+NPC::NPC(std::string name, std::string spriteLoc, std::string animLoc, int LVL, int STR, int VIT, int MAG, int AGI, int LU, int baseXP, std::map<std::string, float> affinities, bool boss, const std::vector<std::string>& skills)
 : Player(name, LVL, STR, VIT, MAG, AGI, LU, 0, affinities),
 baseXPAmount(baseXP),
 animationsLocation(animLoc),
 spriteLocation(spriteLoc),
-isBoss(boss)
+isBoss(boss),
+skillNames(skills)
 {}
 
 
@@ -38,7 +39,7 @@ int NPC::getBaseXPAmount() const {
     return baseXPAmount;
  }
 
-std::vector<std::string> NPC::getAnimationsLocation() const {
+std::string NPC::getAnimationsLocation() const {
     return animationsLocation;
 }
 

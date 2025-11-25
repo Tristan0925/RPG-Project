@@ -44,7 +44,7 @@ private:
     NPC pmember2;
     NPC pmember3;
     NPC pmember4;
-    int floorNumber = 2;
+    int floorNumber = 1;
     std::array<std::string, 9> playerSkills = {"Attack", "Shock", "Dia", "Fire Breath", "Flash Freeze", "Tornado", "Divine Shot", "Freikugel", "Focus"};
     std::array<std::string, 9> pmember2Skills = {"Attack", "Zio", "Agi", "Matarukaja", "Bufula", "Megidola", "Omni-Dimension", "EMPTY SLOT", "EMPTY SLOT"}; //if you want you could make more skills 
     std::array<std::string, 9> pmember3Skills = {"Attack", "Zanma", "Diarama", "Marakunda", "Mediarama", "Scorched Earth", "EMPTY SLOT", "EMPTY SLOT", "EMPTY SLOT"};
@@ -137,8 +137,7 @@ private:
         
         Skill("Spiral Viper", "Massive physical damage to a single foe.","Physical", 10, true, 90, 0.16f, 1.0f, 0.03f, 0.3f),  
 
-        Skill(), //Roary Nyte Moves: Sever (Medium Phys Single Move), Falling Stars (Medium Almighty All Move), Piercing Blade (Heavy Phys Single Move), Reckoning (Heavy Almighty Single Move) idk how we balance any of these
-        //Shaddai Moves: Godly Judgement (Light Almighty Single), El Roi (Light Almighty All), Zio, Shock
+        Skill(), 
     
     
     

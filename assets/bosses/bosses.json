@@ -1,0 +1,47 @@
+[
+       {
+      "name": "Shaddai",
+      "sprite": "assets/bosses/base/shaddai_base.png",
+      "animations": "assets/bosses/animations/shaddai_animation.png",
+      "level": 7,
+      "STR": 5,
+      "VIT": 1,
+      "MAG": 2,
+      "AGI": 1,
+      "LU": 1,
+      "baseXP": 1000,
+      "skills": ["Spiral Viper", "Andalucia"],
+      "isBoss": true,
+      "affinities": {
+        "Physical": 1.0,
+        "Fire": 1.0,
+        "Ice": 1.0,
+        "Electric": 1.0,
+        "Force": 1.0,
+        "Almighty": 1.0
+      }
+    },
+
+    {
+      "name": "Roaring Knight",
+      "sprite": "assets/bosses/base/knight_base.png",
+      "animations": "assets/bosses/animations/knight_basic_attack.png",
+      "level": 10,
+      "STR": 5,
+      "VIT": 2,
+      "MAG": 2,
+      "AGI": 4,
+      "LU": 1,
+      "baseXP": 2000,
+      "skills": ["Spiral Viper", "Andalucia"],
+      "isBoss": true,
+      "affinities": {
+        "Physical": 1.0,
+        "Fire": 1.0,
+        "Ice": 1.0,
+        "Electric": 1.0,
+        "Force": 1.0,
+        "Almighty": 1.0
+      }
+    }
+]
