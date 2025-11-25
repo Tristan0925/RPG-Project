@@ -16,7 +16,17 @@ private:
 
     // Battle state
     bool isBossBattle = false;
-    bool battleOver = false; 
+    bool battleOver = false;
+    
+    //Animation variables
+    int currentFrame = 0;
+    int totalFrames;
+    int frameWidth;
+    int frameHeight;
+    // 1.f/60.f;
+    float animationSpeed = 0.1f;
+    float elapsed;
+    bool setAnimationVariables = false;
     // Music
     sf::Music currentMusic;
     bool playResultsMusic; 

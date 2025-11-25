@@ -710,6 +710,7 @@ void GameStateBattle::draw(const float dt) {
                                      (static_cast<int>(i) == currentEnemyIndex) ? base * 1.15f : base);
         }
 
+     //goober
         this->game->window.draw(enemySprites[i]);
 
         // Highlight active enemy
@@ -960,6 +961,37 @@ void GameStateBattle::update(const float dt) {
 
     else{
     // update damage popups (position + life)
+    if (isBossBattle && !setAnimationVariables){
+        if (this->game->floorNumber == 1){
+            frameHeight = 95;
+            frameWidth = 67;
+            totalFrames = 6;
+            setAnimationVariables = true;
+        }
+        else if (this->game->floorNumber == 2){
+            setAnimationVariables = true;
+        }
+    }
+    if (isBossBattle){
+        if (this->game->floorNumber == 1){
+            elapsed += dt;
+            if (elapsed >= animationSpeed){
+                currentFrame = (currentFrame + 1) % totalFrames;
+                 if (frameWidth == 67 && frameHeight == 95) {
+                frameWidth = 165;
+                frameHeight = 95;
+                } else {
+                frameWidth = 67;
+                frameHeight = 95;
+                }
+                enemySprites[0].setTextureRect(sf::IntRect(currentFrame * frameWidth, 0, frameWidth, frameHeight));
+                elapsed = 0.f;
+            }
+        }
+        else if (this->game->floorNumber == 2){
+
+        }
+    }
     for (auto it = damagePopups.begin(); it != damagePopups.end();) {
         it->life -= dt;
         it->text.move(it->velocity * dt);
@@ -1005,8 +1037,11 @@ void GameStateBattle::update(const float dt) {
 
         // Load textures via texmgr and position sprites
         for (size_t idx = 0; idx < enemies.size(); ++idx) {
+            std::string path;
             const auto& e = enemies[idx];
-            std::string path = e.getSpriteLocation();
+            if (!isBossBattle) path = e.getSpriteLocation();
+            else path = e.getAnimationsLocation();
+            
             std::string texName = "enemy_" + std::to_string(idx) + "_" + std::to_string(std::hash<std::string>{}(path));
 
             this->game->texmgr.loadTexture(texName, path);
