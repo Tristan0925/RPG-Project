@@ -789,10 +789,11 @@ void GameStateBattle::draw(const float dt) {
             this->game->window.draw(turnEnemyNames[i]);
     }
 
-    // Floating damage popups (this crashes bosses for some reason)
-    // for (auto& dp : damagePopups) {
-    //     this->game->window.draw(dp.text);
-    // }
+    if (!isBossBattle){ //this crashes the program if used during a boss fight (not sure why yet)
+     for (auto& dp : damagePopups) {
+         this->game->window.draw(dp.text);
+     }
+    }
 
     // Battle menu buttons
     if (currentMenuState == BattleMenuState::Main) {
