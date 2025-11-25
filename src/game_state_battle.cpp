@@ -81,7 +81,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
 
     // Setup battle text
     battleText.setFont(font);
-    battleText.setString("BATTLE MODE!\nPress Enter to return.");
+    battleText.setString("* You feel like pressing enter to leave the battle state.");
     battleText.setCharacterSize(36);
     battleText.setFillColor(sf::Color::White);
     battleText.setPosition(850.f, 620.f);
@@ -276,7 +276,7 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     //Set Up results screen text
     topBarText.setFont(font);
     topBarText.setCharacterSize(75);
-    topBarText.setString("Results \t\t\t\t\t\t\t\t\t\t\t\t Obtained the following:");
+    topBarText.setString("Results \t\t\t\t\t\t\t\t\t\t\t\t\t\t Obtained the following:"); //the \t don't do anything these are just there now
     topBarText.setFillColor(sf::Color::Black);
     topBarText.setPosition(15.0f, 20.0f);
 
@@ -299,33 +299,270 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     thingsEarnedBackground[3].color= sf::Color(55,11,4);
 
     totalEarnedExp.setFont(font);
-    totalEarnedExpMessage = "EXP                                                                                                                                                                0";  // + std::to_string(totalXpGained) or whatever it is
+    totalEarnedExpMessage = "EXP                                                                                                                                                                " + std::to_string(totalXpGained);  // + std::to_string(totalXpGained) or whatever it is
     totalEarnedExp.setString(totalEarnedExpMessage);
     totalEarnedExp.setCharacterSize(75);
     totalEarnedExp.setFillColor(sf::Color::Red);
     totalEarnedExp.setPosition(25.0f,250.0f);
 
-    //set up all the necessary variables for displaying the player + party
+    //set up all the necessary variables for displaying the player + party for results screen
     playerName.setFont(font);
     playerName.setString(this->game->player.getName());
-    playerName.setCharacterSize(25);
-    playerName.setFillColor(sf::Color(130,25,13));
+    playerName.setCharacterSize(40);
+    playerName.setFillColor(sf::Color(126, 17, 5));
+    playerName.setPosition(200.0f, 490.f);
+
+    playerLevel.setFont(font);
+    playerLevel.setString("LV.  " + std::to_string(this->game->player.getLVL()));
+    playerLevel.setCharacterSize(40);
+    playerLevel.setFillColor(sf::Color(126, 17, 5));
+    playerLevel.setPosition(850.0f, 490.f);
+
+    nextLevelPlayerXp = this->game->player.getXpForNextLevel();
+    nextLevelPlayer.setFont(font);
+    nextLevelPlayer.setString("Next Exp:                                " + std::to_string(nextLevelPlayerXp));
+    nextLevelPlayer.setCharacterSize(40);
+    nextLevelPlayer.setPosition(1100.0f, 490.0f);
+
+     
+    playerXP = (float)this->game->player.getXp();
+    expBarPlayer.setSize({1460.0f * ((float)playerXP/(float)nextLevelPlayerXp),10.0f});
+    expBarPlayer.setFillColor(sf::Color(255,165,0));
+    expBarPlayer.setPosition(175.0f, 545.0f);
 
     pmember2Name.setFont(font);
     pmember2Name.setString(this->game->pmember2.getName());
-    pmember2Name.setCharacterSize(25);
-    pmember2Name.setFillColor(sf::Color(130,25,13));
+    pmember2Name.setCharacterSize(40);
+    pmember2Name.setFillColor(sf::Color(126, 17, 5));
+    pmember2Name.setPosition(200.0f, 590.f);
+
+    pmember2Level.setFont(font);
+    pmember2Level.setString("LV.  " + std::to_string(this->game->player.getLVL()));
+    pmember2Level.setCharacterSize(40);
+    pmember2Level.setFillColor(sf::Color(126, 17, 5));
+    pmember2Level.setPosition(850.0f, 590.f);
+
+    nextLevelPmember2Xp = this->game->pmember2.getXpForNextLevel();
+    nextLevelPmember2.setFont(font);
+    nextLevelPmember2.setString("Next Exp:                                " + std::to_string(nextLevelPmember2Xp));
+    nextLevelPmember2.setCharacterSize(40);
+    nextLevelPmember2.setPosition(1100.0f, 590.0f);
+
+    pmember2XP = (float)this->game->pmember2.getXp();
+    expBarPmember2.setSize({1460.0f * ((float)pmember2XP/(float)nextLevelPmember2Xp),10.0f});
+    expBarPmember2.setFillColor(sf::Color(255,165,0));
+    expBarPmember2.setPosition(175.0f, 645.0f);
 
     pmember3Name.setFont(font);
     pmember3Name.setString(this->game->pmember3.getName());
-    pmember3Name.setCharacterSize(25);
-    pmember3Name.setFillColor(sf::Color(130,25,13));
+    pmember3Name.setCharacterSize(40);
+    pmember3Name.setFillColor(sf::Color(126, 17, 5));
+    pmember3Name.setPosition(200.0f, 690.f);
+
+    pmember3Level.setFont(font);
+    pmember3Level.setString("LV.  " + std::to_string(this->game->player.getLVL()));
+    pmember3Level.setCharacterSize(40);
+    pmember3Level.setFillColor(sf::Color(126, 17, 5));
+    pmember3Level.setPosition(850.0f, 690.f);
+
+    nextLevelPmember3Xp = this->game->pmember3.getXpForNextLevel();
+    nextLevelPmember3.setFont(font);
+    nextLevelPmember3.setString("Next Exp:                                " + std::to_string(nextLevelPmember3Xp));
+    nextLevelPmember3.setCharacterSize(40);
+    nextLevelPmember3.setPosition(1100.0f, 690.0f);
+
+    pmember3XP = (float)this->game->pmember3.getXp();
+    expBarPmember3.setSize({1460.0f * ((float)pmember3XP/(float)nextLevelPmember3Xp),10.0f});
+    expBarPmember3.setFillColor(sf::Color(255,165,0));
+    expBarPmember3.setPosition(175.0f, 745.0f);
 
     pmember4Name.setFont(font);
     pmember4Name.setString(this->game->pmember4.getName());
-    pmember4Name.setCharacterSize(25);
-    pmember4Name.setFillColor(sf::Color(130,25,13));
+    pmember4Name.setCharacterSize(40);
+    pmember4Name.setFillColor(sf::Color(126, 17, 5));
+    pmember4Name.setPosition(200.0f, 790.f);
 
+    pmember4Level.setFont(font);
+    pmember4Level.setString("LV.  " + std::to_string(this->game->player.getLVL()));
+    pmember4Level.setCharacterSize(40);
+    pmember4Level.setFillColor(sf::Color(126, 17, 5));
+    pmember4Level.setPosition(850.0f, 790.f);
+
+    nextLevelPmember4Xp = this->game->pmember4.getXpForNextLevel();
+    nextLevelPmember4.setFont(font);
+    nextLevelPmember4.setString("Next Exp:                                " + std::to_string(nextLevelPmember4Xp));
+    nextLevelPmember4.setCharacterSize(40);
+    nextLevelPmember4.setPosition(1100.0f, 790.0f);
+
+    pmember4XP = (float)this->game->pmember4.getXp();
+    expBarPmember4.setSize({1460.0f * ((float)pmember4XP/(float)nextLevelPmember4Xp),10.0f});
+    expBarPmember4.setFillColor(sf::Color(255,165,0));
+    expBarPmember4.setPosition(175.0f, 845.0f);
+
+    float BackgroundsOffsetY = 490.0f;
+    float levelUpOffsetY = 455.0f;
+    float expOffsetY = 545.0f;
+    for (size_t i = 0; i < 4; i++){
+        portraitBackgrounds[i].setSize({630.f,55.f});
+        portraitBackgrounds[i].setFillColor(sf::Color(184, 62, 48));
+        portraitBackgrounds[i].setPosition(175.0f, BackgroundsOffsetY + 100.0f*i);
+        levelBackgrounds[i].setSize({830.f,55.f});
+        levelBackgrounds[i].setFillColor(sf::Color(255,0,0,100));
+        levelBackgrounds[i].setPosition(805.f, BackgroundsOffsetY + 100.0f*i);
+        levelUpTexts[i].setFont(font);
+        levelUpTexts[i].setFillColor(sf::Color(0,0,0,0));
+        levelUpTexts[i].setCharacterSize(30);
+        levelUpTexts[i].setString("Level Up!");
+        levelUpTexts[i].setPosition(200.0f, levelUpOffsetY + 100.0f*i);
+        expBarBackgrounds[i].setSize({1460,10.0f});
+        expBarBackgrounds[i].setFillColor(sf::Color(51,51,51));
+        expBarBackgrounds[i].setPosition(175.0f, expOffsetY + 100.0f*i);
+    }
+    // set up variables for the LEVEL UP! screen
+    nameplateBackground.setSize({900.0f, 60.0f});
+    nameplateBackground.setFillColor(sf::Color(184, 62, 48));
+    nameplateBackground.setPosition(100.0f, 300.0f);
+
+    nameplate.setSize({300.0f,58.0f});
+    nameplate.setFillColor(sf::Color::Black);
+    nameplate.setPosition(400.0f, 301.0f);
+
+    nameOfCharacterForLevelUp.setFont(font);
+    nameOfCharacterForLevelUp.setString("Placeholder Placeholder"); //adjust for who is leveling up in update
+    nameOfCharacterForLevelUp.setCharacterSize(40);
+    nameOfCharacterForLevelUp.setPosition(500.0f, 302.0f);
+    
+    for (size_t x = 0; x < 5; x++){
+        statBoxes[x].setSize({100.0f, 40.0f});
+        statBoxes[x].setFillColor(sf::Color(184,62,48));
+        statBoxes[x].setPosition(100.0f, 365.0f + 43.0f*x );
+        statBackgrounds[x].setSize({500.0f,40.0f});
+        statBackgrounds[x].setFillColor(sf::Color::Transparent);
+        statBackgrounds[x].setOutlineColor(sf::Color(255,0,0,50));
+        statBackgrounds[x].setOutlineThickness(1.0f);
+        statBackgrounds[x].setPosition(200.0f, 365.0f + 43.0f*x);
+    }
+
+    for (size_t x = 0; x < 2; x++){
+        maxStatBoxes[x].setSize({100.0f, 40.0f});
+        maxStatBoxes[x].setFillColor(sf::Color(184,62,48));
+        maxStatBoxes[x].setPosition(710.0f, 365.0f + 43.0f*x);
+        maxStatBackgrounds[x].setSize({190.0f,40.0f});
+        maxStatBackgrounds[x].setFillColor(sf::Color::Transparent);
+        maxStatBackgrounds[x].setOutlineColor(sf::Color(255,0,0,50));
+        maxStatBackgrounds[x].setOutlineThickness(1.0f);
+        maxStatBackgrounds[x].setPosition(810.0f, 365.0f + 43.0f*x);
+    }
+    
+    strength.setFont(font);
+    strength.setString("ST             " + std::to_string(strengthVal));
+    strength.setFillColor(sf::Color::Green);
+    strength.setPosition(100.0f, 365.0f);
+
+    stBar.setSize({500.0f * strengthValPercent, 10.0f});
+    stBar.setFillColor(sf::Color(255,165,0));
+    stBar.setPosition(200.0f, 380.0f);
+
+    vitality.setFont(font);
+    vitality.setString("VI             " + std::to_string(vitalityVal));
+    vitality.setPosition(100.0f, 408.0f);
+
+    viBar.setSize({500.0f * vitalityValPercent, 10.0f});
+    viBar.setFillColor(sf::Color(255,165,0));
+    viBar.setPosition(200.0f, 423.0f);
+
+    magic.setFont(font);
+    magic.setString("MA             " + std::to_string(magicVal));
+    magic.setFillColor(sf::Color::Green);
+    magic.setPosition(100.0f, 451.0f);
+
+    maBar.setSize({500.0f * magicValPercent, 10.0f});
+    maBar.setFillColor(sf::Color(255,165,0));
+    maBar.setPosition(200.0f, 466.0f);
+
+    agility.setFont(font);
+    agility.setString("AG             " + std::to_string(agilityVal));
+    agility.setPosition(100.0f, 494.0f);
+
+    agBar.setSize({500.0f * agilityValPercent, 10.0f});
+    agBar.setFillColor(sf::Color(255,165,0));
+    agBar.setPosition(200.0f, 509.0f);
+
+    luck.setFont(font);
+    luck.setString("LU             " + std::to_string(luckVal));
+    luck.setPosition(100.0f, 537.0f);
+
+    luBar.setSize({500.0f * luckValPercent, 10.0f});
+    luBar.setFillColor(sf::Color(255,165,0));
+    luBar.setPosition(200.0f, 552.0f);
+
+    maxHp.setFont(font);
+    maxHp.setString("Max HP                 " + std::to_string(maxHpVal) + "  ==>  " + std::to_string(recalculatedMaxHp));
+    maxHp.setPosition(730.0f, 365.0f);
+
+    maxMp.setFont(font);
+    maxMp.setString("Max MP                 " + std::to_string(maxMpVal) + "  ==>  " + std::to_string(recalculatedMaxMp));
+    maxMp.setPosition(730.0f,408.0f);
+
+    pointsToDistributeTextbox.setSize({290.0f,122.0f});
+    pointsToDistributeTextbox.setFillColor(sf::Color::Transparent);
+    pointsToDistributeTextbox.setOutlineColor(sf::Color(255,0,0,50));
+    pointsToDistributeTextbox.setOutlineThickness(1.0f);
+    pointsToDistributeTextbox.setPosition(710.0f, 455.0f);
+
+    distributionText.setFont(font);
+    distributionText.setPosition(710.0f, 455.0f);
+    distributionText.setString("Distribute points.\n" + std::to_string(skillPoints) + " points remaining.");
+
+    for (size_t x = 1; x < 9; x++){
+        skillNamesForResults[x].setFont(font);
+        skillNamesForResults[x].setPosition(200.0f, 540.0f + (50.0f * x-1));
+    }
+
+    levelUpBooleanMap[&this->game->player] = false;
+    levelUpBooleanMap[&this->game->pmember2] = false;
+    levelUpBooleanMap[&this->game->pmember3] = false;
+    levelUpBooleanMap[&this->game->pmember4] = false;
+    levelUpIterator = levelUpBooleanMap.begin();
+}
+
+void GameStateBattle::displayResultsScreen(){
+    this->game->window.clear();
+    if (!reuseArrays){ //doing it like this so we reset positions one time.
+        float iconOffsetY = 494.0f;
+        float backgroundOffsetY = 493.0f;
+        playerIcons[0].setScale(1.22,1.22);
+        playerIcons[1].setScale(0.65,0.65);
+        playerIcons[2].setScale(1.6,1.6);
+        playerIcons[3].setScale(1.72,1.72);
+        for (size_t i = 0; i < 4; i++){ //probably want to make this based off party size
+        playerBackgrounds[i].setSize({231.0f,52.0f});
+        playerBackgrounds[i].setFillColor(sf::Color(58, 7, 1));
+        playerBackgrounds[i].setOutlineThickness(0.0f);
+        playerBackgrounds[i].setPosition(570.0f,backgroundOffsetY + 100.0f * i);
+        playerIcons[i].setPosition(620.0f, iconOffsetY + 100.0f * i);
+        }
+        reuseArrays = true;
+    }
+    for (auto& background : portraitBackgrounds){
+        this->game->window.draw(background);
+    }
+    for (auto& background : levelBackgrounds){
+        this->game->window.draw(background);
+    }
+    for (auto& background : expBarBackgrounds){
+        this->game->window.draw(background);
+    }
+    for (auto& text : levelUpTexts){
+        this->game->window.draw(text);
+    }
+    for (auto&  background : playerBackgrounds){
+        this->game->window.draw(background);
+    }
+    for (auto& icon : playerIcons){
+        this->game->window.draw(icon);
+    }
+ 
     // Game over initialization
     gameOverText.setFont(font);
     gameOverText.setString("GAME OVER");
@@ -340,14 +577,54 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle)
     pendingEnemy = nullptr;
 }
 
-// Results Screen
-void GameStateBattle::displayResultsScreen(bool displayResults){
+
+void GameStateBattle::displayLevelUpScreen(){
+    this->game->window.clear();
+    if (!reuseTextforLevelUp){
+        topBarText.setString("LEVEL UP!");
+        topBarText.setFillColor(sf::Color::White);
+        topBarText.setPosition(850.0f, 20.0f);
+    }
     
+    this->game->window.clear(sf::Color(0,0,0));
     this->game->window.draw(topBarTextBackground);
     this->game->window.draw(topBarText);
-    this->game->window.draw(thingsEarnedBackground);
-    this->game->window.draw(totalEarnedExp);
-   
+    this->game->window.draw(nameplateBackground);
+    this->game->window.draw(nameplate);
+    this->game->window.draw(nameOfCharacterForLevelUp);
+    for (auto& statbox : statBoxes){
+        this->game->window.draw(statbox);
+    }
+    for (auto& backgrounds : statBackgrounds){
+        this->game->window.draw(backgrounds);
+    }
+    for (auto& statbox : maxStatBoxes){
+        this->game->window.draw(statbox);
+    }
+    for (auto& backgrounds : maxStatBackgrounds){
+        this->game->window.draw(backgrounds);
+    }
+  
+    this->game->window.draw(pointsToDistributeTextbox);
+    this->game->window.draw(distributionText);
+    this->game->window.draw(strength);
+    this->game->window.draw(vitality);
+    this->game->window.draw(magic);
+    this->game->window.draw(agility);
+    this->game->window.draw(luck);
+    this->game->window.draw(maxHp);
+    this->game->window.draw(maxMp);
+    this->game->window.draw(stBar);
+    this->game->window.draw(viBar);
+    this->game->window.draw(maBar);
+    this->game->window.draw(agBar);
+    this->game->window.draw(luBar);
+    
+      if (printSkillNames){
+        for (auto& skillName : skillNamesForResults){
+            this->game->window.draw(skillName);
+        }
+    }
 }
 
 // Draw 
@@ -365,14 +642,17 @@ void GameStateBattle::draw(const float dt) {
                 currentMusic.setLoop(true);
                 currentMusic.play();
                 playResultsMusic = true;
+                }
             }
-        }
-
-        displayResultsScreen(true);
+         displayResultsScreen();
+     
+    }
+    else if (battleOver && levelUpTime){
+        displayLevelUpScreen();
         this->game->window.display(); // commit the frame
         return;
     }
-
+    else{
     // --- Draw normal battle scene
     this->game->window.draw(background);
     this->game->window.draw(enemyBackground);
@@ -502,10 +782,152 @@ void GameStateBattle::draw(const float dt) {
     // Commit the frame
     this->game->window.display();
 }
+}
 
 
 // Update
 void GameStateBattle::update(const float dt) {
+    if (battleOver && !levelUpTime){
+        if (totalXpGained > 0){
+            XPdecrementer++;
+            float addedXP = 1;
+            playerXP += addedXP;
+            if (playerXP >= nextLevelPlayerXp){ //since everyone gets the same amount of xp, we are just using the player's xp to see if everyone levels up or not (we can change this later if we want)
+                if (!levelupflags){
+                    levelUpTexts[0].setFillColor(sf::Color(0,255,0,255));
+                    levelUpBooleanMap[&this->game->player] = true;
+
+                    levelUpTexts[1].setFillColor(sf::Color(0,255,0,255));
+                    levelUpBooleanMap[&this->game->pmember2] = true;
+
+                    levelUpTexts[2].setFillColor(sf::Color(0,255,0,255));
+                    levelUpBooleanMap[&this->game->pmember3] = true;
+
+                    levelUpTexts[3].setFillColor(sf::Color(0,255,0,255));
+                    levelUpBooleanMap[&this->game->pmember4] = true;
+                    levelupflags = true;
+                }
+                this->game->player.levelUp();
+                playerLevel.setString("LV.  " + std::to_string(this->game->player.getLVL()));
+                playerXP = 0;
+                nextLevelPlayerXp = this->game->player.getXpForNextLevel();
+                nextLevelPlayer.setString("Next Exp:                                " + std::to_string(nextLevelPlayerXp));
+            
+                this->game->pmember2.levelUp();
+                pmember2XP = 0;
+                pmember2Level.setString("LV.  " + std::to_string(this->game->pmember2.getLVL()));
+                nextLevelPmember2Xp =  this->game->pmember2.getXpForNextLevel();
+                nextLevelPmember2.setString("Next Exp:                                " + std::to_string(nextLevelPmember2Xp));
+
+                this->game->pmember3.levelUp();
+                pmember3Level.setString("LV.  " + std::to_string(this->game->pmember3.getLVL()));
+                pmember3XP = 0;
+                nextLevelPmember3Xp =  this->game->pmember3.getXpForNextLevel();
+                nextLevelPmember3.setString("Next Exp:                                " + std::to_string(nextLevelPmember3Xp));
+
+                this->game->pmember4.levelUp();
+                pmember4Level.setString("LV.  " + std::to_string(this->game->pmember4.getLVL()));
+                pmember4XP = 0;
+                nextLevelPmember4Xp = this->game->pmember4.getXpForNextLevel();
+                nextLevelPmember4.setString("Next Exp:                                " + std::to_string(nextLevelPmember4Xp));
+                XPdecrementer = 0; //very bandaid fix but we reset the decrementer whenever we level up so it will correctly decrement the exp.
+                tempSkillPoints += 8; // on every level up, you gain 8 points you can distribute freely (this is probably not the best for balance)
+                skillPoints = tempSkillPoints;
+                distributionText.setString("Distribute points.\n" + std::to_string(skillPoints) + " points remaining.");
+            }
+            float xpPercent = (float)playerXP/(float)nextLevelPlayerXp;
+            expBarPlayer.setSize({1460.0f * xpPercent,10.0f});
+            nextLevelPlayer.setString("Next Exp:                                " + std::to_string(nextLevelPlayerXp - XPdecrementer));
+
+            expBarPmember2.setSize({1460.0f * xpPercent,10.0f});
+            nextLevelPmember2.setString("Next Exp:                                " + std::to_string(nextLevelPmember2Xp - XPdecrementer));
+
+            expBarPmember3.setSize({1460.0f * xpPercent,10.0f});
+            nextLevelPmember3.setString("Next Exp:                                " + std::to_string(nextLevelPmember3Xp - XPdecrementer));
+
+            expBarPmember4.setSize({1460.0f * xpPercent,10.0f});
+            nextLevelPmember4.setString("Next Exp:                                " + std::to_string(nextLevelPmember4Xp - XPdecrementer));
+
+            totalXpGained -= addedXP; //for simplicity, everyone gets the same amount of xp every battle
+        }
+        else distributionFinished = true;
+    } 
+    else if (battleOver && levelUpTime){
+        if (levelUpIterator != levelUpBooleanMap.end()){
+            character = levelUpIterator->first;
+            bool leveledUp = levelUpIterator->second;
+            if (leveledUp && !statsSet){
+                strengthVal = character->getSTR();
+                strengthValPercent = (float)strengthVal / 99;
+
+                vitalityVal = character->getVIT();
+                vitalityValPercent = (float)vitalityVal / 99;
+
+                magicVal = character->getMAG();
+                magicValPercent = (float)magicVal / 99;
+
+                agilityVal = character->getAGI();
+                agilityValPercent = (float)agilityVal / 99;
+
+                luckVal = character->getLU();
+                luckValPercent = (float)luckVal / 99;
+
+                maxHpVal = character->getmaxHP();
+                recalculatedMaxHp = maxHpVal;
+
+                maxMpVal = character->getmaxMP();
+                recalculatedMaxMp = maxMpVal;
+
+                nameOfCharacterForLevelUp.setString(character->getName());
+                strength.setString("ST             " + std::to_string(strengthVal));
+                stBar.setSize({500.0f * strengthValPercent, 10.0f});    
+                vitality.setString("VI             " + std::to_string(vitalityVal));
+                viBar.setSize({500.0f * vitalityValPercent, 10.0f});
+                magic.setString("MA             " + std::to_string(magicVal));
+                maBar.setSize({500.0f * magicValPercent, 10.0f});
+                agility.setString("AG             " + std::to_string(agilityVal));
+                agBar.setSize({500.0f * agilityValPercent, 10.0f});
+                luck.setString("LU             " + std::to_string(luckVal));
+                luBar.setSize({500.0f * luckValPercent, 10.0f});
+                maxHp.setString("Max HP                 " + std::to_string(maxHpVal) + "  ==>  " + std::to_string(recalculatedMaxHp));
+                maxMp.setString("Max MP                 " + std::to_string(maxMpVal) + "  ==>  " + std::to_string(recalculatedMaxMp));
+
+                 for (size_t x = 1; x < 9; x++){
+                    auto* skill = character->getSkillsList()[x];
+                    if(skill && skill->getName() != "EMPTY SLOT" && skill->getUnlockLevel() <= character->getLVL()){
+                        skillNamesForResults[x-1].setString(skill->getName());
+                    }
+                statsSet = true;
+
+            }}
+            strength.setFillColor(sf::Color::White);
+            vitality.setFillColor(sf::Color::White);
+            magic.setFillColor(sf::Color::White);
+            agility.setFillColor(sf::Color::White);
+            luck.setFillColor(sf::Color::White);
+              switch ((levelUpAttributeIndex % 5 + 5) % 5){
+                        case (0):
+                            strength.setFillColor(sf::Color::Green);
+                            break;
+                        case (1):
+                            vitality.setFillColor(sf::Color::Green);
+                            break;
+                        case (2):
+                            magic.setFillColor(sf::Color::Green);
+                            break;
+                        case (3):
+                            agility.setFillColor(sf::Color::Green);
+                            break;
+                        case (4):
+                            luck.setFillColor(sf::Color::Green);
+                            break;
+              }
+              std::cout << (levelUpAttributeIndex % 5 + 5) % 5 << std::endl;
+            printSkillNames = true;
+        }
+    }
+
+    else{
     // update damage popups (position + life)
     for (auto it = damagePopups.begin(); it != damagePopups.end();) {
         it->life -= dt;
@@ -816,6 +1238,7 @@ void GameStateBattle::update(const float dt) {
         currentMusic.stop();
     }
 }
+}
 
 // Input Handling
 void GameStateBattle::handleInput() {
@@ -823,7 +1246,7 @@ void GameStateBattle::handleInput() {
     while (this->game->window.pollEvent(event)) {
 
         // --- Close window
-        if (event.type == sf::Event::Closed) {
+        if (event.type == sf::Event::Closed) { 
             this->game->window.close();
             return;
         }
@@ -879,11 +1302,7 @@ void GameStateBattle::handleInput() {
 
         // --- Key press events
         if (event.type == sf::Event::KeyPressed) {
-            if (event.key.code == sf::Keyboard::Enter) {
-                this->game->requestChange(std::make_unique<GameStateEditor>(this->game, false));
-                return;
-            }
-            else if (event.key.code == sf::Keyboard::Space) {
+             if (event.key.code == sf::Keyboard::Space) {
                 if (!turnQueue.empty()) {
                     Player* front = turnQueue.front();
                     turnQueue.pop_front();
@@ -902,15 +1321,152 @@ void GameStateBattle::handleInput() {
                     int prev = getPrevLivingEnemy(currentEnemyIndex);
                     if (prev >= 0) currentEnemyIndex = prev;
                 }
+                if (battleOver && distributionFinished && levelUpTime){
+                    if (levelUpIterator == levelUpBooleanMap.end()){
+                        this->game->requestPop();
+                        return;
+                    }
+                    if (levelUpIterator != levelUpBooleanMap.end() && skillPoints == 0){
+                        skillPoints = tempSkillPoints;
+                        character->statUp(strengthVal, vitalityVal, magicVal, agilityVal, luckVal);
+                        ++levelUpIterator; 
+                        statsSet = false;
+                    }
+                
+                }
+                if (battleOver && distributionFinished){ //use this to check if anyone leveld up then pop.
+                    levelUpTime = true;
+                }
+            }
+            else if (event.key.code == sf::Keyboard::W){
+                if (levelUpTime){
+                    levelUpAttributeIndex--;
+                    } 
+                }
+            
+            else if (event.key.code == sf::Keyboard::S){
+                if (levelUpTime){
+                      levelUpAttributeIndex++;
             }
         }
+            else if (event.key.code == sf::Keyboard::D){
+                if (levelUpTime){
+                    switch ((levelUpAttributeIndex % 5 + 5) % 5){
+                        case (0):
+                            if (skillPoints != 0 && strengthVal != 99){
+                                strengthVal++;
+                                strength.setString("ST             " + std::to_string(strengthVal));
+                                strengthValPercent = (float)strengthVal / 99;
+                                stBar.setSize({500.0f * strengthValPercent, 10.0f});
+                                skillPoints--;
+                            }
+                            break;
+                        case (1):
+                            if (skillPoints != 0 && vitalityVal != 99){
+                            vitalityVal++;
+                            vitality.setString("VI             " + std::to_string(vitalityVal));
+                            vitalityValPercent = (float)vitalityVal / 99;
+                            viBar.setSize({500.0f * vitalityValPercent, 10.0f});
+                            recalculatedMaxHp = (levelUpIterator->first->getLVL() + vitalityVal) * 6;
+                            maxHp.setString("Max HP                 " + std::to_string(maxHpVal) + "  ==>  " + std::to_string(recalculatedMaxHp));
+                            skillPoints--;
+                        }
+                            break;
+                        case (2):
+                            if (skillPoints != 0 && magicVal != 99){
+                            magicVal++;
+                            magic.setString("MA             " + std::to_string(magicVal));
+                            magicValPercent = (float)magicVal / 99;
+                            maBar.setSize({500.0f * magicValPercent, 10.0f});
+                            recalculatedMaxMp = (levelUpIterator->first->getLVL() + magicVal) * 3;
+                            maxMp.setString("Max MP                 " + std::to_string(maxMpVal) + "  ==>  " + std::to_string(recalculatedMaxMp));
+                            skillPoints--;
+                            break;
+                        }
+                        case (3):
+                             if (skillPoints != 0 && agilityVal!= 99){
+                            agilityVal++;
+                            agility.setString("AG             " + std::to_string(agilityVal));
+                            agilityValPercent= (float)agilityVal / 99;
+                            agBar.setSize({500.0f * agilityValPercent, 10.0f});
+                            skillPoints--;
+                            break;
+                        }
+                        case (4):
+                            if (skillPoints != 0 && luckVal!= 99){
+                            luckVal++;
+                            luck.setString("LU             " + std::to_string(luckVal));
+                            luckValPercent= (float) luckVal / 99;
+                            luBar.setSize({500.0f * luckValPercent, 10.0f});
+                            skillPoints--;
+                            break;
+                        }
+                    }
+                    distributionText.setString("Distribute points.\n" + std::to_string(skillPoints) + " points remaining."); 
+            }
+        }
+            else if (event.key.code == sf::Keyboard::A){
+                if (levelUpTime){
+                 switch ((levelUpAttributeIndex % 5 + 5) % 5){
+                        case (0):
+                            if (strengthVal != character->getSTR()){
+                                strengthVal--;
+                                strength.setString("ST             " + std::to_string(strengthVal));
+                                strengthValPercent = (float)strengthVal / 99;
+                                stBar.setSize({500.0f * strengthValPercent, 10.0f});
+                                skillPoints++;
+                            }
+                            break;
+                        case (1):
+                            if (vitalityVal != character->getVIT()){
+                            vitalityVal--;
+                            vitality.setString("VI             " + std::to_string(vitalityVal));
+                            vitalityValPercent = (float)vitalityVal / 99;
+                            viBar.setSize({500.0f * vitalityValPercent, 10.0f});
+                            recalculatedMaxHp = (levelUpIterator->first->getLVL() + vitalityVal) * 6;
+                            maxHp.setString("Max HP                 " + std::to_string(maxHpVal) + "  ==>  " + std::to_string(recalculatedMaxHp));
+                            skillPoints++;
+                        }
+                            break;
+                        case (2):
+                            if (magicVal != character->getMAG()){
+                            magicVal--;
+                            magic.setString("MA             " + std::to_string(magicVal));
+                            magicValPercent = (float)magicVal / 99;
+                            maBar.setSize({500.0f * magicValPercent, 10.0f});
+                            recalculatedMaxMp = (levelUpIterator->first->getLVL() + magicVal) * 3;
+                            maxMp.setString("Max MP                 " + std::to_string(maxMpVal) + "  ==>  " + std::to_string(recalculatedMaxMp));
+                            skillPoints++;
+                            break;
+                        }
+                        case (3):
+                             if (agilityVal != character->getAGI()){
+                            agilityVal--;
+                            agility.setString("AG             " + std::to_string(agilityVal));
+                            agilityValPercent= (float)agilityVal / 99;
+                            agBar.setSize({500.0f * agilityValPercent, 10.0f});
+                            skillPoints++;
+                            break;
+                        }
+                        case (4):
+                            if (luckVal != character->getLU()){
+                            luckVal--;
+                            luck.setString("LU             " + std::to_string(luckVal));
+                            luckValPercent= (float)luckVal / 99;
+                            luBar.setSize({500.0f * luckValPercent, 10.0f});
+                            skillPoints++;
+                            break;
+                        }
+                    }
+                    distributionText.setString("Distribute points.\n" + std::to_string(skillPoints) + " points remaining.");
+                }
+        }
+    }
 
         // --- Mouse click events for battle input
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-
             if (currentMenuState == BattleMenuState::Main) {
                 if (attackButton.wasClicked(this->game->window)) {
-
                     if (turnQueue.empty()) {
                         battleText.setString("No one can act right now.");
                         return;
@@ -1030,7 +1586,8 @@ void GameStateBattle::handleInput() {
                         if (front) front->decrementBuffTurns();
                     }
 
-                    return; // end click event
+                    currentMenuState = BattleMenuState::Main; // end click event
+                    return;
                 }                           
                 else if (skillButton.wasClicked(this->game->window)) {
                     if (!turnQueue.empty()) {
@@ -1388,7 +1945,8 @@ void GameStateBattle::handleInput() {
                         if (front) front->decrementBuffTurns();
                     }
 
-                    break; // handled this skill click
+                    currentMenuState = BattleMenuState::Main;
+                    return; // handled this skill click
                 } // end for skillButtons
 
                 // Back button (return to main menu)
@@ -1494,6 +2052,7 @@ void GameStateBattle::handleInput() {
         }
     }
 }
+
   
 // load random enemies
 std::vector<NPC> GameStateBattle::loadRandomEnemies(int count) {

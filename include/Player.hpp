@@ -79,9 +79,9 @@ class Player {
         void regainMP(int mpGained);
         int physATK(float scalar, int baseAtk, bool isCrit); //essentially skills will have a super complicated formula based on the wiki
         int magATK(float scalar, int baseAtk, int limit, int correction, bool isWeak); 
-        void levelUp(std::map<std::string, int> skillPointDistribution);
+        void statUp(int strength, int vitality, int magic, int agility, int luck);
         int doorX, doorY; //track last door entered
-
+        void levelUp();
         void turnLeft();
         void turnRight();
         void update(float dt);
@@ -92,7 +92,9 @@ class Player {
         void setDefault(const Map& map);
         bool isDead() const { return HP <= 0; }
 
-        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const, getAGI() const, getSTR() const, getVIT() const;
+
+        int getXpForNextLevel();
+        int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const, getAGI() const, getSTR() const, getVIT() const, getLU() const, getXp() const, getMAG() const;
         std::string getName() const;
         std::array<Item, 2> getInventory() const;
         std::array<const Skill*, 9> getSkillsList() const;

@@ -24,8 +24,8 @@ private:
     // Text         
     sf::Font font;
     sf::Text battleText;
-
     
+    // Text for results screen
     sf::Text topBarText;
     sf::Text totalEarnedExp;
     std::string totalEarnedExpMessage;
@@ -37,8 +37,54 @@ private:
     sf::Text pmember2Level;
     sf::Text pmember3Level;
     sf::Text pmember4Level;
-    sf::Text nextLevel;
-    sf::Text levelUpText;
+    sf::Text nextLevelPlayer;
+    int nextLevelPlayerXp; // set the xps in the constructor
+    sf::Text nextLevelPmember2; //set the fonts
+    int nextLevelPmember2Xp;
+    sf::Text nextLevelPmember3;
+    int nextLevelPmember3Xp;
+    sf::Text nextLevelPmember4;
+    int nextLevelPmember4Xp;
+    std::array<sf::Text, 4> levelUpTexts;
+
+    //Text for Level Up!
+    sf::Text nameOfCharacterForLevelUp;
+    sf::Text levelUpHeaderText;
+
+    sf::Text strength;
+    int strengthVal = 0;
+    float strengthValPercent = (float)strengthVal / 99;
+
+    sf::Text vitality;
+    int vitalityVal = 0;
+    float vitalityValPercent = (float)vitalityVal / 99;
+
+    sf::Text magic;
+    int magicVal = 0;
+    float magicValPercent = (float)magicVal / 99;
+
+    sf::Text agility;
+    int agilityVal = 0;
+    float agilityValPercent = (float)agilityVal / 99;
+
+    sf::Text luck;
+    int luckVal = 0;
+    float luckValPercent = (float)luckVal / 99;
+
+    sf::Text maxHp;
+    int maxHpVal = 0;
+    int recalculatedMaxHp = maxHpVal;
+
+    sf::Text maxMp;
+    int maxMpVal = 0;
+    int recalculatedMaxMp = recalculatedMaxMp;
+
+    sf::Text distributionText;
+
+    std::array<sf::Text, 8> skillNamesForResults;
+    void backToGame();
+
+
 
     // Shapes
     sf::RectangleShape background;
@@ -46,19 +92,48 @@ private:
     sf::RectangleShape enemyBackground;
     std::vector<sf::Vector2f> basePositions;
     
+    //Shapes for results screen 
     sf::VertexArray topBarTextBackground;
     sf::VertexArray thingsEarnedBackground;
     std::array<sf::RectangleShape, 4> portraitBackgrounds;
-    std::array<sf::RectangleShape, 4>  levelBackground;
-    sf::RectangleShape expBar;
-    std::array<sf::RectangleShape, 4>  expBarBackground;
+    std::array<sf::RectangleShape, 4> levelBackgrounds;
+    sf::RectangleShape expBarPlayer;
+    float playerXP;
+    sf::RectangleShape expBarPmember2;
+    float pmember2XP;
+    sf::RectangleShape expBarPmember3;
+    float pmember3XP;
+    sf::RectangleShape expBarPmember4;
+    float pmember4XP;
+    std::array<sf::RectangleShape, 4> expBarBackgrounds;
+
+    //Shapes for LEVEL UP! screen
+    sf::RectangleShape nameplateBackground;
+    sf::RectangleShape nameplate;
+    std::array<sf::RectangleShape, 5> statBoxes;
+    std::array<sf::RectangleShape,5> statBackgrounds;
+    std::array<sf::RectangleShape, 2> maxStatBoxes;
+    std::array<sf::RectangleShape,2> maxStatBackgrounds;
+    sf::RectangleShape stBar;
+    sf::RectangleShape viBar;
+    sf::RectangleShape maBar;
+    sf::RectangleShape agBar;
+    sf::RectangleShape luBar;
+    sf::RectangleShape pointsToDistributeTextbox;
+    float maxBarSize = 99.0;
+    
+    //map of player + pmember which maps to whether or not they leveled up
+    std::map<Player*, bool> levelUpBooleanMap;
+    std::map<Player*, bool>::iterator levelUpIterator;
+    bool levelupflags;
+
+    //Flags that lets me reuse certain parts of the UI 
+    bool reuseArrays = false;
+    bool reuseTextforLevelUp = false;
 
 
-    // Level Up Flags
-    bool playerLevelUp = false;
-    bool pmember2LevelUp = false;
-    bool pmember3LevelUp = false;
-    bool pmember4LevelUp = false;
+
+
 
     // Textures
     sf::Texture enemyBackgroundTex;
@@ -165,7 +240,22 @@ private:
     float ui_startY = 800.f;
     float ui_spacing = 220.f;
 
-    void displayResultsScreen(bool displayResults);
+    //methods to progress the game_state after a battle
+    void displayResultsScreen();
+    void displayLevelUpScreen();
+    
+    //you must watch the level up screen before you can continue (sorry)
+    bool levelUpTime = false;
+    bool distributionFinished = false;
+    bool printSkillNames = false;
+    bool statsSet = false;
+
+    int totalXpGained = 500;
+    int XPdecrementer = 0; //counts how many times the loop has iterated so we can have a cool next exp counter.
+    int skillPoints = 0;  //points actually distributed
+    int tempSkillPoints = 0;  //holds the total points awarded
+    int levelUpAttributeIndex = 0; 
+    Player * character; 
 
     // BuffState
     struct BuffInstance {

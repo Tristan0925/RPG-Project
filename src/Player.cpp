@@ -117,7 +117,7 @@ void Player::setDefault(const Map& map)
     maxMP = (LVL + MAG) * 3;
     MP = maxMP;
     LVL = 1;
-    XP = 0;
+    XP = 50;
     name = "Tatsuya";
     STR = 4;
     VIT = 3;
@@ -125,7 +125,6 @@ void Player::setDefault(const Map& map)
     AGI = 3;
     LU = 2;
     affinities = {{"Fire", 0.0}, {"Ice", 1.5}, {"Physical", 1.0}, {"Force", 1.0}, {"Electric", 1.0}};
-    XP = 0;
     skillsList = { nullptr };
     angle = 0.f;
     targetAngle = 0.f;
@@ -300,30 +299,16 @@ int Player::getVIT() const { return VIT; }
     return (int) dmg;
  }
  
- void Player::levelUp(std::map<std::string, int> skillPointDistribution){
-    for (auto distribution : skillPointDistribution){
-        std::string trait = distribution.first;
-        int skillPoints = distribution.second;
-        if (trait == "STR"){
-            STR += skillPoints;
-        }
-        else if (trait == "VIT"){
-            VIT += skillPoints;
-        }
-        else if (trait == "AGI"){
-            AGI += skillPoints;
-        }
-        else if (trait == "LU"){
-            LU += skillPoints;
-        }
-        else if (trait == "MAG"){
-            MAG += skillPoints;
-        }
-    }
+ void Player::statUp(int strength, int vitality, int magic, int agility, int luck){
+    STR = strength;
+    VIT = vitality;
+    MAG = magic;
+    AGI = agility;
+    LU = luck;
     maxHP = (LVL + VIT) * 6;
     maxMP = (LVL + MAG) * 3;
     HP = maxHP;
-    MP = maxMP;
+    maxMP = maxMP;
  }
 
  const Skill* Player::getSkillPtr(std::string skillName, const std::vector<Skill>& masterList){
@@ -407,7 +392,29 @@ void Player::setData(const PlayerData& data, const std::vector<Skill>& masterLis
 }
 
 
+int Player::getXp() const{
+    return XP;
+}
 
+int Player::getXpForNextLevel(){
+    if (LVL <= 10) return 100 + (LVL - 1) * 50;
+    else if (LVL <= 25) return 550 + pow(LVL - 10, 2) * 15;
+    else return 3000 + pow(LVL - 25, 2.3) * 25;
+}
+
+void Player::levelUp(){
+    LVL +=1;
+}
+
+
+
+int Player::getLU() const{
+    return LU;
+}
+
+int Player::getMAG() const{
+    return MAG;
+}
 // Buff/Debuff function locations
 
 void Player::addBuff(const std::string& name, float value, int turns,

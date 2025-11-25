@@ -28,7 +28,7 @@ class GameStateDoor : public GameState
 
     void drawTreasureRoom(); 
     void drawBossBattle(); //WIP
-    void backToGame();
+   
     
     public:
 

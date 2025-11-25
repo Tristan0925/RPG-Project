@@ -27,7 +27,7 @@ class Skill{
     
 
     public:
-    std::string getName() const { return name; }
+    const std::string& getName() const { return name; } 
     std::string getDescription() const { return description; }
     std::string getType() const { return type; }
     int getUnlockLevel() const { return unlockLevel; }
