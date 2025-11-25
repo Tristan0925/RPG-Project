@@ -255,8 +255,7 @@ bool Game::loadFromFile(const std::string& filename, const std::vector<Skill>& m
 
     json j;
     in >> j;
-
-    int floorNumber = 1; // default
+    
     if (j.contains("floorNumber")) {
         floorNumber = j["floorNumber"];
     }
