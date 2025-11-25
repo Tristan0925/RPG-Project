@@ -710,7 +710,7 @@ void GameStateBattle::draw(const float dt) {
                                      (static_cast<int>(i) == currentEnemyIndex) ? base * 1.15f : base);
         }
 
-     //goober
+     
         this->game->window.draw(enemySprites[i]);
 
         // Highlight active enemy
