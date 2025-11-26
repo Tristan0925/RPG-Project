@@ -45,6 +45,24 @@ class Skill{
     float getHitEvadeReduction() const {return hitEvadeReduction; }
     float getHealthRestorePercent() const { return healthRestorePercent; }
     float getCritRate() const { return critRate; }
+    // returns whether the skill targets enemy units (true) or allies (false)
+    bool getTargetsEnemies() const { return targetsEnemies; }
+
+    // helper that indicates if this skill is a buff/utility rather than direct damage/heal
+    bool isBuffSkill() const {
+        return damageAmp != 0.0f
+            || damageResist != 0.0f
+            || hitEvadeBoost != 0.0f
+            || hitEvadeReduction != 0.0f;
+    }
+
+    // helper that indicates a healing skill
+    bool isHealingSkill() const {
+        return healthRestorePercent > 0.0f;
+    }
+
+    // helper that indicates AoE (targets multiple) vs single-target
+    bool isAOE() const { return !isSingleTarget; }
 
 
     Skill() = default;

@@ -128,8 +128,8 @@ private:
         Skill("Zanma","Moderate force damage to a single enemy.", "Force", 1, true, 55, 6, 1.0f, 0.0f, 155, 16), 
         
         Skill("Diarama", "Greatly restores one ally's health.", "Healing", 3, true, 7, 1.50f), 
-        
-        Skill("Marakunda", "Reduces defense of all enemies by 25%.", "Damage Resist", 5, false, true, 20, -0.25f, 0.0f,0.0f ), 
+
+        Skill("Marakunda", "Reduces defense of all enemies by 25%.", "Damage Resist", 5, false, true, 10, -0.25f, 0.0f, 0.0f, 0.0f), 
 
         Skill("Megidola", "Heavy almighty damage to all enemies.", "Magic-Almighty", 7, true, 80, 37, 1.0f, 0.0f, 225, 23), 
         

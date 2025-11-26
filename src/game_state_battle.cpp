@@ -738,6 +738,38 @@ void GameStateBattle::draw(const float dt) {
         this->game->window.draw(hpTexts[i]);
         this->game->window.draw(mpTexts[i]);
 
+        // small buff indicators (text) above portrait
+        if (i < party.size() && party[i]) {
+            int x = static_cast<int>(playerBackgrounds[i].getPosition().x);
+            int y = static_cast<int>(playerBackgrounds[i].getPosition().y);
+            float offsetX = 0.f;
+            for (const auto &b : party[i]->activeBuffs) { // activeBuffs is public in Player class earlier
+                sf::Text t;
+                t.setFont(font);
+                t.setCharacterSize(12);
+                t.setString(b.name.substr(0,3)); // e.g. "DMG"
+                t.setPosition(x + offsetX, y - 18.f);
+                // --- Color coding based on buff type ---
+                if (b.name.find("Damage Amp") != std::string::npos) {
+                    t.setFillColor(sf::Color(255, 200, 50));  // gold-ish (ATK up)
+                }
+                else if (b.name.find("Damage Resist") != std::string::npos) {
+                    t.setFillColor(sf::Color(180, 180, 255)); // blue-ish (DEF up/down)
+                }
+                else if (b.name.find("Hit") != std::string::npos || 
+                        b.name.find("Evade") != std::string::npos) {
+                    t.setFillColor(sf::Color(120, 255, 120)); // green (ACC/EVA)
+                }
+                else {
+                    t.setFillColor(sf::Color::White); // fallback
+                }
+
+                this->game->window.draw(t);
+                offsetX += 24.f;
+            }
+        }
+
+
         if (itemUseState == ItemUseState::SELECTING_TARGET) {
             sf::FloatRect b = playerIcons[i].getGlobalBounds();
             sf::RectangleShape highlight(sf::Vector2f(b.width + 8.f, b.height + 8.f));
@@ -1978,6 +2010,8 @@ void GameStateBattle::handleInput() {
 
                 for (auto& b : skillButtons) {
                     if (!b.wasClicked(this->game->window)) continue;
+                    std::cout << "[DEBUG] Skill button clicked: '" << b.getText() << "'\n";
+
 
                     // It's assumed the front of turnQueue is the actor using the skill.
                     if (turnQueue.empty()) {
@@ -2000,6 +2034,15 @@ void GameStateBattle::handleInput() {
                         battleText.setString("Skill not found.");
                         break;
                     }
+                    std::cout << "[DEBUG] Resolved skill: name='" << s->getName() << "' type='" << s->getType()
+                    << "' mpCost=" << s->getMpCost()
+                    << " dmgRes=" << s->getDamageResist()
+                    << " dmgAmp=" << s->getDamageAmp()
+                    << " targetsEnemies=" << (s->getTargetsEnemies() ? "true" : "false")
+                    << " singleTarget=" << (s->getIsSingleTarget() ? "true" : "false")
+                    << " isAOE=" << (!s->getIsSingleTarget() ? "true" : "false")
+                    << "\n";
+
 
                     // Check MP (and HP if you use HP costs)
                     int mpCost = s->getMpCost();
@@ -2070,32 +2113,134 @@ void GameStateBattle::handleInput() {
                     } // end healing branch
 
                     // handle buff/utility skills (Damage Amp, Damage Resist, Hit/Evade)
-                    if (isDamageAmpSkill) {
-                        // +25% outgoing damage for 3 turns on attacker
-                        attacker->addBuff("Damage Amp", 1.25f, 3, /*affectsOutgoing=*/true, /*affectsIncoming=*/false);
-                        battleText.setString(attacker->getName() + " used " + s->getName() + ". Damage increased!");
-                        // popup
-                        DamagePopup dp;
-                        dp.text.setFont(font);
-                        dp.text.setCharacterSize(24);
-                        dp.text.setString("DMG UP!");
-                        dp.text.setFillColor(sf::Color(255,200,50)); // gold-ish
-                        dp.text.setPosition(playerIcons[0].getPosition() - sf::Vector2f(0.f, 40.f)); // adjust actor pos
-                        dp.velocity = sf::Vector2f(0.f, -25.f);
-                        dp.life = 1.2f;
-                        damagePopups.push_back(dp);
+                    if (isDamageAmpSkill || isDamageResistSkill || isHitEvadeBoost) {
+                        // Who does the skill target?
+                        bool targetsEnemies = s->getTargetsEnemies(); // true => enemies, false => allies
+                        bool isAOE = s->isAOE();
+
+                        // Helper popups
+                        auto pushPlayerBuffPopup = [&](int pIdx, const std::string &txt, const sf::Color &col) {
+                            DamagePopup dp;
+                            dp.text.setFont(font);
+                            dp.text.setCharacterSize(22);
+                            dp.text.setString(txt);
+                            dp.text.setFillColor(col);
+                            sf::Vector2f pos(200.f, 700.f);
+                            if (pIdx >= 0 && pIdx < static_cast<int>(playerIcons.size()))
+                                pos = playerIcons[pIdx].getPosition() - sf::Vector2f(0.f, 40.f);
+                            dp.text.setPosition(pos);
+                            dp.velocity = sf::Vector2f(0.f, -25.f);
+                            dp.life = 1.2f;
+                            damagePopups.push_back(dp);
+                        };
+
+                        auto pushEnemyBuffPopup = [&](int eIdx, const std::string &txt, const sf::Color &col) {
+                            DamagePopup dp;
+                            dp.text.setFont(font);
+                            dp.text.setCharacterSize(22);
+                            dp.text.setString(txt);
+                            dp.text.setFillColor(col);
+                            sf::Vector2f pos(800.f, 300.f);
+                            if (eIdx >= 0 && eIdx < static_cast<int>(enemySprites.size()))
+                                pos = enemySprites[eIdx].getPosition() - sf::Vector2f(0.f, 40.f);
+                            dp.text.setPosition(pos);
+                            dp.velocity = sf::Vector2f(0.f, -25.f);
+                            dp.life = 1.2f;
+                            damagePopups.push_back(dp);
+                        };
+
+                        // ----- Ally-targeting buffs (Matarukaja / Masukukaja etc.) -----
+                        if (!targetsEnemies) {
+                            // Single-target ally buff -> use SkillTargeting UI (same as healing)
+                            if (isAOE == false) {
+                                pendingSkill = s;
+                                pendingSkillUser = attacker;
+                                currentMenuState = BattleMenuState::SkillTargeting;
+                                battleText.setString("Select a party member to receive " + s->getName() + "...");
+                                return; // wait for click on portrait
+                            }
+
+                            // AoE ally buff -> apply to all allies
+                            if (isAOE) {
+                                // Example: damageAmp, hit/evade multipliers are stored in Skill fields
+                                float outMult = s->getDamageAmp();          // e.g. 1.25 for Matarukaja
+                                float hitBoost = s->getHitEvadeBoost();    // e.g. 0.25 for Masukukaja (if any)
+                                float evadeReduce = s->getHitEvadeReduction();
+
+                                for (int i = 0; i < static_cast<int>(party.size()); ++i) {
+                                    Player* ally = party[i];
+                                    if (!ally) continue;
+                                    if (outMult != 0.0f) {
+                                        ally->addBuff("Damage Amp", outMult, 3, true, false);
+                                        pushPlayerBuffPopup(i, "ATK UP!", sf::Color(255,200,50));
+                                    }
+                                    if (hitBoost != 0.0f) {
+                                        ally->addBuff("Hit Boost", 1.0f + hitBoost, 3, true, false);
+                                        ally->addBuff("Evade Boost", 1.0f + hitBoost, 3, false, false);
+                                        pushPlayerBuffPopup(i, "EVA/ACC UP!", sf::Color(180,255,180));
+                                    }
+                                    if (evadeReduce != 0.0f) {
+                                        ally->addBuff("Hit Boost", 1.0f + evadeReduce, 3, true, false);
+                                        ally->addBuff("Evade Boost", 1.0f + evadeReduce, 3, false, false);
+                                    }
+                                }
+                                battleText.setString(attacker->getName() + " used " + s->getName() + " on the party!");
+                            }
+                        }
+                        // ----- Enemy-targeting debuffs (Marakunda, Debilitate) -----
+                        else {
+                            // Single-target enemy debuff -> apply to currentEnemyIndex
+                            if (!isAOE) {
+                                int tidx = currentEnemyIndex;
+                                if (tidx < 0 || tidx >= static_cast<int>(enemies.size()) || enemies[tidx].isDead())
+                                    tidx = getFirstLivingEnemy();
+                                if (tidx >= 0) {
+                                    float dmgRes = s->getDamageResist();           // negative means reduce incoming (e.g. -0.25)
+                                    float hitEvadeRed = s->getHitEvadeReduction();
+                                    if (dmgRes != 0.0f) {
+                                        enemies[tidx].addBuff("Damage Resist", 1.0f + dmgRes, 3, false, true);
+                                        pushEnemyBuffPopup(tidx, "DEF DOWN!", sf::Color(180,180,255));
+                                    }
+                                    if (hitEvadeRed != 0.0f) {
+                                        enemies[tidx].addBuff("Hit Reduction", 1.0f + hitEvadeRed, 3, true, false);
+                                        enemies[tidx].addBuff("Evade Reduction", 1.0f + hitEvadeRed, 3, false, false);
+                                        pushEnemyBuffPopup(tidx, "EVA/ACC DOWN!", sf::Color(255,150,150));
+                                    }
+                                    battleText.setString(attacker->getName() + " used " + s->getName() + "!");
+                                }
+                            }
+                            // AoE enemy debuff -> apply to all enemies
+                            else {
+                                float dmgRes = s->getDamageResist();
+                                float hitEvadeRed = s->getHitEvadeReduction();
+                                for (size_t ei = 0; ei < enemies.size(); ++ei) {
+                                    if (enemies[ei].isDead()) continue;
+                                    if (dmgRes != 0.0f) {
+                                        enemies[ei].addBuff("Damage Resist", 1.0f + dmgRes, 3, false, true);
+                                        pushEnemyBuffPopup((int)ei, "DEF DOWN!", sf::Color(180,180,255));
+                                    }
+                                    if (hitEvadeRed != 0.0f) {
+                                        enemies[ei].addBuff("Hit Reduction", 1.0f + hitEvadeRed, 3, true, false);
+                                        enemies[ei].addBuff("Evade Reduction", 1.0f + hitEvadeRed, 3, false, false);
+                                        pushEnemyBuffPopup((int)ei, "EVA/ACC DOWN!", sf::Color(255,150,150));
+                                    }
+                                }
+                                battleText.setString(attacker->getName() + " used " + s->getName() + " on the enemies!");
+                            }
+                        }
+
+                        // end turn: rotate queue
+                        if (!turnQueue.empty()) {
+                            Player* front = turnQueue.front();
+                            turnQueue.pop_front();
+                            turnQueue.push_back(front);
+                            if (front) front->decrementBuffTurns();
+                        }
+
+                        currentMenuState = BattleMenuState::Main;
+                        return;
                     }
-                    else if (isDamageResistSkill) {
-                        // 20% incoming damage reduction (multiplier 0.8) for 3 turns
-                        attacker->addBuff("Damage Resist", 0.80f, 3, /*affectsOutgoing=*/false, /*affectsIncoming=*/true);
-                        battleText.setString(attacker->getName() + " used " + s->getName() + ". Damage taken reduced!");
-                    }
-                    else if (isHitEvadeBoost) {
-                        // add both hit & evade buffs (use standardized names)
-                        attacker->addBuff("Hit Boost", 1.15f, 3, true, false);
-                        attacker->addBuff("Evade Boost", 1.15f, 3, false, false);
-                        battleText.setString(attacker->getName() + " used " + s->getName() + ". Accuracy & Evasion up!");
-                    }
+
 
                     // else: damage skill (physical, magic, almighty, etc.)
                     // Determine targets: single or all
