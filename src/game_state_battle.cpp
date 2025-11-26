@@ -1509,6 +1509,7 @@ void GameStateBattle::handleInput() {
              if (event.key.code == sf::Keyboard::Space) {
                  if (battleOver && distributionFinished && levelUpTime){
                     if (levelUpIterator == std::prev(levelUpBooleanMap.end())){
+                        character->statUp(strengthVal, vitalityVal, magicVal, agilityVal, luckVal);
                          if (isBossBattle && this->game->floorNumber == 1){
                             this->game->floorNumber+=1;
                             this->game->inBattle = false;
