@@ -10,11 +10,10 @@ void SoundManager::loadSound(const std::string& effectName, const std::string& f
         std::cout << "Failed to load sound: " << fileName << std::endl;
         return;
     }
-    buffers[effectName] = std::move(buffer);
+    auto [bufferIt, _] = buffers.emplace(effectName, std::move(buffer));
     sf::Sound sound;
-    sound.setBuffer(buffers[effectName]);
-    sounds[effectName] = std::move(sound);
-    return;
+    sound.setBuffer(bufferIt->second);
+    sounds.emplace(effectName, std::move(sound));
 }
 
 void SoundManager::playSound(const std::string& effectName)
@@ -22,6 +21,14 @@ void SoundManager::playSound(const std::string& effectName)
     auto sound = sounds.find(effectName);
     if (sound != sounds.end())
         sound->second.play();
+    else
+        std::cerr << "Sound not found: " << effectName << std::endl;
+}
+
+void SoundManager::loopSound(const std::string& effectName){
+    auto sound = sounds.find(effectName);
+    if (sound != sounds.end())
+        sound->second.setLoop(true);
     else
         std::cerr << "Sound not found: " << effectName << std::endl;
 }

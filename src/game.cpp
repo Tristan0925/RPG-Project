@@ -23,6 +23,22 @@ void Game::loadTextures() // load textures used in game_state_start and game_sta
     texmgr.loadTexture("pmember3Sprite", "./assets/partymember3.png");
     texmgr.loadTexture("pmember4Sprite", "./assets/partymember4.png");
 }
+
+void Game::loadSounds(){
+    soundmgr.loadSound("cannot", "./assets/sounds/cannotsoundfx.wav");
+    soundmgr.loadSound("confirm", "./assets/sounds/confirmsoundfx.wav");
+    soundmgr.loadSound("damagetaken", "./assets/sounds/damagetakensoundfx.wav");
+    soundmgr.loadSound("hit2", "./assets/sounds/hit2.wav");
+    soundmgr.loadSound("hit3", "./assets/sounds/hit3.wav");
+    soundmgr.loadSound("hit4", "./assets/sounds/hit4.wav");
+    soundmgr.loadSound("footsteps", "./assets/sounds/footstepssoundfx.wav");
+    soundmgr.loadSound("heal", "./assets/sounds/heal.wav");
+    soundmgr.loadSound("buff", "./assets/sounds/buff.wav");
+    soundmgr.loadSound("savesuccess", "./assets/sounds/savesuccess.wav");
+    soundmgr.loadSound("skillchange", "./assets/sounds/skillchange.wav");
+    soundmgr.loadSound("debuff", "./assets/sounds/debuff.wav");
+}
+
 void Game::pushState(std::unique_ptr<GameState> state) //place game state onto stack
 {
     this->states.push(std::move(state));
@@ -133,6 +149,7 @@ pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0, {{"Fire", 1.0}, {"Ice", 1.5}, {"Physica
 {
     
    this->loadTextures();
+   this->loadSounds();
    this->window.create(sf::VideoMode(1920, 1080), "Untitled RPG Project");
    this->window.setFramerateLimit(60); 
    this->background.setTexture(this->texmgr.getRef("background"));
@@ -141,6 +158,9 @@ pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0, {{"Fire", 1.0}, {"Ice", 1.5}, {"Physica
    this->pmember3Sprite.setTexture(this->texmgr.getRef("pmember3Sprite"));
    this->pmember4Sprite.setTexture(this->texmgr.getRef("pmember4Sprite"));
    if (!map.loadFromFile("assets/map1.txt")) {
+    throw std::runtime_error("failed to load");
+   }
+   if (!map.loadFromFile("assets/map2.txt")){
     throw std::runtime_error("failed to load");
    }
     if (!font.loadFromFile("assets/Birch.ttf")) {
@@ -158,15 +178,26 @@ pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0, {{"Fire", 1.0}, {"Ice", 1.5}, {"Physica
 
 
 
+    //first floor
     this->doorCoordinates = map.getDoorCoordinates();
     for (const auto& coord : doorCoordinates) {
         std::cout << coord << " ";
     }
-    std::cout << std::endl;
+
     for (const auto& coord : doorCoordinates) {
         doorCoordinatesToHasLoot[coord] = 1;
     }
     
+    //second floor
+     this->doorCoordinates2 = map2.getDoorCoordinates();
+    for (const auto& coord : doorCoordinates2) {
+        std::cout << coord << " ";
+    }
+
+    for (const auto& coord : doorCoordinates2) {
+        doorCoordinatesToHasLoot2[coord] = 1;
+    }
+
 }
 
 Game::~Game() //get rid of all the things on the stack

@@ -85,6 +85,9 @@ GameStateBattle::GameStateBattle(Game* game, bool isBossBattle, int bossIndex)
     slot2("Slot 2", {450.f, 450.f}, 34, game, sf::Color::White),
     slot3("Slot 3", {450.f, 500.f}, 34, game, sf::Color::White)
 {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        
     this->game = game;
     this->player = &game->player;
     font = this->game->font;
@@ -1319,7 +1322,7 @@ void GameStateBattle::update(const float dt) {
                                     actingEnemy->addBuff("Hit Boost", 1.15f, 3, true, false);
                                     actingEnemy->addBuff("Evade Boost", 1.15f, 3, false, false);
                                 }
-
+                                this->game->soundmgr.playSound("buff");
                                 battleText.setString(actingEnemy->getName() + " used " + chosenSkill->getName() + "!");
 
                                 int idx = getEnemyIndex(actingEnemy);
@@ -1371,6 +1374,9 @@ void GameStateBattle::update(const float dt) {
                                         damage = static_cast<int>(std::round(damage * elementMul * t->getIncomingDamageMultiplier()));
                                     }
 
+                                    std::uniform_int_distribution<int> dist(0, 3);
+                                    int soundIndex = dist(globalRng());
+                                    this->game->soundmgr.playSound(randomHitSounds[soundIndex]);
                                     t->takeDamage(damage);
                                     totalDmg += damage;
 
@@ -1501,12 +1507,14 @@ void GameStateBattle::handleInput() {
                     if (levelUpIterator == levelUpBooleanMap.end()){
                          if (isBossBattle && this->game->floorNumber == 1){
                             this->game->floorNumber+=1;
+                            this->game->inBattle = false;
                             this->game->changeState(std::make_unique<GameStateEditor>(this->game, false, this->game->floorNumber));
                             return;
                          } else if (isBossBattle && this->game->floorNumber == 2){
                             std::cout << "Thanks for Playing!" << std::endl;
                             std::exit(67);
                          } else{
+                        this->game->inBattle = false;
                         this->game->requestPop();
                         return;
                          }
@@ -1522,6 +1530,7 @@ void GameStateBattle::handleInput() {
                     levelUpTime = true;
                    }
                  if (battleOver && distributionFinished && !levelupflags){
+                    this->game->inBattle = false;
                     this->game->requestPop();
                     return;
                  }
@@ -1546,16 +1555,19 @@ void GameStateBattle::handleInput() {
             }
             else if (event.key.code == sf::Keyboard::W){
                 if (levelUpTime){
+                    this->game->soundmgr.playSound("skillchange");
                     levelUpAttributeIndex--;
                 } 
             }
             else if (event.key.code == sf::Keyboard::S){
                 if (levelUpTime){
+                    this->game->soundmgr.playSound("skillchange");
                     levelUpAttributeIndex++;
                 }
             }
             else if (event.key.code == sf::Keyboard::D){
                 if (levelUpTime){
+                    this->game->soundmgr.playSound("skillchange");
                     switch ((levelUpAttributeIndex % 5 + 5) % 5){
                         case (0):
                             if (skillPoints != 0 && strengthVal != 99){
@@ -1612,6 +1624,7 @@ void GameStateBattle::handleInput() {
             }
             else if (event.key.code == sf::Keyboard::A){
                 if (levelUpTime){
+                    this->game->soundmgr.playSound("skillchange");
                  switch ((levelUpAttributeIndex % 5 + 5) % 5){
                         case (0):
                             if (strengthVal != character->getSTR()){
@@ -1703,16 +1716,19 @@ void GameStateBattle::handleInput() {
 
                         // If it is a heal item but target already full, show message and don't consume
                         if (healAmount > 0 && target->getHP() == target->getmaxHP()) {
+                            this->game->soundmgr.playSound("cannot");
                             battleText.setString(target->getName() + " is already at full HP!");
                         } else {
                             // Apply effects
                             if (healAmount > 0) {
+                                this->game->soundmgr.playSound("heal");
                                 target->heal(healAmount);
                                 battleText.setString(target->getName() + " recovered " + std::to_string(healAmount) + " HP!");
                                 // popup for healing item
                                 spawnPopupAtPlayerIndex(static_cast<int>(i), healAmount, false);
                             }
                             if (manaAmount > 0) {
+                                this->game->soundmgr.playSound("heal");
                                 target->regainMP(manaAmount);
                                 battleText.setString(target->getName() + " recovered " + std::to_string(manaAmount) + " MP!");
                             }
@@ -2015,6 +2031,7 @@ void GameStateBattle::handleInput() {
 
                     // It's assumed the front of turnQueue is the actor using the skill.
                     if (turnQueue.empty()) {
+                        this->game->soundmgr.playSound("cannot");
                         battleText.setString("No one can act right now.");
                         break;
                     }
@@ -2023,6 +2040,7 @@ void GameStateBattle::handleInput() {
                     // safety: ensure actor is a player
                     bool isPartyActor = (std::find(party.begin(), party.end(), attacker) != party.end());
                     if (!isPartyActor) {
+                        this->game->soundmgr.playSound("cannot");
                         battleText.setString("It's not your turn!");
                         break;
                     }
@@ -2097,6 +2115,7 @@ void GameStateBattle::handleInput() {
                                 if (!tgt) continue;
                                 int healAmount = static_cast<int>(std::round(tgt->getmaxHP() * healPct));
                                 tgt->heal(healAmount);
+                                this->game->soundmgr.playSound("heal");
                                 spawnPopupAtPlayerIndex(i, healAmount, false);
                             }
                             battleText.setString(attacker->getName() + " used " + s->getName() + " and healed the party!");
@@ -2170,6 +2189,7 @@ void GameStateBattle::handleInput() {
                                 for (int i = 0; i < static_cast<int>(party.size()); ++i) {
                                     Player* ally = party[i];
                                     if (!ally) continue;
+                                    this->game->soundmgr.playSound("buff");
                                     if (outMult != 0.0f) {
                                         ally->addBuff("Damage Amp", outMult, 3, true, false);
                                         pushPlayerBuffPopup(i, "ATK UP!", sf::Color(255,200,50));
@@ -2197,6 +2217,7 @@ void GameStateBattle::handleInput() {
                                 if (tidx >= 0) {
                                     float dmgRes = s->getDamageResist();           // negative means reduce incoming (e.g. -0.25)
                                     float hitEvadeRed = s->getHitEvadeReduction();
+                                    this->game->soundmgr.playSound("debuff");
                                     if (dmgRes != 0.0f) {
                                         enemies[tidx].addBuff("Damage Resist", 1.0f + dmgRes, 3, false, true);
                                         pushEnemyBuffPopup(tidx, "DEF DOWN!", sf::Color(180,180,255));
@@ -2215,6 +2236,7 @@ void GameStateBattle::handleInput() {
                                 float hitEvadeRed = s->getHitEvadeReduction();
                                 for (size_t ei = 0; ei < enemies.size(); ++ei) {
                                     if (enemies[ei].isDead()) continue;
+                                    this->game->soundmgr.playSound("debuff");
                                     if (dmgRes != 0.0f) {
                                         enemies[ei].addBuff("Damage Resist", 1.0f + dmgRes, 3, false, true);
                                         pushEnemyBuffPopup((int)ei, "DEF DOWN!", sf::Color(180,180,255));
@@ -2300,6 +2322,9 @@ void GameStateBattle::handleInput() {
                         }
 
                         // apply damage to target
+                         std::uniform_int_distribution<int> dist(0, 3);
+                        int soundIndex = dist(globalRng());
+                        this->game->soundmgr.playSound(randomHitSounds[soundIndex]);
                         target->takeDamage(damage);
                         totalDamage += damage;
 
@@ -2421,7 +2446,7 @@ void GameStateBattle::handleInput() {
 
                             float healPct = pendingSkill->getHealthRestorePercent();
                             int healAmount = static_cast<int>(std::round(tgt->getmaxHP() * healPct));
-
+                            this->game->soundmgr.playSound("heal");
                             tgt->heal(healAmount);
                             battleText.setString(
                                 pendingSkillUser->getName() + " restored " +

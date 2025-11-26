@@ -272,6 +272,8 @@ private:
     int levelUpAttributeIndex = 0; 
     Player * character; 
 
+    std::array<std::string,4> randomHitSounds = {"damagetaken","hit2","hit3","hit4"};
+
     // BuffState
     struct BuffInstance {
         float damageAmp = 1.0f;

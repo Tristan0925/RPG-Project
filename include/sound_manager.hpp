@@ -17,6 +17,7 @@ public:
 
 void loadSound(const std::string& effectname, const std::string& fileName);
 void playSound(const std::string& effectname);
+void loopSound(const std::string& effectname);
 void stopSound(const std::string& effectname);
 sf::Sound& getRef(const std::string& sound);
 

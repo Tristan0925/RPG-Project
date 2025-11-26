@@ -14,6 +14,7 @@
 #include <vector>
 #include <unordered_map>
 #include <array>
+#include "sound_manager.hpp"
 
 class GameState; // forward declaration
 
@@ -30,6 +31,7 @@ class Game
 private:
 
     void loadTextures();
+    void loadSounds();
 
     // store a pending state request to be applied safely in the game loop
     PendingState pendingState;
@@ -42,7 +44,7 @@ private:
     NPC pmember4;
     int floorNumber = 1;
     std::vector<Player> party;
-
+    bool inBattle = false;
     struct GameData {
         PlayerData player;
         PlayerData pmember2;
@@ -60,8 +62,11 @@ private:
 
 
     Map map;
+    Map map2;
     std::vector<std::string> doorCoordinates;
+    std::vector<std::string> doorCoordinates2;
     std::unordered_map<std::string, bool> doorCoordinatesToHasLoot;
+    std::unordered_map<std::string, bool> doorCoordinatesToHasLoot2;
     sf::Font font;
       
 
@@ -69,6 +74,7 @@ private:
 
     sf::RenderWindow window;
     TextureManager texmgr;
+    SoundManager soundmgr;
     sf::Sprite background;
     //Reused UI elements
     sf::Sprite playerSprite;

@@ -14,6 +14,7 @@ class GameStateEditor : public GameState
     int transparency;
     sf::RectangleShape fader;
     Game* game;
+    
 
     int currentFloor = 1;
     sf::Music currentTrack;
@@ -21,6 +22,7 @@ class GameStateEditor : public GameState
     sf::View guiView;
     
     bool isPaused = false; //controls input reading while pressing pause
+    bool isFootstepsPlaying = false;
     float moveSpeed;
     Map map;
     const float PI = 3.14159f;
@@ -70,6 +72,7 @@ class GameStateEditor : public GameState
     virtual void draw(const float dt);
     virtual void update(const float dt);
     virtual void handleInput();
+    
  
     GameStateEditor(Game* game, bool requestStartGame, int floorNumber);
 };

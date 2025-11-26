@@ -132,7 +132,7 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
     player = this->game->player;
     std::array<Item, 2> playerinv = this->game->player.getInventory(); 
 
-     if (this->game->floorNumber == 1){
+     if (this->game->floorNumber == 1 && isBossRoom){
         if (!preludeTrack.openFromFile("./assets/music/boss1prelude.mp3")) {
         std::cout << "Could not load music file" << std::endl;
     } else {
@@ -140,7 +140,7 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
         preludeTrack.play();
     }
     }
-    else if (this->game->floorNumber == 2){
+    else if (this->game->floorNumber == 2 && isBossRoom){
         if (!preludeTrack.openFromFile("./assets/music/boss2prelude.mp3")) {
         std::cout << "Could not load music file" << std::endl;
     } else {
@@ -149,7 +149,7 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
     }
     }
 
-
+if (this->game->floorNumber == 1){
  for (const auto& pair : this->game->doorCoordinatesToHasLoot) {
        if (pair.first == coordinatePair && coordinatePair == "(34, 4)" && pair.second == true){ //replace with bossCoordinates
             isBossRoom = true;
@@ -179,6 +179,39 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
         }
        
     }
+} 
+
+if (this->game->floorNumber == 2){
+ for (const auto& pair : this->game->doorCoordinatesToHasLoot) {
+       if (pair.first == coordinatePair && coordinatePair == "(6, 24)" && pair.second == true){ //replace with bossCoordinates
+            isBossRoom = true;
+            isEmptyRoom = false;
+            isItemRoom = false;
+            this->game->doorCoordinatesToHasLoot[pair.first] = false;
+        }
+        else if (pair.first == coordinatePair && pair.second == true){
+            isItemRoom = true;
+            isEmptyRoom = false;
+            isBossRoom = false;
+            this->game->doorCoordinatesToHasLoot[pair.first] = false;
+            if (chanceOfItem(gen) == 1) {
+                itemName = hpItem.showName();
+                this->game->player.addToInventory(hpItem, quantity); 
+
+            }
+            else {
+                itemName = mpItem.showName();
+            this->game->player.addToInventory(mpItem, quantity);
+            }
+        } 
+        else if (pair.first == coordinatePair && pair.second == false){
+            isEmptyRoom = true;
+            isItemRoom = false;
+            isBossRoom = false;
+        }
+       
+    }
+} 
 
     if (this->game->floorNumber == 1){
         bossIndex = 0;
@@ -188,7 +221,6 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
 
 
 
-   
   
 }
 

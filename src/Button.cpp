@@ -49,6 +49,8 @@ bool Button::wasClicked(sf::RenderWindow& window) {
 
     // Check if the mouse is inside the text bounds
     sf::FloatRect bounds = text.getGlobalBounds();
+    this->game->soundmgr.playSound("confirm");
+
     return bounds.contains(mouseScreen);
 }
 

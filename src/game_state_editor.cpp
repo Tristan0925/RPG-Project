@@ -586,11 +586,24 @@ void GameStateEditor::enterDoor(int x, int y){
 
 void GameStateEditor::update(const float dt) //If something needs to be updated based on dt, then go here
 {
+    if (this->game->inBattle){
+        currentTrack.pause();
+        isFootstepsPlaying = false;
+        this->game->soundmgr.stopSound("footsteps");
+       
+    }
 
+    if (!this->game->inBattle && (currentTrack.getStatus() == sf::Music::Paused || currentTrack.getStatus() == sf::Music::Stopped)){
+        currentTrack.play();
+    }
+
+    
     if (isPaused)
         return;
     moveSpeed = 100.f * dt;   // movement speed
     this->game->player.update(dt);
+
+       
 
     
    
@@ -682,6 +695,7 @@ void GameStateEditor::handleInput() // Inputs go here
                     } else if (settingsButton.wasClicked(this->game->window)) {
                         std::cout << "Settings clicked (placeholder)\n";
                     } else if (saveButton.wasClicked(this->game->window)) {
+                        this->game->soundmgr.playSound("savesuccess");
                         slotMenuActive = true;
                         slotMenuMode = SlotMenuMode::Save;
                     } else if (loadButton.wasClicked(this->game->window)) {
@@ -746,11 +760,29 @@ void GameStateEditor::handleInput() // Inputs go here
     // Forward movement
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !controlInputReadingPaused) { 
         this->game->player.moveForward(moveSpeed, this->game->map);
+        if (!isFootstepsPlaying){
+            std::cout <<"feet" << std::endl;
+            this->game->soundmgr.loopSound("footsteps");
+            this->game->soundmgr.playSound("footsteps");
+            isFootstepsPlaying = true;
+        }
     }
 
     // Backward movement
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S ) && !controlInputReadingPaused) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !controlInputReadingPaused) {
+         if (!isFootstepsPlaying){
+            this->game->soundmgr.loopSound("footsteps");
+            this->game->soundmgr.playSound("footsteps");
+            isFootstepsPlaying = true;
+        }
         this->game->player.moveBackward(moveSpeed, this->game->map);
+    }
+    
+    if (event.type == sf::Event::KeyReleased){
+        if (event.key.code == sf::Keyboard::W || event.key.code == sf::Keyboard::S){
+            isFootstepsPlaying = false;
+            this->game->soundmgr.stopSound("footsteps");
+        }
     }
 
     static bool leftPressed = false;
@@ -788,7 +820,7 @@ void GameStateEditor::handleInput() // Inputs go here
 
         // 9% chance per new tile 
         if (rand() % 100 < 9) {
-            currentTrack.pause();
+            this->game->inBattle = true;
             this->game->requestPush(std::make_unique<GameStateBattle>(this->game, false, 0));
             return; // exit handleInput immediately
         }

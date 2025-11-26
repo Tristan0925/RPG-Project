@@ -6,7 +6,7 @@ class Game;
 
 class Button{
     public:
-    Button(std::string words, sf::Vector2f location,int size, Game* game, sf::Color color = sf::Color::Red  );
+    Button(std::string words, sf::Vector2f location,int size, Game* game, sf::Color color = sf::Color::Red);
     bool wasClicked(sf::RenderWindow& window);
     void changePosition(float posx, float posy);
     void draw(sf::RenderWindow& window);

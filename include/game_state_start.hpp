@@ -26,7 +26,7 @@ class GameStateStart : public GameState
     sf::Vector2f defaultTitlePos;
     sf::Vector2f defaultTitleScale;
 
-    bool requestStartGame = false;
+    bool requestStartGame = false; 
 
     void loadgame();
 
