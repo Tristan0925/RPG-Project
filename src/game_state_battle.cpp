@@ -751,6 +751,8 @@ void GameStateBattle::draw(const float dt) {
 
     // Draw enemies
     for (size_t i = 0; i < enemies.size(); ++i) {
+        float spacing = 150.f; // adjust to what looks best
+        enemySprites[i].setPosition(600.f + i * spacing, 200.f);
         if (i < enemyBaseScales.size()) {
             float base = enemyBaseScales[i];
             enemySprites[i].setScale((static_cast<int>(i) == currentEnemyIndex) ? base * 1.15f : base,
@@ -859,10 +861,22 @@ void GameStateBattle::draw(const float dt) {
         return;
     }
     else if (currentMenuState == BattleMenuState::SkillTargeting) {
-        for (int i = 0; i < party.size(); ++i)
+        for (size_t i = 0; i < party.size(); ++i) {
             this->game->window.draw(playerIcons[i]);
+    
+            // Highlight selectable player targets for healing skills
+            sf::FloatRect b = playerIcons[i].getGlobalBounds();
+            sf::RectangleShape highlight(sf::Vector2f(b.width + 8.f, b.height + 8.f));
+            highlight.setPosition(b.left - 4.f, b.top - 4.f);
+            highlight.setFillColor(sf::Color(255, 255, 255, 40));
+            highlight.setOutlineColor(sf::Color::Green);
+            highlight.setOutlineThickness(2.f);
+            this->game->window.draw(highlight);
+        }
+    
         backButton.draw(this->game->window);
     }
+    
     
 
     // Commit the frame
