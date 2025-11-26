@@ -80,6 +80,7 @@ void GameStateDoor::handleInput()
             }
             case sf::Event::KeyPressed:{
                 if (event.key.code == sf::Keyboard::Space){ // && !isBossRoom
+                    this->game->inBattle = false;
                     this->game->requestPop();
                     return;
                 }
@@ -132,22 +133,9 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
     player = this->game->player;
     std::array<Item, 2> playerinv = this->game->player.getInventory(); 
 
-     if (this->game->floorNumber == 1 && isBossRoom){
-        if (!preludeTrack.openFromFile("./assets/music/boss1prelude.mp3")) {
-        std::cout << "Could not load music file" << std::endl;
-    } else {
-        preludeTrack.setLoop(true);
-        preludeTrack.play();
-    }
-    }
-    else if (this->game->floorNumber == 2 && isBossRoom){
-        if (!preludeTrack.openFromFile("./assets/music/boss2prelude.mp3")) {
-        std::cout << "Could not load music file" << std::endl;
-    } else {
-        preludeTrack.setLoop(true);
-        preludeTrack.play();
-    }
-    }
+    
+    
+    this->game->inBattle = true;
 
 if (this->game->floorNumber == 1){
  for (const auto& pair : this->game->doorCoordinatesToHasLoot) {
@@ -219,9 +207,24 @@ if (this->game->floorNumber == 2){
         bossIndex = 1;
     }
 
+     if (this->game->floorNumber == 1 && isBossRoom){
+        if (!preludeTrack.openFromFile("./assets/music/boss1prelude.mp3")) {
+        std::cout << "Could not load music file" << std::endl;
+    } else {
+        preludeTrack.setLoop(true);
+        preludeTrack.play();
+    }
+    }
+    else if (this->game->floorNumber == 2 && isBossRoom){
+        if (!preludeTrack.openFromFile("./assets/music/boss2prelude.mp3")) {
+        std::cout << "Could not load music file" << std::endl;
+    } else {
+        preludeTrack.setLoop(true);
+        preludeTrack.play();
+    }
 
 
-  
+}
 }
 
 

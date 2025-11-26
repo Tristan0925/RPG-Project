@@ -120,7 +120,7 @@ void Player::setDefault(const Map& map)
     maxMP = (LVL + MAG) * 3;
     MP = maxMP;
     LVL = 1;
-    XP = 50;
+    XP = 0;
     name = "Tatsuya";
     STR = 4;
     VIT = 3;

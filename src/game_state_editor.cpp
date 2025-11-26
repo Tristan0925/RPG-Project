@@ -609,10 +609,12 @@ void GameStateEditor::update(const float dt) //If something needs to be updated 
    
     if (this->game->player.inDoor && !enteringDoor){
         enteringDoor = true;
+        currentTrack.pause();
+        this->game->inBattle = true;
         this->game->player.inDoor = 0;
         controlInputReadingPaused = true;
     }       
-        //play sound
+        
         if (controlInputReadingPaused & !exitingDoor){
          transparency += static_cast<int>(100 * 2 * dt);
          if (transparency >= 255) transparency = 255;
@@ -866,11 +868,7 @@ GameStateEditor::GameStateEditor(Game* game, bool requestStartGame, int floorNum
         wallTexture.loadFromFile("assets/wall_texture.jpg");  
    }
     else if (currentFloor == 2){
-          if (!map.loadFromFile("assets/map2.txt")) {
-            throw std::runtime_error("failed to load");
-          } else{
-            this->game->map = map;
-          }
+            map = this->game->map2;
         sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
         this->game->player.setPosition(spawn * 64.f); // scale by tile size
         doorTexture.loadFromFile("assets/door_texture2.png");

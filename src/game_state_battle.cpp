@@ -1504,7 +1504,7 @@ void GameStateBattle::handleInput() {
         if (event.type == sf::Event::KeyPressed) {
              if (event.key.code == sf::Keyboard::Space) {
                  if (battleOver && distributionFinished && levelUpTime){
-                    if (levelUpIterator == levelUpBooleanMap.end()){
+                    if (levelUpIterator == std::prev(levelUpBooleanMap.end())){
                          if (isBossBattle && this->game->floorNumber == 1){
                             this->game->floorNumber+=1;
                             this->game->inBattle = false;
@@ -1521,9 +1521,11 @@ void GameStateBattle::handleInput() {
                     }
                     if (levelUpIterator != levelUpBooleanMap.end() && skillPoints == 0){
                         skillPoints = tempSkillPoints;
+                        distributionText.setString("Distribute points.\n" + std::to_string(skillPoints) + " points remaining.");
                         character->statUp(strengthVal, vitalityVal, magicVal, agilityVal, luckVal);
                         ++levelUpIterator; 
                         statsSet = false;
+                        return;
                     }
                 }
                  if (battleOver && distributionFinished && levelupflags){
