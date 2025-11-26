@@ -225,8 +225,13 @@ private:
         Main,
         Skill,
         Item,
-        EnemyTurn
+        EnemyTurn,
+        SkillTargeting
     };
+    const Skill* pendingSkill = nullptr;
+    Player* pendingSkillUser = nullptr;
+    
+
     BattleMenuState currentMenuState = BattleMenuState::Main;
     bool setPlayerMenuState = false;
     // Game over Menu State

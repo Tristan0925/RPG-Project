@@ -17,22 +17,22 @@
                 "Ice": 1.5,
                 "Physical": 1.0
             },
-            "angle": 1.5707963705062866,
+            "angle": 1.7484555314695172e-07,
             "inventory": [
                 {
                     "name": "Energizing Moss",
-                    "quantity": 2
+                    "quantity": 4
                 },
                 {
-                    "name": "Dragon Morsel",
-                    "quantity": 3
+                    "name": "Empty Slot",
+                    "quantity": 0
                 }
             ],
             "maxHP": 294,
             "maxMP": 27,
             "position": [
-                237.41162109375,
-                404.0285949707031
+                252.61070251464844,
+                64.0
             ],
             "skills": [
                 "Attack",
@@ -198,22 +198,22 @@
             "Ice": 1.5,
             "Physical": 1.0
         },
-        "angle": 1.5707963705062866,
+        "angle": 1.7484555314695172e-07,
         "inventory": [
             {
                 "name": "Energizing Moss",
-                "quantity": 2
+                "quantity": 4
             },
             {
-                "name": "Dragon Morsel",
-                "quantity": 3
+                "name": "Empty Slot",
+                "quantity": 0
             }
         ],
         "maxHP": 294,
         "maxMP": 27,
         "position": [
-            237.41162109375,
-            404.0285949707031
+            252.61070251464844,
+            64.0
         ],
         "skills": [
             "Attack",
