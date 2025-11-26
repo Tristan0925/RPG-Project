@@ -95,6 +95,7 @@ class Player {
 
         int getXpForNextLevel();
         int getHP() const, getmaxHP() const, getMP() const, getmaxMP() const, getLVL() const, getAGI() const, getSTR() const, getVIT() const, getXp() const, getMAG() const, getLU() const;
+        void gainXp(int xpgain); 
         std::string getName() const;
         std::array<Item, 2> getInventory() const;
         std::array<const Skill*, 9> getSkillsList() const;

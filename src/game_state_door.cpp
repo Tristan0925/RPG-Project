@@ -143,7 +143,6 @@ if (this->game->floorNumber == 1){
             isBossRoom = true;
             isEmptyRoom = false;
             isItemRoom = false;
-            this->game->doorCoordinatesToHasLoot[pair.first] = false;
         }
         else if (pair.first == coordinatePair && pair.second == true){
             isItemRoom = true;
@@ -175,7 +174,6 @@ if (this->game->floorNumber == 2){
             isBossRoom = true;
             isEmptyRoom = false;
             isItemRoom = false;
-            this->game->doorCoordinatesToHasLoot[pair.first] = false;
         }
         else if (pair.first == coordinatePair && pair.second == true){
             isItemRoom = true;

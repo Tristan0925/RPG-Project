@@ -468,3 +468,7 @@ float Player::getHitModifier() const {
     }
     return mult;
 }
+
+void Player::gainXp(int xpgained){
+     XP+= xpgained;
+}
