@@ -2010,7 +2010,7 @@ void GameStateBattle::handleInput() {
 
                 for (auto& b : skillButtons) {
                     if (!b.wasClicked(this->game->window)) continue;
-                    std::cout << "[DEBUG] Skill button clicked: '" << b.getText() << "'\n";
+                    std::cout << "[DEBUG] Skill button clicked: '" << b.getText() << "'\n"; // DEBUG REMOVE 
 
 
                     // It's assumed the front of turnQueue is the actor using the skill.
@@ -2033,7 +2033,7 @@ void GameStateBattle::handleInput() {
                     if (!s) {
                         battleText.setString("Skill not found.");
                         break;
-                    }
+                    } // BELOW IS DEBUg
                     std::cout << "[DEBUG] Resolved skill: name='" << s->getName() << "' type='" << s->getType()
                     << "' mpCost=" << s->getMpCost()
                     << " dmgRes=" << s->getDamageResist()

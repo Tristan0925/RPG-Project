@@ -154,7 +154,7 @@ pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0, {{"Fire", 1.0}, {"Ice", 1.5}, {"Physica
             std::cout << "[DEBUG] Marakunda damageResist = " << s.getDamageResist() << "\n";
             break;
         }
-    }
+    } // DEBUG REMEMBER TO REMOVE EVENTUALLY
 
 
 
