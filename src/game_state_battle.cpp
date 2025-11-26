@@ -1388,40 +1388,6 @@ void GameStateBattle::update(const float dt) {
 // Input Handling
 void GameStateBattle::handleInput() {
     sf::Event event;
-    auto spawnPopupAtEnemyIndex = [&](int enemyIdx, int dmg, bool crit, float elementMul) {
-        DamagePopup dp;
-        dp.text.setFont(font);
-        dp.text.setCharacterSize(32);
-
-        std::string label = "";
-        if (crit) label += "CRIT ";
-        if (elementMul > 1.0f)      label += "WEAK ";
-        else if (elementMul < 1.0f) label += "RESIST ";
-
-        dp.text.setString(label + std::to_string(dmg));
-
-        sf::Color popupColor = sf::Color::White;
-        if (elementMul > 1.0f)       popupColor = sf::Color(255, 255, 0);
-        else if (elementMul < 1.0f)  popupColor = sf::Color(100, 149, 255);
-        else if (crit)               popupColor = sf::Color::Red;
-
-        dp.text.setFillColor(popupColor);
-
-        sf::FloatRect eb = (enemyIdx >= 0 && enemyIdx < (int)enemySprites.size())
-                           ? enemySprites[enemyIdx].getGlobalBounds()
-                           : sf::FloatRect(800.f, 300.f, 0.f, 0.f);
-
-        dp.text.setPosition(
-            eb.left + eb.width / 2.f - dp.text.getGlobalBounds().width / 2.f,
-            eb.top - 10.f
-        );
-
-        dp.velocity = sf::Vector2f(0.f, -30.f);
-        dp.life = 1.0f;
-
-        damagePopups.push_back(dp);
-    };
-
     auto spawnPopupAtPlayerIndex = [&](int pIdx, int amt, bool crit) {
         DamagePopup dp;
         dp.text.setFont(font);
@@ -1546,7 +1512,6 @@ void GameStateBattle::handleInput() {
                     if (prev >= 0) currentEnemyIndex = prev;
                 }
             }
-            // (duplicate Left/Right handlers were in original; harmless but unnecessary — left as-is)
             else if (event.key.code == sf::Keyboard::W){
                 if (levelUpTime){
                     levelUpAttributeIndex--;
