@@ -23,7 +23,7 @@ private:
     int totalFrames;
     int frameWidth;
     int frameHeight;
-    float animationSpeed = 1.f/60.f; //60fps animations
+    float animationSpeed;
     float elapsed;
     bool setAnimationVariables = false;
     // Music
