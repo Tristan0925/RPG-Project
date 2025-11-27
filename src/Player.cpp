@@ -471,4 +471,8 @@ float Player::getHitModifier() const {
 
 void Player::gainXp(int xpgained){
      XP+= xpgained;
+     if (XP > getXpForNextLevel()){
+        XP = 0;
+     }
 }
+

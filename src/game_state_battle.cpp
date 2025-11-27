@@ -1989,6 +1989,10 @@ void GameStateBattle::handleInput() {
                     return;
                 }
                 else if (escapeButton.wasClicked(this->game->window)) {
+                    if (isBossBattle){
+                        battleText.setString("There's nowhere to run.");
+                        return;
+                    }
 
                     if (turnQueue.empty()) return;
 
