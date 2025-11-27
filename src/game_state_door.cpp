@@ -169,7 +169,7 @@ if (this->game->floorNumber == 1){
 } 
 
 if (this->game->floorNumber == 2){
- for (const auto& pair : this->game->doorCoordinatesToHasLoot) {
+ for (const auto& pair : this->game->doorCoordinatesToHasLoot2) {
        if (pair.first == coordinatePair && coordinatePair == "(6, 24)" && pair.second == true){ //replace with bossCoordinates
             isBossRoom = true;
             isEmptyRoom = false;
@@ -179,7 +179,7 @@ if (this->game->floorNumber == 2){
             isItemRoom = true;
             isEmptyRoom = false;
             isBossRoom = false;
-            this->game->doorCoordinatesToHasLoot[pair.first] = false;
+            this->game->doorCoordinatesToHasLoot2[pair.first] = false;
             if (chanceOfItem(gen) == 1) {
                 itemName = hpItem.showName();
                 this->game->player.addToInventory(hpItem, quantity); 

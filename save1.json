@@ -1,15 +1,15 @@
 {
-    "floorNumber": 2,
+    "floorNumber": 1,
     "party": [
         {
             "AGI": 3,
-            "HP": 294,
+            "HP": 42,
             "LU": 2,
-            "LVL": 6,
-            "MP": 27,
+            "LVL": 4,
+            "MP": 93,
             "STR": 4,
-            "VIT": 43,
-            "XP": 50,
+            "VIT": 3,
+            "XP": 600,
             "affinities": {
                 "Electric": 1.0,
                 "Fire": 0.0,
@@ -20,19 +20,19 @@
             "angle": 1.7484555314695172e-07,
             "inventory": [
                 {
-                    "name": "Energizing Moss",
-                    "quantity": 4
+                    "name": "Empty Slot",
+                    "quantity": 0
                 },
                 {
                     "name": "Empty Slot",
                     "quantity": 0
                 }
             ],
-            "maxHP": 294,
-            "maxMP": 27,
+            "maxHP": 42,
+            "maxMP": 93,
             "position": [
-                252.61070251464844,
-                64.0
+                2049.96826171875,
+                239.71990966796875
             ],
             "skills": [
                 "Attack",
@@ -48,13 +48,13 @@
         },
         {
             "AGI": 3,
-            "HP": 54,
+            "HP": 90,
             "LU": 3,
-            "LVL": 6,
-            "MP": 153,
+            "LVL": 4,
+            "MP": 75,
             "STR": 2,
-            "VIT": 3,
-            "XP": 0,
+            "VIT": 11,
+            "XP": 600,
             "affinities": {
                 "Electric": 1.0,
                 "Fire": 1.0,
@@ -73,8 +73,8 @@
                     "quantity": 0
                 }
             ],
-            "maxHP": 54,
-            "maxMP": 153,
+            "maxHP": 90,
+            "maxMP": 75,
             "position": [
                 0.0,
                 0.0
@@ -92,14 +92,14 @@
             ]
         },
         {
-            "AGI": 19,
-            "HP": 198,
+            "AGI": 3,
+            "HP": 78,
             "LU": 2,
-            "LVL": 6,
-            "MP": 30,
+            "LVL": 4,
+            "MP": 78,
             "STR": 3,
-            "VIT": 27,
-            "XP": 0,
+            "VIT": 9,
+            "XP": 600,
             "affinities": {
                 "Electric": 1.5,
                 "Fire": 1.5,
@@ -118,8 +118,8 @@
                     "quantity": 0
                 }
             ],
-            "maxHP": 198,
-            "maxMP": 30,
+            "maxHP": 78,
+            "maxMP": 78,
             "position": [
                 0.0,
                 0.0
@@ -138,13 +138,13 @@
         },
         {
             "AGI": 2,
-            "HP": 48,
+            "HP": 96,
             "LU": 3,
-            "LVL": 6,
-            "MP": 27,
-            "STR": 45,
-            "VIT": 2,
-            "XP": 0,
+            "LVL": 4,
+            "MP": 30,
+            "STR": 16,
+            "VIT": 12,
+            "XP": 600,
             "affinities": {
                 "Electric": 1.0,
                 "Fire": 1.0,
@@ -163,8 +163,8 @@
                     "quantity": 0
                 }
             ],
-            "maxHP": 48,
-            "maxMP": 27,
+            "maxHP": 96,
+            "maxMP": 30,
             "position": [
                 0.0,
                 0.0
@@ -184,13 +184,13 @@
     ],
     "player": {
         "AGI": 3,
-        "HP": 294,
+        "HP": 42,
         "LU": 2,
-        "LVL": 6,
-        "MP": 27,
+        "LVL": 4,
+        "MP": 93,
         "STR": 4,
-        "VIT": 43,
-        "XP": 50,
+        "VIT": 3,
+        "XP": 600,
         "affinities": {
             "Electric": 1.0,
             "Fire": 0.0,
@@ -201,19 +201,19 @@
         "angle": 1.7484555314695172e-07,
         "inventory": [
             {
-                "name": "Energizing Moss",
-                "quantity": 4
+                "name": "Empty Slot",
+                "quantity": 0
             },
             {
                 "name": "Empty Slot",
                 "quantity": 0
             }
         ],
-        "maxHP": 294,
-        "maxMP": 27,
+        "maxHP": 42,
+        "maxMP": 93,
         "position": [
-            252.61070251464844,
-            64.0
+            2049.96826171875,
+            239.71990966796875
         ],
         "skills": [
             "Attack",

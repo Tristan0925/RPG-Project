@@ -1,14 +1,196 @@
 {
-    "party": [],
+    "floorNumber": 2,
+    "party": [
+        {
+            "AGI": 3,
+            "HP": 204,
+            "LU": 2,
+            "LVL": 7,
+            "MP": 102,
+            "STR": 4,
+            "VIT": 27,
+            "XP": 1600,
+            "affinities": {
+                "Electric": 1.0,
+                "Fire": 0.0,
+                "Force": 1.0,
+                "Ice": 1.5,
+                "Physical": 1.0
+            },
+            "angle": 1.5707964897155762,
+            "inventory": [
+                {
+                    "name": "Empty Slot",
+                    "quantity": 0
+                },
+                {
+                    "name": "Empty Slot",
+                    "quantity": 0
+                }
+            ],
+            "maxHP": 204,
+            "maxMP": 102,
+            "position": [
+                330.291748046875,
+                234.9699249267578
+            ],
+            "skills": [
+                "Attack",
+                "Shock",
+                "Dia",
+                "Fire Breath",
+                "Flash Freeze",
+                "Tornado",
+                "Divine Shot",
+                "Freikugel",
+                "Focus"
+            ]
+        },
+        {
+            "AGI": 3,
+            "HP": 252,
+            "LU": 3,
+            "LVL": 7,
+            "MP": 84,
+            "STR": 2,
+            "VIT": 35,
+            "XP": 1600,
+            "affinities": {
+                "Electric": 1.0,
+                "Fire": 1.0,
+                "Force": 1.5,
+                "Ice": 0.5,
+                "Physical": 1.0
+            },
+            "angle": 0.0,
+            "inventory": [
+                {
+                    "name": "Empty Slot",
+                    "quantity": 0
+                },
+                {
+                    "name": "Empty Slot",
+                    "quantity": 0
+                }
+            ],
+            "maxHP": 252,
+            "maxMP": 84,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "skills": [
+                "Attack",
+                "Zio",
+                "Agi",
+                "Matarukaja",
+                "Bufula",
+                "Megidola",
+                "Omni-Dimension",
+                "EMPTY SLOT",
+                "EMPTY SLOT"
+            ]
+        },
+        {
+            "AGI": 3,
+            "HP": 240,
+            "LU": 2,
+            "LVL": 7,
+            "MP": 87,
+            "STR": 3,
+            "VIT": 33,
+            "XP": 1600,
+            "affinities": {
+                "Electric": 1.5,
+                "Fire": 1.5,
+                "Force": 1.0,
+                "Ice": 1.0,
+                "Physical": 1.0
+            },
+            "angle": 0.0,
+            "inventory": [
+                {
+                    "name": "Empty Slot",
+                    "quantity": 0
+                },
+                {
+                    "name": "Empty Slot",
+                    "quantity": 0
+                }
+            ],
+            "maxHP": 240,
+            "maxMP": 87,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "skills": [
+                "Attack",
+                "Zanma",
+                "Diarama",
+                "Marakunda",
+                "Mediarama",
+                "Scorched Earth",
+                "EMPTY SLOT",
+                "EMPTY SLOT",
+                "EMPTY SLOT"
+            ]
+        },
+        {
+            "AGI": 2,
+            "HP": 138,
+            "LU": 3,
+            "LVL": 7,
+            "MP": 39,
+            "STR": 36,
+            "VIT": 16,
+            "XP": 1600,
+            "affinities": {
+                "Electric": 1.0,
+                "Fire": 1.0,
+                "Force": 1.0,
+                "Ice": 1.5,
+                "Physical": 0.5
+            },
+            "angle": 0.0,
+            "inventory": [
+                {
+                    "name": "Empty Slot",
+                    "quantity": 0
+                },
+                {
+                    "name": "Empty Slot",
+                    "quantity": 0
+                }
+            ],
+            "maxHP": 138,
+            "maxMP": 39,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "skills": [
+                "Attack",
+                "Andalucia",
+                "Mabufula",
+                "Masukukaja",
+                "Debilitate",
+                "Spiral Viper",
+                "EMPTY SLOT",
+                "EMPTY SLOT",
+                "EMPTY SLOT"
+            ]
+        }
+    ],
     "player": {
         "AGI": 3,
-        "HP": 24,
+        "HP": 204,
         "LU": 2,
-        "LVL": 1,
-        "MP": 12,
+        "LVL": 7,
+        "MP": 102,
         "STR": 4,
-        "VIT": 3,
-        "XP": 0,
+        "VIT": 27,
+        "XP": 1600,
         "affinities": {
             "Electric": 1.0,
             "Fire": 0.0,
@@ -16,7 +198,7 @@
             "Ice": 1.5,
             "Physical": 1.0
         },
-        "angle": 0.0,
+        "angle": 1.5707964897155762,
         "inventory": [
             {
                 "name": "Empty Slot",
@@ -27,11 +209,11 @@
                 "quantity": 0
             }
         ],
-        "maxHP": 24,
-        "maxMP": 12,
+        "maxHP": 204,
+        "maxMP": 102,
         "position": [
-            128.15911865234375,
-            256.0
+            330.291748046875,
+            234.9699249267578
         ],
         "skills": [
             "Attack",
