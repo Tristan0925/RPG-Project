@@ -42,7 +42,7 @@ private:
     NPC pmember2;
     NPC pmember3;
     NPC pmember4;
-    int floorNumber = 1;
+    int floorNumber = 2;
     std::vector<Player> party;
     bool inBattle = false;
     struct GameData {
