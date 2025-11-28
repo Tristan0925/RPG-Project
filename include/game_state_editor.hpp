@@ -35,6 +35,8 @@ class GameStateEditor : public GameState
     Button saveButton;
     Button loadButton;
     Button quitButton;
+    Button mapButton;
+    bool mapOpen = false;
 
     sf::Texture wallTexture;
     sf::Texture doorTexture;

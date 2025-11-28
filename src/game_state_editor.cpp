@@ -537,11 +537,60 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         sf::RectangleShape overlay(sf::Vector2f(this->game->window.getSize()));
         overlay.setFillColor(sf::Color(0, 0, 0, 150)); // semi-transparent black
         this->game->window.draw(overlay);
-    
+        if (mapOpen)
+        {
+            sf::RectangleShape background(sf::Vector2f(
+                this->game->window.getSize().x,
+                this->game->window.getSize().y
+            ));
+            background.setFillColor(sf::Color(0, 0, 0, 220));
+            this->game->window.draw(background);
+
+            // Draw the full dungeon map
+            float tileSize = 10.0f;  // how big each tile appears on screen
+
+            for (int y = 0; y < map.getHeight(); y++)
+            {
+                for (int x = 0; x < map.getWidth(); x++)
+                {
+                    sf::RectangleShape tile(sf::Vector2f(tileSize, tileSize));
+                    tile.setPosition(50 + x * tileSize, 50 + y * tileSize);
+            
+                    // Determine tile type using Map's public API
+                    int val = 0;
+            
+                    if (map.isWall(x, y)) val = 1;
+                    else if (map.isDoor(x, y)) val = 2;
+                    else val = 0;
+            
+                    // Color based on type
+                    if (val == 1) tile.setFillColor(sf::Color(80, 80, 80));        // wall
+                    if (val == 0) tile.setFillColor(sf::Color(180, 180, 180));     // floor
+                    if (val == 2) tile.setFillColor(sf::Color::Yellow);            // door
+            
+                    this->game->window.draw(tile);
+                }
+            }
+            
+
+            // draw player position as a red dot
+            sf::CircleShape playerDot(4.0f);
+            playerDot.setFillColor(sf::Color::Red);
+            playerDot.setPosition(
+                50 + (this->game->player.getPosition().x / 64.f) * tileSize,
+                50 + (this->game->player.getPosition().y / 64.f) * tileSize
+            );
+
+            this->game->window.draw(playerDot);
+
+            return; // don't draw pause buttons if map is open
+        }
+
         if (!slotMenuActive)
         {
             resumeButton.draw(this->game->window);
             settingsButton.draw(this->game->window);
+            mapButton.draw(this->game->window);
             saveButton.draw(this->game->window);
             loadButton.draw(this->game->window);
             quitButton.draw(this->game->window);
@@ -551,6 +600,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
             if (settingsButton.isHovered(this->game->window)) this->game->window.draw(settingsButton.getUnderline());
             if (saveButton.isHovered(this->game->window)) this->game->window.draw(saveButton.getUnderline());
             if (loadButton.isHovered(this->game->window)) this->game->window.draw(loadButton.getUnderline());
+            if (mapButton.isHovered(this->game->window)) this->game->window.draw(mapButton.getUnderline());
             if (quitButton.isHovered(this->game->window)) this->game->window.draw(quitButton.getUnderline());
         }
         else // slot menu active
@@ -678,7 +728,7 @@ void GameStateEditor::update(const float dt) //If something needs to be updated 
         controlInputReadingPaused = true;
     }       
         
-        if (controlInputReadingPaused & !exitingDoor){
+        if (controlInputReadingPaused && !exitingDoor){
          transparency += static_cast<int>(100 * 2 * dt);
          if (transparency >= 255) transparency = 255;
          fader.setFillColor(sf::Color(0,0,0,static_cast<sf::Uint8>(transparency)));
@@ -733,13 +783,18 @@ void GameStateEditor::handleInput() // Inputs go here
                 break;
 
             case sf::Event::KeyPressed:
+                // Handle Escape: close map first, then slot menu, then pause
                 if (event.key.code == sf::Keyboard::Escape)
                 {
-                    if (slotMenuActive) {
+                    if (mapOpen) {
+                        mapOpen = false; // close map first
+                    }
+                    else if (slotMenuActive) {
                         slotMenuActive = false;
                         slotMenuMode = SlotMenuMode::None;
-                    } else {
-                        isPaused = !isPaused;
+                    }
+                    else {
+                        isPaused = !isPaused; // toggle pause menu
                     }
                 }
                 break;
@@ -748,6 +803,7 @@ void GameStateEditor::handleInput() // Inputs go here
                 break;
         }
 
+        // Handle mouse clicks while paused
         if (isPaused)
         {
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
@@ -766,15 +822,19 @@ void GameStateEditor::handleInput() // Inputs go here
                     } else if (loadButton.wasClicked(this->game->window)) {
                         slotMenuActive = true;
                         slotMenuMode = SlotMenuMode::Load;
+                    } else if (mapButton.wasClicked(this->game->window)) {
+                        mapOpen = true; // open map
                     } else if (quitButton.wasClicked(this->game->window)) {
                         requestQuitToMenu = true;
                         return;
                     }
                 }
-                if (slotMenuActive && event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+
+                // Slot menu buttons
+                if (slotMenuActive)
                 {
                     Button* slots[3] = { &slot1, &slot2, &slot3 };
-                
+
                     for (int i = 0; i < 3; ++i)
                     {
                         if (slots[i]->wasClicked(this->game->window))
@@ -788,47 +848,35 @@ void GameStateEditor::handleInput() // Inputs go here
                             else if (slotMenuMode == SlotMenuMode::Load)
                             {
                                 this->game->loadFromFile(saveFiles[i], this->game->skillMasterList);
-                                // Force camera to follow new player position
                                 sf::Vector2f playerPos = this->game->player.getPosition();
                                 gameView.setCenter(playerPos);
                             }
-                            if (slotMenuMode == SlotMenuMode::Inventory)
-                            {
-                                }
-
-                
                             slotMenuActive = false;
                             slotMenuMode = SlotMenuMode::None;
-                            return; // stop checking other slots
+                            return;
                         }
                     }
-                
+
                     if (backButton.wasClicked(this->game->window))
                     {
                         slotMenuActive = false;
                         slotMenuMode = SlotMenuMode::None;
                     }
                 }
-                
             }
         }
     }
 
-
-        // Skip gameplay input while paused
-        // just let the while loop finish naturally
-
+    // Skip gameplay input while paused
     if (requestQuitToMenu) {
         this->game->changeState(std::make_unique<GameStateStart>(this->game));
-        return; // stop further input for this frame
-    }
-
-    if (isPaused) {
         return;
     }
 
-    // Forward movement
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !controlInputReadingPaused) { 
+    if (isPaused) return;
+
+    // Movement
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !controlInputReadingPaused) {
         this->game->player.moveForward(moveSpeed, map);
         if (!isFootstepsPlaying){
             this->game->soundmgr.loopSound("footsteps");
@@ -837,16 +885,15 @@ void GameStateEditor::handleInput() // Inputs go here
         }
     }
 
-    // Backward movement
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !controlInputReadingPaused) {
-         if (!isFootstepsPlaying){
+        this->game->player.moveBackward(moveSpeed, map);
+        if (!isFootstepsPlaying){
             this->game->soundmgr.loopSound("footsteps");
             this->game->soundmgr.playSound("footsteps");
             isFootstepsPlaying = true;
         }
-        this->game->player.moveBackward(moveSpeed, map);
     }
-    
+
     if (event.type == sf::Event::KeyReleased){
         if (event.key.code == sf::Keyboard::W || event.key.code == sf::Keyboard::S){
             isFootstepsPlaying = false;
@@ -857,27 +904,13 @@ void GameStateEditor::handleInput() // Inputs go here
     static bool leftPressed = false;
     static bool rightPressed = false;
 
-    // Turn left
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !controlInputReadingPaused) {
-        if (!leftPressed) {
-            this->game->player.turnLeft();
-            leftPressed = true;
-        }
-        } else {
-            leftPressed = false;
-        }
+        if (!leftPressed) { this->game->player.turnLeft(); leftPressed = true; }
+    } else { leftPressed = false; }
 
-    // Turn right
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && !controlInputReadingPaused) {
-        if (!rightPressed) {
-            this->game->player.turnRight();
-            rightPressed = true;
-        }
-    } else {
-        rightPressed = false;
-    }
-
-        // Simple random encounter trigger (9% chance per movement key press)
+        if (!rightPressed) { this->game->player.turnRight(); rightPressed = true; }
+    } else { rightPressed = false; }
 
     sf::Vector2i currentTile(
         int(this->game->player.getPosition().x / 64.f),
@@ -886,15 +919,12 @@ void GameStateEditor::handleInput() // Inputs go here
 
     if (currentTile != lastTile) {
         lastTile = currentTile;
-
-        // 9% chance per new tile 
         if (rand() % 100 < 9) {
             this->game->inBattle = true;
             this->game->requestPush(std::make_unique<GameStateBattle>(this->game, false, 0));
-            return; // exit handleInput immediately
+            return;
         }
     }
-    return;
 }
 
 
@@ -906,6 +936,7 @@ GameStateEditor::GameStateEditor(Game* game, bool requestStartGame, int floorNum
   saveButton("Save", sf::Vector2f(0.f, 0.f), 40, game),
   loadButton("Load", sf::Vector2f(0.f,0.f), 40, game),
   quitButton("Quit to Menu", sf::Vector2f(0.f, 0.f), 40, game),
+  mapButton("Map", sf::Vector2f(0.f, 0.f), 36, game),
   slot1("Slot 1", sf::Vector2f(0.f, 0.f), 36, game),
   slot2("Slot 2", sf::Vector2f(0.f, 0.f), 36, game),
   slot3("Slot 3", sf::Vector2f(0.f, 0.f), 36, game),
@@ -925,6 +956,8 @@ GameStateEditor::GameStateEditor(Game* game, bool requestStartGame, int floorNum
     // Load textures once
     if (currentFloor == 1){
         map = this->game->map;
+        sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
+        this->game->player.setPosition(spawn * 64.f); // scale by tile size
         doorTexture.loadFromFile("assets/door_texture.png");
         wallTexture.loadFromFile("assets/wall_texture.jpg");  
    }
@@ -961,9 +994,10 @@ GameStateEditor::GameStateEditor(Game* game, bool requestStartGame, int floorNum
 
     resumeButton.changePosition(50.f, 190.f);
     settingsButton.changePosition(50.f, 230.f);
-    saveButton.changePosition(50.f, 270.f);
-    loadButton.changePosition(50.f, 310.f);
-    quitButton.changePosition(50.f, 350.f);
+    mapButton.changePosition(50.f, 270);
+    saveButton.changePosition(50.f, 310.f);
+    loadButton.changePosition(50.f, 350.f);
+    quitButton.changePosition(50.f, 390.f);
 
     slot1.changePosition(100.f, 200.f);
     slot2.changePosition(100.f, 260.f);
