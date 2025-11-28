@@ -555,6 +555,69 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         }
         else // slot menu active
         {
+            if (slotMenuMode == SlotMenuMode::Inventory)
+            {
+                // INVENTORY WINDOW
+                sf::Text title;
+                title.setFont(this->game->font);
+                title.setCharacterSize(42);
+                title.setFillColor(sf::Color::Red);
+                title.setString("Inventory");
+                title.setPosition(120, 80);
+                this->game->window.draw(title);
+        
+                // Fetch inventory
+                auto inv = this->game->player.getInventory();
+        
+                float y = 160.f;
+                for (const auto& item : inv)
+                {
+                    // Skip empty items (quantity = 0)
+                    if (item.getQuantity() <= 0)
+                        continue;
+        
+                    sf::Text nameText;
+                    nameText.setFont(this->game->font);
+                    nameText.setCharacterSize(28);
+                    nameText.setFillColor(sf::Color::White);
+        
+                    // Ex: "Dragon Morsel ×3"
+                    nameText.setString(item.showName() + " x" + std::to_string(item.getQuantity()));
+                    nameText.setPosition(140, y);
+                    this->game->window.draw(nameText);
+        
+                    y += 35;
+        
+                    // Description
+                    sf::Text desc;
+                    desc.setFont(this->game->font);
+                    desc.setCharacterSize(20);
+                    desc.setFillColor(sf::Color(200, 200, 200));
+        
+                    // Example: "Restores 50 HP"
+                    std::string effect;
+        
+                    if (item.getHealAmount() > 0)
+                        effect += "Restores " + std::to_string(item.getHealAmount()) + " HP";
+        
+                    if (item.getManaAmount() > 0)
+                    {
+                        if (!effect.empty()) effect += ", ";
+                        effect += "Restores " + std::to_string(item.getManaAmount()) + " MP";
+                    }
+        
+                    desc.setString(effect);
+                    desc.setPosition(160, y);
+                    this->game->window.draw(desc);
+        
+                    y += 40; // spacing
+                }
+        
+                // BACK Button
+                backButton.draw(this->game->window);
+                if (backButton.isHovered(this->game->window))
+                    this->game->window.draw(backButton.getUnderline());
+            } else {
             // Draw slot buttons
             slot1.draw(this->game->window);
             slot2.draw(this->game->window);
@@ -566,6 +629,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
             if (slot2.isHovered(this->game->window)) this->game->window.draw(slot2.getUnderline());
             if (slot3.isHovered(this->game->window)) this->game->window.draw(slot3.getUnderline());
             if (backButton.isHovered(this->game->window)) this->game->window.draw(backButton.getUnderline());
+            }
         }
     }
     
@@ -693,7 +757,8 @@ void GameStateEditor::handleInput() // Inputs go here
                     if (resumeButton.wasClicked(this->game->window)) {
                         isPaused = false;
                     } else if (settingsButton.wasClicked(this->game->window)) {
-                        //settings
+                        slotMenuActive = true;
+                        slotMenuMode = SlotMenuMode::Inventory;
                     } else if (saveButton.wasClicked(this->game->window)) {
                         this->game->soundmgr.playSound("savesuccess");
                         slotMenuActive = true;
@@ -727,6 +792,10 @@ void GameStateEditor::handleInput() // Inputs go here
                                 sf::Vector2f playerPos = this->game->player.getPosition();
                                 gameView.setCenter(playerPos);
                             }
+                            if (slotMenuMode == SlotMenuMode::Inventory)
+                            {
+                                }
+
                 
                             slotMenuActive = false;
                             slotMenuMode = SlotMenuMode::None;
@@ -833,7 +902,7 @@ void GameStateEditor::handleInput() // Inputs go here
 GameStateEditor::GameStateEditor(Game* game, bool requestStartGame, int floorNumber)
 : game(game),
   resumeButton("Resume", sf::Vector2f(0.f, 0.f), 40, game),
-  settingsButton("Settings", sf::Vector2f(0.f, 0.f), 40, game),
+  settingsButton("Inventory", sf::Vector2f(0.f, 0.f), 40, game),
   saveButton("Save", sf::Vector2f(0.f, 0.f), 40, game),
   loadButton("Load", sf::Vector2f(0.f,0.f), 40, game),
   quitButton("Quit to Menu", sf::Vector2f(0.f, 0.f), 40, game),

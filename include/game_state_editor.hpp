@@ -51,7 +51,8 @@ class GameStateEditor : public GameState
     enum class SlotMenuMode {
         None,
         Save,
-        Load
+        Load,
+        Inventory
     } slotMenuMode = SlotMenuMode::None;
 
     Button slot1;
