@@ -14,7 +14,7 @@ class GameStateEditor : public GameState
     int transparency;
     sf::RectangleShape fader;
     Game* game;
-    
+
 
     int currentFloor = 1;
     sf::Music currentTrack;

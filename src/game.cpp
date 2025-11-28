@@ -150,7 +150,7 @@ pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0, {{"Fire", 1.0}, {"Ice", 1.5}, {"Physica
     
    this->loadTextures();
    this->loadSounds();
-   this->window.create(sf::VideoMode(1920, 1080), "Untitled RPG Project");
+   this->window.create(sf::VideoMode(1920, 1080), "smt4sloths");
    this->window.setFramerateLimit(60); 
    this->background.setTexture(this->texmgr.getRef("background"));
    this->playerSprite.setTexture(this->texmgr.getRef("playerSprite"));
@@ -160,7 +160,7 @@ pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0, {{"Fire", 1.0}, {"Ice", 1.5}, {"Physica
    if (!map.loadFromFile("assets/map1.txt")) {
     throw std::runtime_error("failed to load");
    }
-   if (!map.loadFromFile("assets/map2.txt")){
+   if (!map2.loadFromFile("assets/map2.txt")){
     throw std::runtime_error("failed to load");
    }
     if (!font.loadFromFile("assets/Birch.ttf")) {

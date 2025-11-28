@@ -76,16 +76,19 @@ void GameStateStart::handleInput()
             else { // slot menu active
                 if (slot1.wasClicked(this->game->window)) {
                     this->game->loadFromFile("save1.json", this->game->skillMasterList);
+                    mainTheme.stop();
                     this->game->changeState(std::make_unique<GameStateEditor>(this->game, requestStartGame, this->game->floorNumber));
                     return;
                 }
                 if (slot2.wasClicked(this->game->window)) {
                     this->game->loadFromFile("save2.json", this->game->skillMasterList);
+                    mainTheme.stop();
                     this->game->changeState(std::make_unique<GameStateEditor>(this->game, requestStartGame, this->game->floorNumber));
                     return;
                 }
                 if (slot3.wasClicked(this->game->window)) {
                     this->game->loadFromFile("save3.json", this->game->skillMasterList);
+                    mainTheme.stop();
                     this->game->changeState(std::make_unique<GameStateEditor>(this->game, requestStartGame, this->game->floorNumber));
                     return;
                 }

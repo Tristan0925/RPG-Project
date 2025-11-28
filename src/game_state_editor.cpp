@@ -35,8 +35,8 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
     // --- New rendering parameters ---
     const int rayCount = 640; // fewer rays = big performance boost
     const float columnWidth = (float)screenWidth / rayCount;
-    int mapWidth = this->game->map.getWidth();
-    int mapHeight = this->game->map.getHeight();
+    int mapWidth = map.getWidth();
+    int mapHeight = map.getHeight();
 
 
     // Ceiling
@@ -97,7 +97,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
             }
         
             // Check for wall hit
-            if (this->game->map.isWall(mapX, mapY) || this->game->map.isDoor(mapX, mapY))
+            if (map.isWall(mapX, mapY) || map.isDoor(mapX, mapY))
                 hit = 1;
         
             // Bounds check
@@ -174,7 +174,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
             column[v].color = tint;
 
         // Draw this vertical slice, tex is dependent on door or not door
-     if (this->game->map.isDoor(mapX,mapY) == 0){
+     if (map.isDoor(mapX,mapY) == 0){
         this->game->window.draw(column, &wallTexture);
      }
      else this->game->window.draw(column, &doorTexture); 
@@ -341,7 +341,6 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
         pmember2HPBarBackground.setOutlineThickness(1.2f);
         pmember2HPBarBackground.setOutlineColor(sf::Color::Black);
        
-
         
         sf::RectangleShape pmember2MPBar(sf::Vector2f(100.0f * pmember2MPpercentage, 10.0f));
         sf::RectangleShape pmember2MPBarBackground(sf::Vector2f(100.0f, 10.0f));
@@ -517,7 +516,7 @@ void GameStateEditor::draw(const float dt) //If you draw things, put them here
   
 
 
-    this->game->map.renderMiniMap(this->game->window, minimapView, this->game->player.getPosition(), this->game->player.getAngle());
+    map.renderMiniMap(this->game->window, minimapView, this->game->player.getPosition(), this->game->player.getAngle());
 
     sf::CircleShape playerIcon(6, 3);
     playerIcon.setOrigin(6, 6);
@@ -609,10 +608,12 @@ void GameStateEditor::update(const float dt) //If something needs to be updated 
    
     if (this->game->player.inDoor && !enteringDoor){
         enteringDoor = true;
+        currentTrack.pause();
+        this->game->inBattle = true;
         this->game->player.inDoor = 0;
         controlInputReadingPaused = true;
     }       
-        //play sound
+        
         if (controlInputReadingPaused & !exitingDoor){
          transparency += static_cast<int>(100 * 2 * dt);
          if (transparency >= 255) transparency = 255;
@@ -631,7 +632,7 @@ void GameStateEditor::update(const float dt) //If something needs to be updated 
 
         if (exitingDoor){
             exitTimer -= dt;
-            this->game->player.moveBackward(moveSpeed, this->game->map);
+            this->game->player.moveBackward(moveSpeed, map);
             if (exitTimer <= 0.0f){
                 exitingDoor = false;
                 enteringDoor = false;
@@ -759,7 +760,7 @@ void GameStateEditor::handleInput() // Inputs go here
 
     // Forward movement
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !controlInputReadingPaused) { 
-        this->game->player.moveForward(moveSpeed, this->game->map);
+        this->game->player.moveForward(moveSpeed, map);
         if (!isFootstepsPlaying){
             std::cout <<"feet" << std::endl;
             this->game->soundmgr.loopSound("footsteps");
@@ -775,7 +776,7 @@ void GameStateEditor::handleInput() // Inputs go here
             this->game->soundmgr.playSound("footsteps");
             isFootstepsPlaying = true;
         }
-        this->game->player.moveBackward(moveSpeed, this->game->map);
+        this->game->player.moveBackward(moveSpeed, map);
     }
     
     if (event.type == sf::Event::KeyReleased){
@@ -852,6 +853,21 @@ GameStateEditor::GameStateEditor(Game* game, bool requestStartGame, int floorNum
     currentFloor = floorNumber;
     moveSpeed = 0.f;
 
+    
+    // Load textures once
+    if (currentFloor == 1){
+        map = this->game->map;
+        doorTexture.loadFromFile("assets/door_texture.png");
+        wallTexture.loadFromFile("assets/wall_texture.jpg");  
+   }
+    else if (currentFloor == 2){
+        map = this->game->map2;
+        sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
+        this->game->player.setPosition(spawn * 64.f); // scale by tile size
+        doorTexture.loadFromFile("assets/door_texture2.png");
+        wallTexture.loadFromFile("assets/wall_texture2.png");
+    }
+
     // Initialize lastTile to the player's starting tile
     sf::Vector2f playerPos = this->game->player.getPosition();
     lastTile = sf::Vector2i(int(playerPos.x / 64.f), int(playerPos.y / 64.f));
@@ -860,22 +876,6 @@ GameStateEditor::GameStateEditor(Game* game, bool requestStartGame, int floorNum
     fader.setSize(sf::Vector2f(1920,1080));
     fader.setFillColor(sf::Color(255,0,0,static_cast<sf::Uint8>(transparency)));
   
-    // Load textures once
-    if (currentFloor == 1){
-        doorTexture.loadFromFile("assets/door_texture.png");
-        wallTexture.loadFromFile("assets/wall_texture.jpg");  
-   }
-    else if (currentFloor == 2){
-          if (!map.loadFromFile("assets/map2.txt")) {
-            throw std::runtime_error("failed to load");
-          } else{
-            this->game->map = map;
-          }
-        sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
-        this->game->player.setPosition(spawn * 64.f); // scale by tile size
-        doorTexture.loadFromFile("assets/door_texture2.png");
-        wallTexture.loadFromFile("assets/wall_texture2.png");
-    }
     doorTexture.setSmooth(false);
     doorTexture.generateMipmap();
     doorImage = wallTexture.copyToImage();   

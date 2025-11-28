@@ -80,6 +80,7 @@ void GameStateDoor::handleInput()
             }
             case sf::Event::KeyPressed:{
                 if (event.key.code == sf::Keyboard::Space){ // && !isBossRoom
+                    this->game->inBattle = false;
                     this->game->requestPop();
                     return;
                 }
@@ -132,22 +133,9 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
     player = this->game->player;
     std::array<Item, 2> playerinv = this->game->player.getInventory(); 
 
-     if (this->game->floorNumber == 1 && isBossRoom){
-        if (!preludeTrack.openFromFile("./assets/music/boss1prelude.mp3")) {
-        std::cout << "Could not load music file" << std::endl;
-    } else {
-        preludeTrack.setLoop(true);
-        preludeTrack.play();
-    }
-    }
-    else if (this->game->floorNumber == 2 && isBossRoom){
-        if (!preludeTrack.openFromFile("./assets/music/boss2prelude.mp3")) {
-        std::cout << "Could not load music file" << std::endl;
-    } else {
-        preludeTrack.setLoop(true);
-        preludeTrack.play();
-    }
-    }
+    
+    
+    this->game->inBattle = true;
 
 if (this->game->floorNumber == 1){
  for (const auto& pair : this->game->doorCoordinatesToHasLoot) {
@@ -155,7 +143,6 @@ if (this->game->floorNumber == 1){
             isBossRoom = true;
             isEmptyRoom = false;
             isItemRoom = false;
-            this->game->doorCoordinatesToHasLoot[pair.first] = false;
         }
         else if (pair.first == coordinatePair && pair.second == true){
             isItemRoom = true;
@@ -182,18 +169,17 @@ if (this->game->floorNumber == 1){
 } 
 
 if (this->game->floorNumber == 2){
- for (const auto& pair : this->game->doorCoordinatesToHasLoot) {
+ for (const auto& pair : this->game->doorCoordinatesToHasLoot2) {
        if (pair.first == coordinatePair && coordinatePair == "(6, 24)" && pair.second == true){ //replace with bossCoordinates
             isBossRoom = true;
             isEmptyRoom = false;
             isItemRoom = false;
-            this->game->doorCoordinatesToHasLoot[pair.first] = false;
         }
         else if (pair.first == coordinatePair && pair.second == true){
             isItemRoom = true;
             isEmptyRoom = false;
             isBossRoom = false;
-            this->game->doorCoordinatesToHasLoot[pair.first] = false;
+            this->game->doorCoordinatesToHasLoot2[pair.first] = false;
             if (chanceOfItem(gen) == 1) {
                 itemName = hpItem.showName();
                 this->game->player.addToInventory(hpItem, quantity); 
@@ -219,9 +205,24 @@ if (this->game->floorNumber == 2){
         bossIndex = 1;
     }
 
+     if (this->game->floorNumber == 1 && isBossRoom){
+        if (!preludeTrack.openFromFile("./assets/music/boss1prelude.mp3")) {
+        std::cout << "Could not load music file" << std::endl;
+    } else {
+        preludeTrack.setLoop(true);
+        preludeTrack.play();
+    }
+    }
+    else if (this->game->floorNumber == 2 && isBossRoom){
+        if (!preludeTrack.openFromFile("./assets/music/boss2prelude.mp3")) {
+        std::cout << "Could not load music file" << std::endl;
+    } else {
+        preludeTrack.setLoop(true);
+        preludeTrack.play();
+    }
 
 
-  
+}
 }
 
 

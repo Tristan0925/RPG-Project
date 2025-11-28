@@ -927,6 +927,10 @@ void GameStateBattle::update(const float dt) {
             XPdecrementer++;
             float addedXP = 1;
             playerXP += addedXP;
+            this->game->player.gainXp(addedXP);
+            this->game->pmember2.gainXp(addedXP);
+            this->game->pmember3.gainXp(addedXP);
+            this->game->pmember4.gainXp(addedXP);
             if (playerXP >= nextLevelPlayerXp){ //since everyone gets the same amount of xp, we are just using the player's xp to see if everyone levels up or not (we can change this later if we want)
                 if (!levelupflags){
                     levelUpTexts[0].setFillColor(sf::Color(0,255,0,255));
@@ -1504,7 +1508,8 @@ void GameStateBattle::handleInput() {
         if (event.type == sf::Event::KeyPressed) {
              if (event.key.code == sf::Keyboard::Space) {
                  if (battleOver && distributionFinished && levelUpTime){
-                    if (levelUpIterator == levelUpBooleanMap.end()){
+                    if (levelUpIterator == std::prev(levelUpBooleanMap.end())){
+                        character->statUp(strengthVal, vitalityVal, magicVal, agilityVal, luckVal);
                          if (isBossBattle && this->game->floorNumber == 1){
                             this->game->floorNumber+=1;
                             this->game->inBattle = false;
@@ -1521,9 +1526,11 @@ void GameStateBattle::handleInput() {
                     }
                     if (levelUpIterator != levelUpBooleanMap.end() && skillPoints == 0){
                         skillPoints = tempSkillPoints;
+                        distributionText.setString("Distribute points.\n" + std::to_string(skillPoints) + " points remaining.");
                         character->statUp(strengthVal, vitalityVal, magicVal, agilityVal, luckVal);
                         ++levelUpIterator; 
                         statsSet = false;
+                        return;
                     }
                 }
                  if (battleOver && distributionFinished && levelupflags){
@@ -1982,6 +1989,10 @@ void GameStateBattle::handleInput() {
                     return;
                 }
                 else if (escapeButton.wasClicked(this->game->window)) {
+                    if (isBossBattle){
+                        battleText.setString("There's nowhere to run.");
+                        return;
+                    }
 
                     if (turnQueue.empty()) return;
 
