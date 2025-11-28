@@ -1061,7 +1061,6 @@ void GameStateBattle::update(const float dt) {
                             luck.setFillColor(sf::Color::Green);
                             break;
               }
-              std::cout << (levelUpAttributeIndex % 5 + 5) % 5 << std::endl;
             printSkillNames = true;
         }
     }
@@ -2037,7 +2036,6 @@ void GameStateBattle::handleInput() {
 
                 for (auto& b : skillButtons) {
                     if (!b.wasClicked(this->game->window)) continue;
-                    std::cout << "[DEBUG] Skill button clicked: '" << b.getText() << "'\n"; // DEBUG REMOVE 
 
 
                     // It's assumed the front of turnQueue is the actor using the skill.
@@ -2062,15 +2060,7 @@ void GameStateBattle::handleInput() {
                     if (!s) {
                         battleText.setString("Skill not found.");
                         break;
-                    } // BELOW IS DEBUg
-                    std::cout << "[DEBUG] Resolved skill: name='" << s->getName() << "' type='" << s->getType()
-                    << "' mpCost=" << s->getMpCost()
-                    << " dmgRes=" << s->getDamageResist()
-                    << " dmgAmp=" << s->getDamageAmp()
-                    << " targetsEnemies=" << (s->getTargetsEnemies() ? "true" : "false")
-                    << " singleTarget=" << (s->getIsSingleTarget() ? "true" : "false")
-                    << " isAOE=" << (!s->getIsSingleTarget() ? "true" : "false")
-                    << "\n";
+                    } 
 
 
                     // Check MP (and HP if you use HP costs)
@@ -2825,13 +2815,13 @@ float GameStateBattle::getElementMultiplier(const Player* target, const Skill* s
         s->getType() == "Almighty")
         return 1.0f; // ignores affinities
 
-    auto affinities = target->getAffinityMap(); // I'll show you how to add this getter
+    auto affinities = target->getAffinityMap();
     auto it = affinities.find(s->getType());
     if (it == affinities.end()) return 1.0f;
 
     float a = it->second;
-    if (a == 0.0f) return 0.0f;   // NULL
-    return a;                     // 0.5 resist, 1.0 neutral, 1.5 weak
+    if (a == 0.0f) return 0.0f; // NULL
+    return a; // 0.5 resist, 1.0 neutral, 1.5 weak
 }
 
 int GameStateBattle::getEnemyIndex(NPC* e) const {

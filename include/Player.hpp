@@ -31,6 +31,7 @@ struct PlayerData {
     float angle;
     int HP;
     int maxHP;
+    int MAG;
     int MP;
     int maxMP;
     int STR;
@@ -42,6 +43,20 @@ struct PlayerData {
     std::array<Item, 2> inventory;
     std::map<std::string, float> affinities;
     std::array<std::string, 9> skills; //save skills as strings instead of ptrs
+
+    PlayerData()
+    : position(0.f, 0.f),
+      angle(0.f),
+      HP(0), maxHP(0),
+      MAG(0),
+      MP(0), maxMP(0),
+      STR(0), VIT(0), AGI(0), LU(0),
+      XP(0),
+      LVL(1),  // start at level 1
+      inventory{},
+      affinities({{"Physical",1.f},{"Fire",1.f},{"Ice",1.f},{"Electric",1.f},{"Force",1.f}}),
+      skills{}
+    {}
 };
 
 class Player {

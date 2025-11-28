@@ -169,13 +169,6 @@ pmember4("Eikichi", 1, 5, 2, 3, 2, 3, 0, {{"Fire", 1.0}, {"Ice", 1.5}, {"Physica
     } else {
         std::cout << "Font loaded: " << font.getInfo().family << std::endl;
     }
-    for (auto& s : skillMasterList) {
-        if (s.getName() == "Marakunda") {
-            std::cout << "[DEBUG] Marakunda damageResist = " << s.getDamageResist() << "\n";
-            break;
-        }
-    } // DEBUG REMEMBER TO REMOVE EVENTUALLY
-
 
 
     //first floor
@@ -223,6 +216,7 @@ void Game::saveFromFile(const std::string& filename) const {
     j["player"]["angle"] = pdata.angle;
     j["player"]["HP"] = pdata.HP;
     j["player"]["maxHP"] = pdata.maxHP;
+    j["player"]["MAG"] = pdata.MAG;
     j["player"]["MP"] = pdata.MP;
     j["player"]["maxMP"] = pdata.maxMP;
     j["player"]["STR"] = pdata.STR;
@@ -253,6 +247,7 @@ void Game::saveFromFile(const std::string& filename) const {
         pmj["angle"] = pd.angle;
         pmj["HP"] = pd.HP;
         pmj["maxHP"] = pd.maxHP;
+        pmj["MAG"] = pd.MAG;
         pmj["MP"] = pd.MP;
         pmj["maxMP"] = pd.maxMP;
         pmj["STR"] = pd.STR;
@@ -310,6 +305,7 @@ bool Game::loadFromFile(const std::string& filename, const std::vector<Skill>& m
         pdata.angle = j["player"].value("angle", 0.0f);
         pdata.HP = j["player"].value("HP", pdata.HP);
         pdata.maxHP = j["player"].value("maxHP", pdata.maxHP);
+        pdata.MAG = j["player"].value("MAG", pdata.MAG);
         pdata.MP = j["player"].value("MP", pdata.MP);
         pdata.maxMP = j["player"].value("maxMP", pdata.maxMP);
         pdata.STR = j["player"].value("STR", pdata.STR);
@@ -358,6 +354,7 @@ bool Game::loadFromFile(const std::string& filename, const std::vector<Skill>& m
             pd.angle = pmj.value("angle", 0.0f);
             pd.HP = pmj.value("HP", pd.HP);
             pd.maxHP = pmj.value("maxHP", pd.maxHP);
+            pd.MAG = pmj.value("MAG", pd.MAG);
             pd.MP = pmj.value("MP", pd.MP);
             pd.maxMP = pmj.value("maxMP", pd.maxMP);
             pd.STR = pmj.value("STR", pd.STR);
@@ -396,6 +393,7 @@ bool Game::loadFromFile(const std::string& filename, const std::vector<Skill>& m
             pd.angle = pmj.value("angle", 0.0f);
             pd.HP = pmj.value("HP", pd.HP);
             pd.maxHP = pmj.value("maxHP", pd.maxHP);
+            pd.MAG = pmj.value("MAG", pd.MAG);
             pd.MP = pmj.value("MP", pd.MP);
             pd.maxMP = pmj.value("maxMP", pd.maxMP);
             pd.STR = pmj.value("STR", pd.STR);
@@ -434,6 +432,7 @@ bool Game::loadFromFile(const std::string& filename, const std::vector<Skill>& m
             pd.angle = pmj.value("angle", 0.0f);
             pd.HP = pmj.value("HP", pd.HP);
             pd.maxHP = pmj.value("maxHP", pd.maxHP);
+            pd.MAG = pmj.value("MAG", pd.MAG);
             pd.MP = pmj.value("MP", pd.MP);
             pd.maxMP = pmj.value("maxMP", pd.maxMP);
             pd.STR = pmj.value("STR", pd.STR);

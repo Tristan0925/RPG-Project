@@ -783,18 +783,15 @@ void GameStateEditor::handleInput() // Inputs go here
                 break;
 
             case sf::Event::KeyPressed:
-                // Handle Escape: close map first, then slot menu, then pause
                 if (event.key.code == sf::Keyboard::Escape)
                 {
                     if (mapOpen) {
                         mapOpen = false; // close map first
-                    }
-                    else if (slotMenuActive) {
+                    } else if (slotMenuActive) {
                         slotMenuActive = false;
                         slotMenuMode = SlotMenuMode::None;
-                    }
-                    else {
-                        isPaused = !isPaused; // toggle pause menu
+                    } else {
+                        isPaused = !isPaused;
                     }
                 }
                 break;
@@ -803,8 +800,7 @@ void GameStateEditor::handleInput() // Inputs go here
                 break;
         }
 
-        // Handle mouse clicks while paused
-        if (isPaused)
+        if (isPaused && !mapOpen)
         {
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
             {
@@ -830,11 +826,9 @@ void GameStateEditor::handleInput() // Inputs go here
                     }
                 }
 
-                // Slot menu buttons
                 if (slotMenuActive)
                 {
                     Button* slots[3] = { &slot1, &slot2, &slot3 };
-
                     for (int i = 0; i < 3; ++i)
                     {
                         if (slots[i]->wasClicked(this->game->window))
@@ -856,7 +850,6 @@ void GameStateEditor::handleInput() // Inputs go here
                             return;
                         }
                     }
-
                     if (backButton.wasClicked(this->game->window))
                     {
                         slotMenuActive = false;
@@ -867,15 +860,14 @@ void GameStateEditor::handleInput() // Inputs go here
         }
     }
 
-    // Skip gameplay input while paused
+    // Skip gameplay input while paused or map is open
     if (requestQuitToMenu) {
         this->game->changeState(std::make_unique<GameStateStart>(this->game));
         return;
     }
+    if (isPaused || mapOpen) return;
 
-    if (isPaused) return;
-
-    // Movement
+    // Movement and player input
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !controlInputReadingPaused) {
         this->game->player.moveForward(moveSpeed, map);
         if (!isFootstepsPlaying){
@@ -884,7 +876,6 @@ void GameStateEditor::handleInput() // Inputs go here
             isFootstepsPlaying = true;
         }
     }
-
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !controlInputReadingPaused) {
         this->game->player.moveBackward(moveSpeed, map);
         if (!isFootstepsPlaying){
@@ -893,30 +884,23 @@ void GameStateEditor::handleInput() // Inputs go here
             isFootstepsPlaying = true;
         }
     }
-
     if (event.type == sf::Event::KeyReleased){
         if (event.key.code == sf::Keyboard::W || event.key.code == sf::Keyboard::S){
             isFootstepsPlaying = false;
             this->game->soundmgr.stopSound("footsteps");
         }
     }
-
     static bool leftPressed = false;
     static bool rightPressed = false;
-
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !controlInputReadingPaused) {
         if (!leftPressed) { this->game->player.turnLeft(); leftPressed = true; }
-    } else { leftPressed = false; }
-
+    } else leftPressed = false;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && !controlInputReadingPaused) {
         if (!rightPressed) { this->game->player.turnRight(); rightPressed = true; }
-    } else { rightPressed = false; }
+    } else rightPressed = false;
 
-    sf::Vector2i currentTile(
-        int(this->game->player.getPosition().x / 64.f),
-        int(this->game->player.getPosition().y / 64.f)
-    );
-
+    // Random encounter logic
+    sf::Vector2i currentTile(int(this->game->player.getPosition().x / 64.f), int(this->game->player.getPosition().y / 64.f));
     if (currentTile != lastTile) {
         lastTile = currentTile;
         if (rand() % 100 < 9) {
@@ -926,6 +910,7 @@ void GameStateEditor::handleInput() // Inputs go here
         }
     }
 }
+
 
 
 

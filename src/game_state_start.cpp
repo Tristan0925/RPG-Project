@@ -55,10 +55,10 @@ void GameStateStart::handleInput()
 
             if (!slotMenuActive) { // main menu
                 if (startgame.wasClicked(this->game->window)) {
-                    this->game->changeState(std::make_unique<GameStateEditor>(
-                        this->game, requestStartGame, 1
-                    ));
-                    return;
+                    Map map;
+                    map.loadFromFile("assets/map1.txt");
+                    this->game->player.setDefault(map);
+                    requestStartGame = true;
                 }
 
                 if (loadButton.wasClicked(this->game->window)) {

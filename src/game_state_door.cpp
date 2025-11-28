@@ -139,7 +139,7 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
 
 if (this->game->floorNumber == 1){
  for (const auto& pair : this->game->doorCoordinatesToHasLoot) {
-       if (pair.first == coordinatePair && coordinatePair == "(34, 4)" && pair.second == true){ //replace with bossCoordinates
+       if (pair.first == coordinatePair && coordinatePair == "(2, 2)" && pair.second == true){ //replace with bossCoordinates
             isBossRoom = true;
             isEmptyRoom = false;
             isItemRoom = false;
