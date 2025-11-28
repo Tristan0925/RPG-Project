@@ -139,7 +139,9 @@ GameStateDoor::GameStateDoor(Game* game, int x, int y)
 
 if (this->game->floorNumber == 1){
  for (const auto& pair : this->game->doorCoordinatesToHasLoot) {
-       if (pair.first == coordinatePair && coordinatePair == "(2, 2)" && pair.second == true){ //replace with bossCoordinates
+        std::cout << "Coordinate: " << pair.first 
+        << " Has loot? " << pair.second << std::endl;
+       if (pair.first == coordinatePair && coordinatePair == "(35, 25)" && pair.second == true){ //replace with bossCoordinates
             isBossRoom = true;
             isEmptyRoom = false;
             isItemRoom = false;

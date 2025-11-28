@@ -1,15 +1,16 @@
 {
-    "floorNumber": 2,
+    "floorNumber": 1,
     "party": [
         {
             "AGI": 3,
-            "HP": 114,
+            "HP": 24,
             "LU": 2,
-            "LVL": 6,
-            "MP": 102,
-            "STR": 9,
-            "VIT": 13,
-            "XP": 96,
+            "LVL": 1,
+            "MAG": 0,
+            "MP": 12,
+            "STR": 4,
+            "VIT": 3,
+            "XP": 0,
             "affinities": {
                 "Electric": 1.0,
                 "Fire": 0.0,
@@ -17,22 +18,22 @@
                 "Ice": 1.5,
                 "Physical": 1.0
             },
-            "angle": 1.5707963705062866,
+            "angle": 1.6292068494294654e-07,
             "inventory": [
                 {
-                    "name": "Dragon Morsel",
-                    "quantity": 3
+                    "name": "Empty Slot",
+                    "quantity": 0
                 },
                 {
                     "name": "Empty Slot",
                     "quantity": 0
                 }
             ],
-            "maxHP": 114,
-            "maxMP": 102,
+            "maxHP": 24,
+            "maxMP": 12,
             "position": [
-                338.35772705078125,
-                199.40855407714844
+                533.2721557617188,
+                184.42388916015625
             ],
             "skills": [
                 "Attack",
@@ -48,13 +49,14 @@
         },
         {
             "AGI": 3,
-            "HP": 144,
+            "HP": 24,
             "LU": 3,
-            "LVL": 6,
-            "MP": 108,
+            "LVL": 1,
+            "MAG": 0,
+            "MP": 18,
             "STR": 2,
-            "VIT": 18,
-            "XP": 96,
+            "VIT": 3,
+            "XP": 0,
             "affinities": {
                 "Electric": 1.0,
                 "Fire": 1.0,
@@ -73,8 +75,8 @@
                     "quantity": 0
                 }
             ],
-            "maxHP": 144,
-            "maxMP": 108,
+            "maxHP": 24,
+            "maxMP": 18,
             "position": [
                 0.0,
                 0.0
@@ -92,14 +94,15 @@
             ]
         },
         {
-            "AGI": 10,
-            "HP": 96,
+            "AGI": 3,
+            "HP": 24,
             "LU": 2,
-            "LVL": 6,
-            "MP": 108,
+            "LVL": 1,
+            "MAG": 0,
+            "MP": 15,
             "STR": 3,
-            "VIT": 10,
-            "XP": 96,
+            "VIT": 3,
+            "XP": 0,
             "affinities": {
                 "Electric": 1.5,
                 "Fire": 1.5,
@@ -118,8 +121,8 @@
                     "quantity": 0
                 }
             ],
-            "maxHP": 96,
-            "maxMP": 108,
+            "maxHP": 24,
+            "maxMP": 15,
             "position": [
                 0.0,
                 0.0
@@ -138,13 +141,14 @@
         },
         {
             "AGI": 2,
-            "HP": 48,
+            "HP": 18,
             "LU": 3,
-            "LVL": 6,
-            "MP": 27,
-            "STR": 45,
+            "LVL": 1,
+            "MAG": 0,
+            "MP": 12,
+            "STR": 5,
             "VIT": 2,
-            "XP": 96,
+            "XP": 0,
             "affinities": {
                 "Electric": 1.0,
                 "Fire": 1.0,
@@ -163,8 +167,8 @@
                     "quantity": 0
                 }
             ],
-            "maxHP": 48,
-            "maxMP": 27,
+            "maxHP": 18,
+            "maxMP": 12,
             "position": [
                 0.0,
                 0.0
@@ -184,13 +188,14 @@
     ],
     "player": {
         "AGI": 3,
-        "HP": 114,
+        "HP": 24,
         "LU": 2,
-        "LVL": 6,
-        "MP": 102,
-        "STR": 9,
-        "VIT": 13,
-        "XP": 96,
+        "LVL": 1,
+        "MAG": 0,
+        "MP": 12,
+        "STR": 4,
+        "VIT": 3,
+        "XP": 0,
         "affinities": {
             "Electric": 1.0,
             "Fire": 0.0,
@@ -198,22 +203,22 @@
             "Ice": 1.5,
             "Physical": 1.0
         },
-        "angle": 1.5707963705062866,
+        "angle": 1.6292068494294654e-07,
         "inventory": [
             {
-                "name": "Dragon Morsel",
-                "quantity": 3
+                "name": "Empty Slot",
+                "quantity": 0
             },
             {
                 "name": "Empty Slot",
                 "quantity": 0
             }
         ],
-        "maxHP": 114,
-        "maxMP": 102,
+        "maxHP": 24,
+        "maxMP": 12,
         "position": [
-            338.35772705078125,
-            199.40855407714844
+            533.2721557617188,
+            184.42388916015625
         ],
         "skills": [
             "Attack",
