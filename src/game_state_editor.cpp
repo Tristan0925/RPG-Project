@@ -942,14 +942,12 @@ GameStateEditor::GameStateEditor(Game* game, bool requestStartGame, int floorNum
     if (currentFloor == 1){
         map = this->game->map;
         sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
-        this->game->player.setPosition(spawn * 64.f); // scale by tile size
         doorTexture.loadFromFile("assets/door_texture.png");
         wallTexture.loadFromFile("assets/wall_texture.jpg");  
    }
     else if (currentFloor == 2){
         map = this->game->map2;
         sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
-        this->game->player.setPosition(spawn * 64.f); // scale by tile size
         doorTexture.loadFromFile("assets/door_texture2.png");
         wallTexture.loadFromFile("assets/wall_texture2.png");
     }
@@ -975,7 +973,7 @@ GameStateEditor::GameStateEditor(Game* game, bool requestStartGame, int floorNum
     saveText.setCharacterSize(32);
     saveText.setFillColor(sf::Color::White);
     saveText.setString("Game Saved!");
-    saveText.setPosition(50.f, 400.f); 
+    saveText.setPosition(50.f, 430.f); 
 
     resumeButton.changePosition(50.f, 190.f);
     settingsButton.changePosition(50.f, 230.f);

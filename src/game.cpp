@@ -291,17 +291,14 @@ bool Game::loadFromFile(const std::string& filename, const std::vector<Skill>& m
     if (j.contains("floorNumber")) {
         floorNumber = j["floorNumber"];
     }
-    this->states.push(std::make_unique<GameStateEditor>(this, false, floorNumber));
 
 
 
     // --- Load main player ---
     if (j.contains("player")) {
         PlayerData pdata;
-        if (j["player"].contains("position") && j["player"]["position"].is_array() && j["player"]["position"].size() >= 2) {
-            pdata.position.x = j["player"]["position"][0].get<float>();
-            pdata.position.y = j["player"]["position"][1].get<float>();
-        }
+        auto pos = j["player"]["position"];
+        pdata.position = sf::Vector2f(pos[0].get<float>(), pos[1].get<float>());        
         pdata.angle = j["player"].value("angle", 0.0f);
         pdata.HP = j["player"].value("HP", pdata.HP);
         pdata.maxHP = j["player"].value("maxHP", pdata.maxHP);
@@ -314,6 +311,11 @@ bool Game::loadFromFile(const std::string& filename, const std::vector<Skill>& m
         pdata.LU = j["player"].value("LU", pdata.LU);
         pdata.XP = j["player"].value("XP", pdata.XP);
         pdata.LVL = j["player"].value("LVL", pdata.LVL);
+
+            // DEBUG: print loaded position
+            std::cout << "[DEBUG] Loaded player position: x=" 
+            << pdata.position.x << ", y=" 
+            << pdata.position.y << std::endl;
 
         // inventory
         if (j["player"].contains("inventory") && j["player"]["inventory"].is_array()) {
@@ -461,6 +463,12 @@ bool Game::loadFromFile(const std::string& filename, const std::vector<Skill>& m
             pmember4.setData(pd, masterList, true);
         }
     }
+    auto editor = std::make_unique<GameStateEditor>(this, false, floorNumber);
 
+    // Use the setter instead of accessing `game` directly
+    editor->setPlayerPosition(player.getData().position);
+    
+    this->states.push(std::move(editor));
+    
     return true;
 }
