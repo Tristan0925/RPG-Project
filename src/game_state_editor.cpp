@@ -676,7 +676,6 @@ void GameStateEditor::handleInput() // Inputs go here
                         slotMenuMode = SlotMenuMode::None;
                     } else {
                         isPaused = !isPaused;
-                        std::cout << "Paused: " << std::boolalpha << isPaused << std::endl;
                     }
                 }
                 break;
@@ -694,7 +693,7 @@ void GameStateEditor::handleInput() // Inputs go here
                     if (resumeButton.wasClicked(this->game->window)) {
                         isPaused = false;
                     } else if (settingsButton.wasClicked(this->game->window)) {
-                        std::cout << "Settings clicked (placeholder)\n";
+                        //settings
                     } else if (saveButton.wasClicked(this->game->window)) {
                         this->game->soundmgr.playSound("savesuccess");
                         slotMenuActive = true;
@@ -724,8 +723,6 @@ void GameStateEditor::handleInput() // Inputs go here
                             else if (slotMenuMode == SlotMenuMode::Load)
                             {
                                 this->game->loadFromFile(saveFiles[i], this->game->skillMasterList);
-                                std::cout << "Loaded position: " << this->game->player.getPosition().x
-                                << ", " << this->game->player.getPosition().y << std::endl;
                                 // Force camera to follow new player position
                                 sf::Vector2f playerPos = this->game->player.getPosition();
                                 gameView.setCenter(playerPos);
@@ -753,16 +750,18 @@ void GameStateEditor::handleInput() // Inputs go here
         // just let the while loop finish naturally
 
     if (requestQuitToMenu) {
-        std::cout << "Changing to main menu...\n";
         this->game->changeState(std::make_unique<GameStateStart>(this->game));
         return; // stop further input for this frame
+    }
+
+    if (isPaused) {
+        return;
     }
 
     // Forward movement
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !controlInputReadingPaused) { 
         this->game->player.moveForward(moveSpeed, map);
         if (!isFootstepsPlaying){
-            std::cout <<"feet" << std::endl;
             this->game->soundmgr.loopSound("footsteps");
             this->game->soundmgr.playSound("footsteps");
             isFootstepsPlaying = true;
