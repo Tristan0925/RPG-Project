@@ -905,7 +905,7 @@ void GameStateEditor::handleInput() // Inputs go here
     sf::Vector2i currentTile(int(this->game->player.getPosition().x / 64.f), int(this->game->player.getPosition().y / 64.f));
     if (currentTile != lastTile) {
         lastTile = currentTile;
-        if (rand() % 100 < 0) {
+        if (rand() % 100 < 9) {
             this->game->inBattle = true;
             this->game->requestPush(std::make_unique<GameStateBattle>(this->game, false, 0));
             return;
