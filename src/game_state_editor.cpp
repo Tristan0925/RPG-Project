@@ -812,7 +812,7 @@ void GameStateEditor::handleInput() // Inputs go here
                         slotMenuActive = true;
                         slotMenuMode = SlotMenuMode::Inventory;
                     } else if (saveButton.wasClicked(this->game->window)) {
-                        this->game->soundmgr.playSound("savesuccess");
+                        
                         slotMenuActive = true;
                         slotMenuMode = SlotMenuMode::Save;
                     } else if (loadButton.wasClicked(this->game->window)) {
@@ -836,11 +836,13 @@ void GameStateEditor::handleInput() // Inputs go here
                             if (slotMenuMode == SlotMenuMode::Save)
                             {
                                 this->game->saveFromFile(saveFiles[i]);
+                                this->game->soundmgr.playSound("savesuccess");
                                 showSaveText = true;
                                 saveClock.restart();
                             }
                             else if (slotMenuMode == SlotMenuMode::Load)
                             {
+                                currentTrack.stop();
                                 this->game->loadFromFile(saveFiles[i], this->game->skillMasterList);
                                 sf::Vector2f playerPos = this->game->player.getPosition();
                                 gameView.setCenter(playerPos);
@@ -903,7 +905,7 @@ void GameStateEditor::handleInput() // Inputs go here
     sf::Vector2i currentTile(int(this->game->player.getPosition().x / 64.f), int(this->game->player.getPosition().y / 64.f));
     if (currentTile != lastTile) {
         lastTile = currentTile;
-        if (rand() % 100 < 9) {
+        if (rand() % 100 < 0) {
             this->game->inBattle = true;
             this->game->requestPush(std::make_unique<GameStateBattle>(this->game, false, 0));
             return;
@@ -948,6 +950,7 @@ GameStateEditor::GameStateEditor(Game* game, bool requestStartGame, int floorNum
     else if (currentFloor == 2){
         map = this->game->map2;
         sf::Vector2f spawn(map.getSpawnX(), map.getSpawnY());
+        this->game->player.setPosition(spawn * 64.f); //this ignores whatever is in the save file and sets spawn at the same spot every time
         doorTexture.loadFromFile("assets/door_texture2.png");
         wallTexture.loadFromFile("assets/wall_texture2.png");
     }

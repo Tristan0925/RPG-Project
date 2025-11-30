@@ -1,16 +1,16 @@
 {
-    "floorNumber": 1,
+    "floorNumber": 2,
     "party": [
         {
             "AGI": 3,
-            "HP": 24,
+            "HP": 54,
             "LU": 2,
-            "LVL": 1,
+            "LVL": 6,
             "MAG": 0,
-            "MP": 12,
-            "STR": 4,
+            "MP": 27,
+            "STR": 44,
             "VIT": 3,
-            "XP": 0,
+            "XP": 96,
             "affinities": {
                 "Electric": 1.0,
                 "Fire": 0.0,
@@ -18,7 +18,7 @@
                 "Ice": 1.5,
                 "Physical": 1.0
             },
-            "angle": 0.0,
+            "angle": 1.5707963705062866,
             "inventory": [
                 {
                     "name": "Empty Slot",
@@ -29,11 +29,11 @@
                     "quantity": 0
                 }
             ],
-            "maxHP": 24,
-            "maxMP": 12,
+            "maxHP": 54,
+            "maxMP": 27,
             "position": [
-                64.0,
-                128.0
+                361.46453857421875,
+                205.02444458007813
             ],
             "skills": [
                 "Attack",
@@ -49,14 +49,14 @@
         },
         {
             "AGI": 3,
-            "HP": 24,
+            "HP": 54,
             "LU": 3,
-            "LVL": 1,
+            "LVL": 6,
             "MAG": 0,
-            "MP": 18,
-            "STR": 2,
+            "MP": 33,
+            "STR": 42,
             "VIT": 3,
-            "XP": 0,
+            "XP": 96,
             "affinities": {
                 "Electric": 1.0,
                 "Fire": 1.0,
@@ -75,8 +75,8 @@
                     "quantity": 0
                 }
             ],
-            "maxHP": 24,
-            "maxMP": 18,
+            "maxHP": 54,
+            "maxMP": 33,
             "position": [
                 0.0,
                 0.0
@@ -95,14 +95,14 @@
         },
         {
             "AGI": 3,
-            "HP": 24,
+            "HP": 54,
             "LU": 2,
-            "LVL": 1,
+            "LVL": 6,
             "MAG": 0,
-            "MP": 15,
-            "STR": 3,
+            "MP": 30,
+            "STR": 43,
             "VIT": 3,
-            "XP": 0,
+            "XP": 96,
             "affinities": {
                 "Electric": 1.5,
                 "Fire": 1.5,
@@ -121,8 +121,8 @@
                     "quantity": 0
                 }
             ],
-            "maxHP": 24,
-            "maxMP": 15,
+            "maxHP": 54,
+            "maxMP": 30,
             "position": [
                 0.0,
                 0.0
@@ -141,14 +141,14 @@
         },
         {
             "AGI": 2,
-            "HP": 18,
+            "HP": 48,
             "LU": 3,
-            "LVL": 1,
+            "LVL": 6,
             "MAG": 0,
-            "MP": 12,
-            "STR": 5,
+            "MP": 27,
+            "STR": 45,
             "VIT": 2,
-            "XP": 0,
+            "XP": 96,
             "affinities": {
                 "Electric": 1.0,
                 "Fire": 1.0,
@@ -167,8 +167,8 @@
                     "quantity": 0
                 }
             ],
-            "maxHP": 18,
-            "maxMP": 12,
+            "maxHP": 48,
+            "maxMP": 27,
             "position": [
                 0.0,
                 0.0
@@ -188,14 +188,14 @@
     ],
     "player": {
         "AGI": 3,
-        "HP": 24,
+        "HP": 54,
         "LU": 2,
-        "LVL": 1,
+        "LVL": 6,
         "MAG": 0,
-        "MP": 12,
-        "STR": 4,
+        "MP": 27,
+        "STR": 44,
         "VIT": 3,
-        "XP": 0,
+        "XP": 96,
         "affinities": {
             "Electric": 1.0,
             "Fire": 0.0,
@@ -203,7 +203,7 @@
             "Ice": 1.5,
             "Physical": 1.0
         },
-        "angle": 0.0,
+        "angle": 1.5707963705062866,
         "inventory": [
             {
                 "name": "Empty Slot",
@@ -214,11 +214,11 @@
                 "quantity": 0
             }
         ],
-        "maxHP": 24,
-        "maxMP": 12,
+        "maxHP": 54,
+        "maxMP": 27,
         "position": [
-            64.0,
-            128.0
+            361.46453857421875,
+            205.02444458007813
         ],
         "skills": [
             "Attack",
